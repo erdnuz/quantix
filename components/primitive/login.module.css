@@ -1,0 +1,93 @@
+.login-container {
+  width: 140px; /* Fixed width */
+  height: fit-content; /* Adjust height based on the content */
+  display: flex; /* Use flexbox for alignment */
+  
+  position: relative; /* Vertically center th
+  .dropdown {e content */
+  box-sizing: border-box;
+/* Placeholder for alignment with dropdown */
+}
+
+
+
+
+
+.holder {
+  box-sizing: border-box;
+  padding: 4px;
+  display: flex;
+  width: 100%; 
+  justify-content: center; /* Horizontally center the content */
+  align-items: center;
+}
+
+.holder.dropdown-active {
+  border-radius: 16px 16px 0 0;
+  
+  box-sizing: border-box;
+  border: 1px solid var(--sds-color-border-default-secondary);
+  cursor: pointer;
+}
+
+  .dropdown {
+    display: block;
+    position: absolute;
+    top: 100%; /* Below the search box */
+    left: 0;
+    right: 0;
+    background: var(--sds-color-background-default-secondary);
+    border: 1px solid var(--sds-color-border-default-secondary);
+    border-radius: 0 0 16px 16px; /* Bottom corners rounded */
+    border-top: none;
+    font: var(--sds-font-body-small);
+    z-index: 10;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+.dropdown-item {
+  display:flex;
+  padding: 12px 16px;
+  cursor: pointer;
+  max-width: 100%;
+  height: fit-content;
+  max-height: fit-content;
+  box-sizing: border-box;
+  width: 100%;
+  font: var(--sds-font-body-small);
+  background: var(--sds-color-background-default-default);
+  color: var(--sds-color-text-default-secondary);
+  border-bottom: 1px solid var(--sds-color-border-default-secondary);
+}
+
+.dropdown-item.last {
+  border: none;
+}
+
+.dropdown-item.first {
+  border-top: 1px solid var(--sds-color-border-default-secondary);
+}
+
+.dropdown-item:hover {
+  background: var(--sds-color-background-default-secondary);
+  color: var(--sds-color-text-default);
+}
+
+@media (max-width: 700px) {
+  .login-container {
+    width: 100px
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+  }
+
+  .holder {
+    justify-content: right;
+  }
+
+  .holder.dropdown-active {
+    justify-content: center;
+  }
+}

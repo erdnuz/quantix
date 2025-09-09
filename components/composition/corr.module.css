@@ -1,0 +1,20 @@
+.cell {
+    
+    padding: 12px;
+    text-align: center;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    color: #FFF;
+  }
+  
+  @media (max-width: 700px) {
+    .cell {
+      padding: 6px;
+      font-size: 12px
+    }
+
+    .ind {
+      font-size: 14px
+    }
+  }
+  

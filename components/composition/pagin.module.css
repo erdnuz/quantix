@@ -1,0 +1,125 @@
+.pagination-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        position: relative; /* Relative positioning to contain the absolute positioned elements */
+      }
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    gap: 4px;
+  }
+  
+  .pagination-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  
+  .pagination-arrow:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  .pagination-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: var(--sds-color-background-default);
+    color: var(--sds-color-text-default-default);
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0px;
+  }
+  
+  .pagination-item:hover:not(.active):not(:disabled) {
+    background-color: var(--sds-color-background-default-hover);
+    color: var(--sds-color-text-default-default);
+    border-color: var(--sds-color-border-default-hover);
+  }
+  
+  .pagination-item.active {
+    background-color: var(--sds-color-background-brand-default);
+    color: var(--sds-color-text-brand-on-brand);
+    border-color: var(--sds-color-border-brand-default);
+  }
+  
+  .pagination-item:disabled {
+    cursor: not-allowed;
+    border: none;
+    opacity: 0.5;
+  }
+  
+  .pagination-arrow > svg,
+  .pagination-item > svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .pagination-goto {
+    position: absolute; /* Absolute positioning to push it to the right */
+    right: 0; /* Align to the right */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .pagination-input {
+    width: 60px;
+    align-content: center;
+    height: 100%;
+    padding: 6px 6px;
+    border: 1px solid var(--sds-color-border-default-default);
+    border-radius: 12px;
+    background: inherit;
+    box-sizing: border-box;
+    color: inherit
+  }
+
+  .pagination-input:focus {
+    outline: none; /* Removes the default outline */
+    box-shadow: none; /* Removes any default focus shadow */
+    border: 1px solid var(--sds-color-border-default-secondary); /* Custom border */
+  }
+
+  .pagination-input:-webkit-autofill {
+    background-color: transparent !important; 
+    -webkit-box-shadow: 0 0 0px 1000px var(--sds-color-background-default-default) inset !important;
+    color: var(--sds-color-text-default-default) !important;
+  }
+  
+  .pagination-input:-webkit-autofill::first-line {
+    color: var(--sds-color-text-default-default) !important;
+  }
+  
+  /* Remove arrows for number inputs */
+    .pagination-input::-webkit-inner-spin-button,
+    .pagination-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+
+    .pagination-input {
+    -moz-appearance: textfield; /* For Firefox */
+    }
+
+    @media (max-width:700px) {
+      .pagination-item {
+        font-size: 14px;
+        width: 24px;
+        height: 24px
+      }
+
+      .pagination-goto {
+        display: none;
+      }
+    }
+  

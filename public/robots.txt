@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://quant-algo-4430a.web.app
+
+# Sitemaps
+Sitemap: https://quant-algo-4430a.web.app/sitemap.xml

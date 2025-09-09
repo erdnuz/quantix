@@ -1,0 +1,57 @@
+.filter-grid {
+    display: flex;
+    width: fit-content;
+    gap: 4px;
+    flex-direction: column;
+    
+
+}
+
+.grid-header, .grid-row {
+    display: flex;
+    gap: 4px;    
+    justify-content: right;
+}
+
+.empty-cell {
+    flex: 0.4;
+}
+
+.header-label, .left-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: var(--sds-font-body-base)
+}
+
+.left-label {
+    flex: 0.4;
+    justify-content: right;
+    margin-right: 4px;
+}
+
+.header-label {
+    width: 60px;
+    text-align: bottom;
+}
+
+
+.grid-cell {
+    height: 60px;
+    width: 60px;
+    border-radius: 4px;
+    
+    
+    background-color: var(--sds-color-background-brand-secondary);
+    border: 1px solid var(--sds-color-background-brand-secondary);
+    cursor: pointer;
+}
+
+.grid-cell:hover {
+    background-color: var(--sds-color-background-brand-secondary-hover);
+}
+
+.grid-cell.selected {
+    background-color: var(--sds-color-background-brand-default);
+    border-color: var(--sds-color-background-default-secondary);
+}

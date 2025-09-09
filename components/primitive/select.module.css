@@ -1,0 +1,109 @@
+.select-container {
+  display: inline-block;
+  min-width: 120px; /* Ensures the container fits its content */
+  position: relative; /* Dropdown position relative to this container */
+  border-radius: 8px;
+  height: fit-content;
+  width: auto; /* Allows the container to scale dynamically */
+}
+
+.select-box {
+  display: flex;
+  align-items: center;
+  background: var(--sds-color-background-default-default);
+  gap: 8px;
+  width: auto; /* Dynamically adjusts to content width */
+  padding: 4px 12px;
+  cursor: pointer;
+  border-radius: 12px;
+  border: var(--sds-size-stroke-border) solid var(--sds-color-border-default-secondary);
+  box-sizing: border-box;
+  font: var(--sds-font-body-small);
+  position: relative;
+  min-width: fit-content; /* Ensures it doesn't shrink smaller than its content */
+}
+
+.select-box.dropdown-visible {
+  border-radius: 12px 12px 0 0;
+  font-weight:600;
+}
+
+
+
+.select-box:hover {
+  background: var(--sds-color-background-default-secondary);
+}
+
+
+
+.select-box.dropdown-visible .chevron-icon  {
+  visibility: hidden;
+}
+
+.selected-value {
+  min-width: fit-content;
+  width: 100%;
+}
+
+/* Dropdown styles */
+.select-dropdown {
+  display: block;
+  position: absolute;
+  top: 100%; /* Below the select box */
+  left: 0;
+  right: 0;
+  background: var(--sds-color-background-default-secondary);
+  border: 1px solid var(--sds-color-border-default-secondary);
+  border-radius: 0 0 16px 16px; /* Rounded bottom corners */
+  border-top: none; /* Seamless connection with the select box */
+  font: var(--sds-font-body-small);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  min-width: 120px; /* Minimum width for the dropdown */
+  width: auto; /* Allow dropdown to expand based on content */
+}
+
+.select-item {
+  padding: 8px 12px;
+  min-width: fit-content; /* Ensures the item isn't smaller than the content */
+  width: 100%; /* Ensures the item takes full width of the dropdown */
+  cursor: pointer;
+  background: var(--sds-color-background-default-default);
+  color: var(--sds-color-text-default-secondary);
+  border-bottom: 1px solid var(--sds-color-border-default-secondary);
+}
+
+
+.select-item.last {
+  border-bottom: none; /* No border for the last item */
+}
+
+.select-item:hover {
+  background: var(--sds-color-background-default-secondary);
+  color: var(--sds-color-text-default);
+}
+
+@media (max-width: 700px) {
+  .select-item {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .selected-value {
+    font-size: 14px;
+  }
+
+  .select-dropdown {
+    min-width: 100px;
+  }
+
+  .select-container {
+    min-width: 100px
+  }
+  .select-box {
+    padding: 4px 8px;
+  }
+}

@@ -1,0 +1,55 @@
+.container {
+    padding: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    align-items: flex-start; /* Align items to the left */
+  }
+
+  
+
+  .content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-content: left; /* Align items to the left */
+  }
+  
+  .headRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .analysis1 {
+    display: flex;
+  }
+
+  .analysis2 {
+    display: none;
+    margin: 0;
+    margin-top: 16px;
+  }
+
+  .comps {
+     display: flex; 
+     flex-wrap: wrap ;
+     gap: 16px; margin-top:16px  }
+
+  @media (max-width: 700px) {
+    .container {
+        padding: 24px;
+        gap: 8px;
+    }
+
+    .analysis1 {
+        display: none;
+      }
+    
+      .analysis2 {
+        display: flex
+      }
+  }
