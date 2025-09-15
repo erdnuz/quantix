@@ -1,4 +1,4 @@
 firebase-functions
 firebase-admin
 pandas
-yfinance>=0.2.54
+yfinance

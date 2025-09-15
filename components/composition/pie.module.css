@@ -1,8 +1,0 @@
-.width {
-    width: 240px;
-    height: fit-content
-}
-
-@media (max-width: 700px) {
-    .width {width: 180px;}
-}

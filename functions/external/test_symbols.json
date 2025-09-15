@@ -1,0 +1,27 @@
+{
+  "etfs": [
+    "IVV",
+    "FPE",
+    "FEX",
+    "SPHQ",
+    "VTI",
+    "VOO",
+    "QQQ",
+    "DIA",
+    "ARKK"
+  ],
+  "equities": [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "TSLA",
+    "BRK-B",
+    "NVDA",
+    "META",
+    "UNH",
+    "JNJ",
+    "V",
+    "WMT"
+  ]
+}

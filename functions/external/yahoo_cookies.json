@@ -1,0 +1,207 @@
+[
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1792263159,
+    "httpOnly": false,
+    "name": "_ga_YD9K1W9DLN",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "GS2.1.s1757703159$o1$g0$t1757703159$j60$l0$h0"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1792263159,
+    "httpOnly": false,
+    "name": "_ga",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "GA1.1.538776305.1757703142"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789239159,
+    "httpOnly": false,
+    "name": "axids",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "gam=y-TFEoCXdG2uIPSSR5yvNPwSi8cN2JAfR6nqnDF7TutpbAdtPWKw---A&dv360=eS05RXlVaG9GRTJ1RkRRVDRZSUtNcV9MNXJmbTdhLk9VSzNlX2pGMDRmb2sxOEF3cTlzX3lZVmxaZW5wV3YuVmVmNDM5MX5B&ydsp=y-3sTG.ZhE2uJI7jLqTO4DMqcWqZjm5w0wWmIjnsS0wnOiZBbTalbhsjDA4hqFGQiLk8IX~A&tbla=y-f5uDcJ9G2uIMbXWH_kqBYQd6CkgiIFVMRUeYHoXuSwUmMg6fRg---A"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1792263142,
+    "httpOnly": false,
+    "name": "_ga_B40QGCQW3G",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "GS2.1.s1757703142$o1$g0$t1757703142$j60$l0$h0"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789239140,
+    "httpOnly": false,
+    "name": "cmp",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "t=1757703141&j=1&u=1---&v=96"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789239138,
+    "httpOnly": false,
+    "name": "_ebd",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "bid-4951ublkc8quq&d=56e02ba49b8f0aee5517fc558085332d&s=bidhashk-EhWPKBbF"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789239138,
+    "httpOnly": true,
+    "name": "A1",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "d=AQABBNprxGgCEA8Ur0lXRwmZCcdxU10-lEQFEgAACAG0xWj0aCXaxyMA9qMCAAcI2mvEaF0-lEQIDxcJpTP1AFe1mGdpZWa0mwkBBwoBow&S=AQAAAs-b6GeT1bl9uipKjWgJE7Y"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1757789540,
+    "httpOnly": false,
+    "name": "EuConsent",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "CQXekwAQXekwAAOACeENB7FoAP_gAEPgACiQKptB9G7eTXFneTp2YPskOYwX0VBJ4MAwBgCBAUABzBIUIBwGVmAzJEyIICACGAIAIGBBIABtGAhAQEAAIIAFAABIAEgAIBAAIGAAACAAAABACAAAAAAAAAAQgEAXMBQgmCYEBFoIQUhAggAgAQAAAAAEAIgBCAQAEAAAQAAACAAAACgAggAAAAAAAAAEAFAIEAAAIAECAgvkdAAAAAAAAAAIAAYACAABAAAAAIKpgAkGhUQRFgQAhEIGEECAAQUBABQIAgAACBAAAATBAUIAwAVGAyAEAIAAAAAAAAAAABAAABAAhAAEAAAIAAAAAIAAgAIAAAACAAAAAAAAAAAAAAAAAAAAAAAAAGIBAggCAABBAAQUAAAAAgAAAAAAAAAIgACAAAAAAAAAAAAAAAgAAAgAAAAAAAAAAAAAAIEAAAIAAAAoDEFgAAAAAAAAAAAAAACAABAAAAAIAAA"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789282316,
+    "httpOnly": false,
+    "name": "GUC",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "AQAACAFoxbRo9EIbrgR0&s=AQAAAAxdD38k&g=aMRr7A"
+  },
+  {
+    "domain": ".finance.yahoo.com",
+    "httpOnly": false,
+    "name": "fes-ds-session",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "pv%3D1"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1762887138,
+    "httpOnly": false,
+    "name": "ySID",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "v=1&d=0DZvTQe37Q--"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789239159,
+    "httpOnly": false,
+    "name": "tbla_id",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "8e9dc7a1-420d-43ef-b559-d08563fbc32f-tuctfbdf15b"
+  },
+  {
+    "domain": ".yahoo.com",
+    "httpOnly": false,
+    "name": "Y",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "v=1&np=1&n=06d2vll3683ah&l=8euoflvmc8pda9nb405vx4gbhi733x7pkv9ig1oo/o&p=037vvca00000000&r=1e7&intl=ca"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1757704985,
+    "httpOnly": false,
+    "name": "GUCS",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "AUwl2gyC"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789239138,
+    "httpOnly": false,
+    "name": "PH",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "l=en-CA"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789260761,
+    "httpOnly": true,
+    "name": "A3",
+    "path": "/",
+    "sameSite": "None",
+    "secure": true,
+    "value": "d=AQABBNprxGgCEA8Ur0lXRwmZCcdxU10-lEQFEgAACAG0xWj0aCXaxyMA9qMCAAcI2mvEaF0-lEQIDxcJpTP1AFe1mGdpZWa0mwkBBwoBow&S=AQAAAs-b6GeT1bl9uipKjWgJE7Y"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789282319,
+    "httpOnly": false,
+    "name": "OTHD",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "g=AD2D461AF924D1FCCF31228728B00307B4CF75CBA1DA0EFBCC66F4FF58BD0F34&s=CD629487C85DC09EC04959A04F08DA2BEB73D95B4A29A3AD91632185FAD9741D&b=bid-4951ublkc8quq&j=CA&bd=29f844a257cb8458a930ef24997ee0c4&gk=x1a9z-qJCjBBcc&sk=x1a9z-qJCjBBcc&bk=x1a9z-qJCjBBcc&iv=242437309E0672DE1F4096878FFDC25F&v=1&u=0"
+  },
+  {
+    "domain": ".yahoo.com",
+    "httpOnly": false,
+    "name": "A1S",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "d=AQABBNprxGgCEA8Ur0lXRwmZCcdxU10-lEQFEgAACAG0xWj0aCXaxyMA9qMCAAcI2mvEaF0-lEQIDxcJpTP1AFe1mGdpZWa0mwkBBwoBow&S=AQAAAs-b6GeT1bl9uipKjWgJE7Y"
+  },
+  {
+    "domain": ".yahoo.com",
+    "expiry": 1789239138,
+    "httpOnly": true,
+    "name": "F",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": false,
+    "value": "d=otoZ9W89vNeyZn7H_UBXiQtNVzF4Mxwjl6.CK9xAnminoC7tNI79kEI-"
+  },
+  {
+    "domain": ".yahoo.com",
+    "httpOnly": true,
+    "name": "OTH",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "v=2&s=0&d=eyJraWQiOiIwIiwiYWxnIjoiUlMyNTYifQ.eyJjdSI6eyJndWlkIjoiSUJaRlRSWFBGSDNEWEtIVUVYRDJEWU9JR1UiLCJwZXJzaXN0ZW50IjpmYWxzZSwic2lkIjoiS2prY25lQk52RG00In19.sUOswpzRP2pAwweUJrGpnNXze_9suXoLegrsNF_Ce3eT5wnF5_hQMGMoEtGgtkgIj9Q3vFiDsHtMM6Fp7TZetEJlxqq1YmjsEwfTlbHXzf6ACwA_9N9sJecxEbXUzQPFwS0ZtWXSzmApmDqvaF3y0s88djtDmujFXUxe7p6TDMY"
+  },
+  {
+    "domain": ".yahoo.com",
+    "httpOnly": true,
+    "name": "T",
+    "path": "/",
+    "sameSite": "Lax",
+    "secure": true,
+    "value": "af=JnRzPTE3NTc3MDMxMzgmcHM9d0Q3VDMuRE5rbWtvWGtyS21JS1ZDZy0t&d=bnMBeWFob28BZwFJQlpGVFJYUEZIM0RYS0hVRVhEMkRZT0lHVQFhYwFBQzZlUnc0WgFhbAFhbWNhcnRodXJAbXl5YWhvby5jb20Bc2MBZGVza3RvcF93ZWIBZnMBRTZyQnZVbG94R3ZpAXp6AWl2R3hvQkE3RQFhAVFBRQFsYXQBaXZHeG9CAW51ATA-&kt=EAAYYHjIqe5a4zRviU6WZhiFw--~I&ku=FAAGY6wOdXhoV73LB2yrlV0SDDBFyC8gNLLLbN8cBx03UgpzPr61BxC8FZziVsyBJ2UkgoeCagCd_V53.8i7GSDYeEAhcE_2MhK7sy_6NKjA74nPHPATVUeS_CTiFPQzZkUWVRDw3wE2F6XgdvOqcBJSZheo0.yA6PEg_eEZTX3Ikw-~E"
+  }
+]
