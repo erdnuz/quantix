@@ -188,7 +188,7 @@ export const Table: React.FC<TableProps> = ({
   return (
     <div className="flex flex-col w-full">
       {hints && (
-        <div className="flex justify-between mb-1 mx-2 w-full text-xs text-gray-400 dark:text-gray-500">
+        <div className="flex justify-between mb-1 px-3 w-full text-xs text-gray-400 dark:text-gray-500">
           <p>
             Displaying results {startIdx + 1}-{Math.min(endIdx, sortedRows.length)} of {sortedRows.length}
           </p>
