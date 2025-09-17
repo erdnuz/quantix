@@ -1,6 +1,6 @@
 'use client';
 
-import { Hero, ImagePanel } from '../../components/composition';
+import { Hero, ImagePanel } from '../components/composition';
 import { useState, useEffect } from 'react';
 
 const Home: React.FC = () => {
@@ -24,7 +24,7 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-16">
+    <div className="flex flex-col gap-16 bg-light dark:bg-dark">
       <Hero 
         title="Quantix" 
         subtitle="Empowering Investors with Data-Driven Insights" 
@@ -61,15 +61,6 @@ const Home: React.FC = () => {
         href="/screener"
       />
 
-      <ImagePanel
-        title="Stay Ahead with Macro Risk Insights"
-        subtitle="Data-driven market risk assessments at your fingertips."
-        body="Leverage our Macro Risk model to gain a comprehensive view of U.S. market health. Powered by key economic indicators like GDP growth, inflation, and the yield curve, the model provides a reliable score that adapts to evolving trends. View the current risk score alongside an interactive historical chart, helping you track economic shifts and make informed investment decisions with confidence."
-        buttonText="View Risk"
-        image={`/images/macro-${currentTheme}.png`}
-        reverse={true}
-        href="/macro"
-      />
     </div>
   );
 };

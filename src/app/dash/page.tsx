@@ -2,7 +2,7 @@
 import { getUserPortfolios, getUserFavourites } from '../../../services/firebase/db';
 import { useAuth } from '../../../services/useAuth';
 import { useEffect, useState } from 'react';
-import { PortfolioCard, Hero } from '../../../components/composition';
+import { PortfolioCard, Hero } from '../../components/composition';
 
 const Dash = () => {
     const { currentUser } = useAuth();

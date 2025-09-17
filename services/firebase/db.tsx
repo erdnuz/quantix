@@ -302,7 +302,148 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
     const assetClass = data['asset-class'] ?? null;
 
     if (assetClass === 'Equity') {
-      return {ticker:assetSnap.id, ...data } as FullStock
+      return {
+        assetClass,
+        name: data['name'],
+        ticker: assetSnap.id,
+        size: data['market-cap'],
+        sizePS: data['market-cap_SECT'],
+        sizePO: data['market-cap_OVER'],
+        category: data['sector'],
+        volume: data['volume'],
+        volumePS: data['volume_SECT'],
+        volumePO: data['volume_OVER'],
+        dividendYield: data['yield'],
+        dividendYieldPS: data['yield_SECT'],
+        dividendYieldPO: data['yield_OVER'],
+
+        threeYearGrowth: data['3y'],
+        threeYearGrowthPS: data['3y_SECT'],
+        threeYearGrowthPO: data['3y_OVER'],
+        sixMonthGrowth: data['6mo'],
+        sixMonthGrowthPS: data['6mo_SECT'],
+        sixMonthGrowthPO: data['6mo_OVER'],
+        cagr: data['cagr'],
+        cagrPS: data['cagr_SECT'],
+        cagrPO: data['cagr_OVER'],
+        oneYearGrowth: data['yoy'],
+        oneYearGrowthPS: data['yoy_SECT'],
+        oneYearGrowthPO: data['yoy_OVER'],
+
+        dividendGrowth: data['div-g'],
+        dividendGrowthPS: data['div-g_SECT'],
+        dividendGrowthPO: data['div-g_OVER'],
+        earningsGrowth: data['earnings-g'],
+        earningsGrowthPS: data['earnings-g_SECT'],
+        earningsGrowthPO: data['earnings-g_OVER'],
+        revenueGrowth: data['revenue-g'],
+        revenueGrowthPS: data['revenue-g_SECT'],
+        revenueGrowthPO: data['revenue-g_OVER'],
+        profitMargin: data['profit-m'],
+        profitMarginPS: data['profit-m_SECT'],
+        profitMarginPO: data['profit-m_OVER'],
+        returnOnEquity: data['roe'],
+        returnOnEquityPS: data['roe_SECT'],
+        returnOnEquityPO: data['roe_OVER'],
+        returnOnAssets: data['roa'],
+        returnOnAssetsPS: data['roa_SECT'],
+        returnOnAssetsPO: data['roa_OVER'],
+
+        priceToEarnings: data['p-earnings'],
+        priceToEarningsPS: data['p-earnings_SECT'],
+        priceToEarningsPO: data['p-earnings_OVER'],
+        priceToSales: data['p-sales'],
+        priceToSalesPS: data['p-sales_SECT'],
+        priceToSalesPO: data['p-sales_OVER'],
+        priceToBook: data['p-book'],
+        priceToBookPS: data['p-book_SECT'],
+        priceToBookPO: data['p-book_OVER'],
+        priceToEarningsToGrowth: data['peg'],
+        priceToEarningsToGrowthPS: data['peg_SECT'],
+        priceToEarningsToGrowthPO: data['peg_OVER'],
+
+        avgDrawdown: data['avg-d'],
+        avgDrawdownPS: data['avg-d_SECT'],
+        avgDrawdownPO: data['avg-d_OVER'],
+        maxDrawdown: data['max-d'],
+        maxDrawdownPS: data['max-d_SECT'],
+        maxDrawdownPO: data['max-d_OVER'],
+        beta: data['beta'],
+        betaPS: data['beta_SECT'],
+        betaPO: data['beta_OVER'],
+        standardDeviationReturns: data['std-dev'],
+        standardDeviationReturnsPS: data['std-dev_SECT'],
+        standardDeviationReturnsPO: data['std-dev_OVER'],
+        var1: data['var1'],
+        var1PS: data['var1_SECT'],
+        var1PO: data['var1_OVER'],
+        var5: data['var5'],
+        var5PS: data['var5_SECT'],
+        var5PO: data['var5_OVER'],
+        var10: data['var10'],
+        var10PS: data['var10_SECT'],
+        var10PO: data['var10_OVER'],
+
+        calmar: data['calmar'],
+        calmarPS: data['calmar_SECT'],
+        calmarPO: data['calmar_OVER'],
+        alpha: data['alpha'],
+        alphaPS: data['alpha_SECT'],
+        alphaPO: data['alpha_OVER'],
+        sharpe: data['sharpe'],
+        sharpePS: data['sharpe_SECT'],
+        sharpePO: data['sharpe_OVER'],
+        sortino: data['sortino'],
+        sortinoPS: data['sortino_SECT'],
+        sortinoPO: data['sortino_OVER'],
+        mSquared: data['m-squared'],
+        mSquaredPS: data['m-squared_SECT'],
+        mSquaredPO: data['m-squared_OVER'],
+        martin: data['martin'],
+        martinPS: data['martin_SECT'],
+        martinPO: data['martin_OVER'],
+        omega: data['omega'],
+        omegaPS: data['omega_SECT'],
+        omegaPO: data['omega_OVER'],
+
+        altmanZ: data['altman-z'],
+        altmanZPS: data['altman-z_SECT'],
+        altmanZPO: data['altman-z_OVER'],
+        assetsToLiabilities: data['assets-l'],
+        assetsToLiabilitiesPS: data['assets-l_SECT'],
+        assetsToLiabilitiesPO: data['assets-l_OVER'],
+        debtToAssets: data['debt-a'],
+        debtToAssetsPS: data['debt-a_SECT'],
+        debtToAssetsPO: data['debt-a_OVER'],
+        debtToEquity: data['debt-e'],
+        debtToEquityPS: data['debt-e_SECT'],
+        debtToEquityPO: data['debt-e_OVER'],
+        debtToEBIT: data['debt-ebit'],
+        debtToEBITPS: data['debt-ebit_SECT'],
+        debtToEBITPO: data['debt-ebit_OVER'],
+
+        qOverall: data['OVERALL'],
+        qOverallPS: data['OVERALL_SECT'],
+        qOverallPO: data['OVERALL_OVER'],
+        qGrowth: data['G'],
+        qGrowthPS: data['G_SECT'],
+        qGrowthPO: data['G_OVER'],
+        qRisk: data['R'],
+        qRiskPS: data['R_SECT'],
+        qRiskPO: data['R_OVER'],
+        qPerformance: data['PE'],
+        qPerformancePS: data['PE_SECT'],
+        qPerformancePO: data['PE_OVER'],
+        qLeverage: data['L'],
+        qLeveragePS: data['L_SECT'],
+        qLeveragePO: data['L_OVER'],
+        qValuation: data['V'],
+        qValuationPS: data['V_SECT'],
+        qValuationPO: data['V_OVER'],
+        qProfitability: data['PR'],
+        qProfitabilityPS: data['PR_SECT'],
+        qProfitabilityPO: data['PR_OVER'],
+      } as FullStock;
     } else {
       return {ticker:assetSnap.id, ...data } as FullETF
     }
@@ -338,24 +479,8 @@ export const getUserFavourites = async ({favourites}: {favourites: string[]}): P
   }
 };
 
-// Fetch compare data for multiple tickers (prices + correlation + plot)
-export async function getCompareData({tickers} : {tickers: string[]}): Promise<{
-  plot: Record<string, Record<string, number>>;
-  corr: Record<string, Record<string, number>>;
-  prices: Record<string, number>;
-} | null> {
-  try {
-    const plot: Record<string, Record<string, number>> = {};
-    const prices: Record<string, number> = {};
-    const corr: Record<string, Record<string, number>> = {};
 
-    
-    return { plot, corr, prices };
-  } catch (err) {
-    console.error('Error fetching compare data:', err);
-    return null;
-  }
-}
+
 
 
 interface GetTableDataParams {
@@ -413,27 +538,6 @@ export async function getTableData({ equity, filtered, onSuccess, onError }: Get
   }
 }
 
-
-
-export async function getFastData({
-  ticker,
-  onSuccess,
-  onError,
-}: {
-  ticker: string;
-  onSuccess: SuccessCallback;
-  onError?: ErrorCallback;
-}): Promise<void> {
-  try {
-    onSuccess({
-      price: 157.69,
-      change: 4.09,
-    });
-  } catch (err) {
-    onError?.("Error fetching price data.");
-  }
-}
-
 export async function getCompetitors({ ticker }: { ticker: string }): Promise<ProxyAsset[]> {
   try {
     // Fetch the main asset to know its class and category
@@ -457,11 +561,16 @@ export async function getCompetitors({ ticker }: { ticker: string }): Promise<Pr
     const snapshot = await getDocs(q);
 
     const competitors: ProxyAsset[] = [];
+    
     for (const doc of snapshot.docs) {
       if (doc.id === ticker) continue; // exclude the main ticker
+      const data = doc.data();
       competitors.push({
         ticker: doc.id,
-        ...doc.data()
+        name: data.name,
+        size: data['asset-class'] == 'ETF'?data['assets']:data['market-cap'],
+        category: data['asset-class'] == 'ETF'?data['category']:data['sector'],
+        assetClass: data['asset-class']
       } as ProxyAsset);
       if (competitors.length >= 4) break; // only top 4
     }
@@ -483,27 +592,4 @@ export async function getPortfolioDoc({ id }: { id: string }): Promise<Portfolio
     console.error('Error fetching portfolio document:', error);
     return null;
   }
-}
-
-/**
- * Fetch portfolio data by ID.
- * Currently returns a placeholder object; will be implemented later.
- */
-export async function getPortfolioData({ id }: { id: string }): Promise<Portfolio> {
-  // Placeholder: return a minimal portfolio structure
-  return {
-    id,
-    title: 'Sample Portfolio',
-    userId: 'user123',
-    date: new Date().toISOString(),
-    favourites: 0,
-    description: 'This is a placeholder portfolio.',
-    tags: [],
-    actions: {},
-    df: {},
-    hist: {},
-    cash: 0,
-    initialCash: 0,
-    shares: {},
-  } as Portfolio;
 }

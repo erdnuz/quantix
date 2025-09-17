@@ -70,7 +70,7 @@ class yfHelper:
 
         
     def get_volume(self):   ##
-        return self.ticker.fast_info['threeMonthAverageVolume']
+        return self.ticker.fast_info.get('threeMonthAverageVolume', None)
     
     def get_equity_growth(self, limiter=None):  ##
         

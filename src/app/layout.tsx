@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import { AppContent } from '../../components/AppContent';
+import { AppContent } from '../components/AppContent';
 import { AuthProvider } from '../../services/useAuth';
-import '../styles/global.css';
+import './globals.css';
 
 export const metadata = {
   title: 'Quantix',
@@ -41,9 +41,8 @@ export default function Layout({ children }: LayoutProps) {
     <html lang="en">
       <body className="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-50 min-h-screen">
         <AuthProvider>
-          {/* Wrapping children in AppContent to provide layout */}
-          <AppContent Component={() => <>{children}</>} pageProps={{}}>
-            {/* children are rendered by Component prop */}
+          <AppContent>
+            {children}
           </AppContent>
         </AuthProvider>
       </body>

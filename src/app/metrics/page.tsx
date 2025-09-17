@@ -1,8 +1,8 @@
 "use client";
 
 // Update the import path to the correct location of Search component
-import { Search } from "../../../components/primitive";
-import { Hero } from "../../../components/composition";
+import { Search } from "../../components/primitive";
+import { Hero } from "../../components/composition";
 
 const Metrics: React.FC = () => {
   return (

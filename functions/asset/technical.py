@@ -22,6 +22,8 @@ def get_technical_metrics(
 ) -> Optional[Dict]:
     
     vol = MetricsManager().get(tick, ["volume"])[0]
+    if not vol:
+        return None
 
     try:
         returns = prices.pct_change().dropna()

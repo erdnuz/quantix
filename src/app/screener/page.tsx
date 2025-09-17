@@ -1,17 +1,26 @@
-import { Hero, Screener } from '../../../components/composition';
+import { Hero, Screener } from '../../components/composition';
 
+const ScreenerPage = () => {
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50">
+      {/* Hero Section */}
+      <section className="py-12 sm:py-16 md:py-20">
+        <Hero
+          title="Screener"
+          subtitle="Filter top stocks, ETFs, and mutual funds"
+        />
+      </section>
 
-
-const ScreenerPage=() =>{
-    
-    
-
-    return (
-        <div>
-            <Hero title="Screener" subtitle="Filter top stocks, ETFs, and mutual funds" />
+      {/* Screener Section */}
+      <section className="px-4 pb-16 flex justify-center">
+        <div className="w-full max-w-7xl">
+          <div className="rounded-2xl bg-white dark:bg-gray-800 shadow-lg p-6 sm:p-8">
             <Screener />
+          </div>
         </div>
-    );
-}
+      </section>
+    </div>
+  );
+};
 
 export default ScreenerPage;

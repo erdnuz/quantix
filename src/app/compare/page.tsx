@@ -9,10 +9,11 @@ import {
   CompareChart,
   CorrelationTable,
   AnalysisCompare
-} from '../../../components/composition';
-import { Button, TabGroup, Card, Search, Loading } from '../../../components/primitive';
-import { getAssetData, getStockIdsAndNames, getCompareData } from '../../../services/firebase/db';
+} from '../../components/composition';
+import { Button, TabGroup, Card, Search, Loading } from '../../components/primitive';
+import { getAssetData } from '../../../services/firebase/db';
 import { FullETF, FullStock } from '../../../types';
+import { getCompareData } from '../../../services/firebase/api';
 
 
 
@@ -148,22 +149,13 @@ const Compare: React.FC = () => {
 
       <div className="flex flex-col gap-4 w-full">
         <div className="flex flex-wrap justify-center gap-4">
-          {tickers.map((competitor) => (
-            <Link key={competitor.ticker} href={`/metrics/${competitor.ticker}/`} className="hidden sm:flex rounded-lg px-2 py-1 bg-gray-100 border border-gray-300 text-sm">
-              {competitor.ticker}
-            </Link>
-          ))}
-          {tickers.map((competitor) => (
-            <Link key={competitor.ticker} href={`/metrics/${competitor.ticker}/`} className="sm:hidden">
-              <Card
-                ticker={competitor.ticker}
-                name={competitor.name}
-                category={competitor.category}
-                size={competitor.size}
-                assetClass={competitor.assetClass}
-              />
-            </Link>
-          ))}
+          
+          {tickers.map((competitor, index) => (
+                  <Link key={index} href={`/metrics/${competitor.ticker}/`}>
+                    <Card ticker={competitor.ticker} name={competitor.name} size={competitor.size} assetClass={competitor.assetClass} category={competitor.category} />
+                  </Link>
+                ))}
+         
         </div>
 
         <div className="flex flex-col sm:flex-row gap-6 mt-4 justify-center items-center w-full">

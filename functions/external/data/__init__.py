@@ -2,9 +2,12 @@ import pandas as pd
 import numpy as np
 import os
 from asset import Asset
+from external.clean import clean_df
 from market_data import MarketDataManager
 from typing import Tuple, List
 from tqdm import tqdm
+import json
+from pathlib import Path
 
 
 # -----------------------
@@ -22,7 +25,7 @@ MINIMIZE_SET = {
     'wacc', 'debt-e', 'debt-a', 'debt-ebit',
 }
 
-LIGHT_COLS = ["name", "market-cap", "assets", "asset-class" "sector", "category"]
+LIGHT_COLS = ["name", "market-cap", "assets", "asset-class", "sector", "category"]
 
 TABLE_COLS = [
     "name", "market-cap", "assets", "asset-class", "sector", "volume", "category", "turnover",
@@ -156,6 +159,7 @@ class DataManager:
 
         # Filter only requested tickers
         df = cached_metrics.loc[tickers].copy()
+        print(df.head())
 
         # Rankings
         ranked_sector, ranked_overall, ranked_avg = rank(df, MINIMIZE_SET, is_equity)
@@ -187,7 +191,7 @@ class DataManager:
         # Save descriptive stats
         numeric_lowercase_cols = [col for col in df.columns if col.islower() and pd.api.types.is_numeric_dtype(df[col])]
         df[numeric_lowercase_cols].describe(percentiles=[0.25,0.5,0.75]).T.to_csv(
-            f"./tables/{ 'equities' if is_equity else 'etfs'}", index=True
+            f"./tables/{ 'equities' if is_equity else 'etfs'}.csv", index=True
         )
 
         return split_df(df)
@@ -204,21 +208,65 @@ class DataManager:
         cache_file = f"./cache/{ 'equities' if is_equity else 'etfs'}_cache.pkl"
         df.to_pickle(cache_file)
 
+    def _remove_failed_from_json(self, failed: list[str], is_equity: bool, symbols_json_path: str):
+        """Remove failed tickers from JSON file immediately."""
+        path = Path(symbols_json_path)
+        if not path.exists():
+            print(f"Warning: JSON file {symbols_json_path} not found.")
+            return
+
+        with open(path, 'r', encoding='utf-8') as f:
+            symbols_data = json.load(f)
+
+        key = 'equities' if is_equity else 'etfs'
+        if key in symbols_data:
+            symbols_data[key] = [t for t in symbols_data[key] if t not in failed]
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(symbols_data, f, indent=2)
+        else:
+            print(f"Warning: '{key}' key not found in {symbols_json_path}")
+
+
+
+
     def _fetch_metrics(
         self,
-        tickers: List[str],
+        tickers: list[str],
         cached_metrics: pd.DataFrame,
         m_data,
         is_equity: bool,
-        batch_size: int = 20
+        batch_size: int = 10,
+        symbols_json_path: str = "./external/yahoo_symbols.json"  # path to the JSON file
     ) -> pd.DataFrame:
         """
         Fetch metrics for tickers not already in cached_metrics, saving cache every `batch_size`.
-        Checks for extra columns in cached_metrics vs new batch and asks user whether to delete them.
+        Deletes failed tickers from both the working list and the JSON file.
         """
-        new_metrics = []
+        # --- Determine resume point ---
+        cached_set = set(cached_metrics.index)
+        last_cached_idx = -1
+        for i, ticker in enumerate(tickers):
+            if ticker in cached_set:
+                last_cached_idx = i
 
-        for ticker in tqdm(tickers, desc="Fetching metrics"):
+        if last_cached_idx >= 0:
+            total_checked = last_cached_idx + 1
+            successful = sum(ticker in cached_set for ticker in tickers[:total_checked])
+            failed_count = total_checked - successful
+            print(f"Successfully cached metrics: {successful}, total checked: {total_checked}, failed: {failed_count}")
+
+            if failed_count > 0:
+                answer = input("Retry all failed tickers (r) or resume from last cached (c)? [r/c]: ").strip().lower()
+                start_idx = 0 if answer == 'r' else last_cached_idx + 1
+            else:
+                start_idx = last_cached_idx + 1
+        else:
+            start_idx = 0
+
+        # --- Fetch metrics ---
+        failed = []
+        new_metrics = []
+        for ticker in tqdm(tickers[start_idx:], desc="Fetching metrics"):
             if ticker in cached_metrics.index:
                 continue
 
@@ -226,39 +274,76 @@ class DataManager:
             if metrics:
                 new_metrics.append(metrics)
 
-                # Save every `batch_size` metrics
                 if len(new_metrics) % batch_size == 0:
                     batch_df = pd.DataFrame(new_metrics).set_index('ticker')
 
-                    # Check for extra columns in cached_metrics
+                    # Align columns
                     extra_cols = set(cached_metrics.columns) - set(batch_df.columns)
                     if extra_cols:
                         print(f"Extra columns in cached metrics not in new batch: {extra_cols}")
-                        answer = input("Do you want to delete these columns? [y/N]: ").strip().lower()
+                        answer = input("Delete these columns? [y/N]: ").strip().lower()
                         if answer == 'y':
                             cached_metrics = cached_metrics.drop(columns=list(extra_cols))
 
-                    # Concatenate and save
                     cached_metrics = pd.concat([cached_metrics, batch_df], axis=0, join='outer')
                     self._save_cache(cached_metrics, is_equity)
-                    new_metrics.clear()  # reset batch
+                    new_metrics.clear()
+               
 
-        # Save any remaining metrics
+            else:
+                failed.append(ticker)
+
+                if len(failed) % batch_size == 0:
+                    
+                    print(f"Removing failed tickers from list and {symbols_json_path}: {failed}")
+                    self._remove_failed_from_json(failed, is_equity, symbols_json_path)
+                    failed.clear()
+
+        # --- Save any remaining metrics ---
         if new_metrics:
             batch_df = pd.DataFrame(new_metrics).set_index('ticker')
-
-            # Check for extra columns in cached_metrics
             extra_cols = set(cached_metrics.columns) - set(batch_df.columns)
             if extra_cols:
                 print(f"Extra columns in cached metrics not in final batch: {extra_cols}")
-                answer = input("Do you want to delete these columns? [y/N]: ").strip().lower()
+                answer = input("Delete these columns? [y/N]: ").strip().lower()
                 if answer == 'y':
                     cached_metrics = cached_metrics.drop(columns=list(extra_cols))
 
             cached_metrics = pd.concat([cached_metrics, batch_df], axis=0, join='outer')
             self._save_cache(cached_metrics, is_equity)
 
-        return cached_metrics
+        # --- Remove failed tickers from ticker list and JSON file ---
+        if failed:
+            print(f"Removing failed tickers from list and {symbols_json_path}: {failed}")
+
+            # 2. Update JSON file
+            path = Path(symbols_json_path)
+            if path.exists():
+                with open(path, 'r', encoding='utf-8') as f:
+                    symbols_data = json.load(f)
+
+                # Only update 'equities' key if it exists
+                if is_equity:
+                    if 'equities' in symbols_data:
+                        symbols_data['equities'] = [t for t in symbols_data['equities'] if t not in failed]
+
+                        with open(path, 'w', encoding='utf-8') as f:
+                            json.dump(symbols_data, f, indent=2)
+                    else:
+                        print(f"Warning: 'equities' key not found in {symbols_json_path}")
+                else:
+                    if 'etfs' in symbols_data:
+                        symbols_data['etfs'] = [t for t in symbols_data['etfs'] if t not in failed]
+
+                        with open(path, 'w', encoding='utf-8') as f:
+                            json.dump(symbols_data, f, indent=2)
+                    else:
+                        print(f"Warning: 'etfs' key not found in {symbols_json_path}")
+                
+
+        return clean_df(cached_metrics)
+
+
 
 
 
@@ -270,7 +355,8 @@ class DataManager:
 def split_df(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     light_df = df[[col for col in df.columns if col in LIGHT_COLS]].copy()
     table_df = df[[col for col in df.columns if col in TABLE_COLS]].copy()
-    for column in df.columns:
-        print(column)
+    print(light_df.shape)
+    print(table_df.shape)
+    print(df.shape)
     return light_df, table_df, df
 

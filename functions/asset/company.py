@@ -169,8 +169,6 @@ def get_company_metrics(
     an_mean = info.get("targetMeanPrice")
 
 
-    if info.get('financialCurrency') != info.get('currency'):
-        return None
 
     return metrics_dict | {
         'sector': sector,

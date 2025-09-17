@@ -1,5 +1,5 @@
 
-import { Hero, NewPortfolio } from '../../../../components/composition';
+import { Hero, NewPortfolio } from '../../../components/composition';
 
 const New = () => 
     {

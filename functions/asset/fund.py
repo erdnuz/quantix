@@ -29,10 +29,7 @@ def get_etf_metrics(
         return None
 
     fund_info["p-earnings"] = info.get("trailingPE")
-    
 
-    currency = info.get("financialCurrency")
-    converter = CurrencyConverter(currency)
 
     metrics = get_technical_metrics(tick, prices, info, rfr, div, market_returns)
     if not metrics:
@@ -40,7 +37,7 @@ def get_etf_metrics(
         return None
 
     assets = info.get("totalAssets", fund_info.get("assets"))
-    fund_info["assets"] = converter.convert(assets) / 1000 if assets else None
+    fund_info["assets"] = assets / 1000 if assets else None
 
     # Size classification
     size_options = [20e6, 50e6]

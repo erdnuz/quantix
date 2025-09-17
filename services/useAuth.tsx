@@ -1,11 +1,10 @@
 'use client'
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
-import { auth } from "./firebase/initialization"; 
-import { updateUser } from "./firebase/db"; // Ensure correct path
+import { auth } from "./firebase/initialization";
+import { updateUser } from "./firebase/db";
 import { User } from "../types";
 
-// Context type
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
@@ -16,12 +15,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-// Props type for provider
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Create context with default null
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
@@ -44,7 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const update = (user: User) => {
-    updateUser(user);
+    updateUser({ user });
     saveUser(user);
   };
 
@@ -56,8 +53,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const parsedUser: User = JSON.parse(storedUser);
         setCurrentUser(parsedUser);
       } catch (error) {
-        console.error("[Auth] Error parsing user from localStorage:", error);
-        localStorage.removeItem("user"); // Remove corrupted data
+        console.error("[Auth] Error parsing user from storage:", error);
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
       }
     }
   };

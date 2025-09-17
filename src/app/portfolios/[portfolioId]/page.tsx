@@ -1,12 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { BaselineChart, PieChart, Table } from "../../../../components/composition";
-import { IconStar, IconUser, IconEdit } from "../../../../components/icons";
-import { Select, Loading } from "../../../../components/primitive";
-import { getPortfolioData, getPortfolioDoc, getUserById, incrementFavourites } from "../../../../services/firebase/db";
+import { BaselineChart, PieChart, Table } from "../../../components/composition";
+import { IconStar, IconUser, IconEdit } from "../../../components/icons";
+import { Select, Loading } from "../../../components/primitive";
+import { getPortfolioDoc, getUserById, incrementFavourites } from "../../../../services/firebase/db";
 import { useAuth } from "../../../../services/useAuth";
-import { EditPortfolioDialog } from "../../../../components/dialogs";
+import { EditPortfolioDialog } from "../../../components/dialogs";
 import { useParams } from "next/navigation";
+import { getPortfolioData } from "../../../../services/firebase/api";
 
 const holdingColumnDets = {
   public: ["ticker", "name", "type", "sector", "region", "shares", "avg-buy", "price", "weight", "open-pnl"],

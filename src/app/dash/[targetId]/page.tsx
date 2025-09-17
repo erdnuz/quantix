@@ -2,7 +2,7 @@
 
 import { getUserPortfolios, getUserById } from '../../../../services/firebase/db';
 import { useEffect, useState } from 'react';
-import { PortfolioCard, Hero } from '../../../../components/composition';
+import { PortfolioCard, Hero } from '../../../components/composition';
 import { useParams } from 'next/navigation';
 import { Portfolio, User } from '../../../../types';
 

@@ -1,16 +1,16 @@
 "use client";
 
-import { Chart, RankingTable, Analysis, PieChart } from '../../../../components/composition';
-import { Button, TabGroup, Card, Loading } from '../../../../components/primitive';
+import { Chart, RankingTable, Analysis, PieChart } from '../../../components/composition';
+import { Button, TabGroup, Card, Loading } from '../../../components/primitive';
 import React, { useEffect, useState } from 'react';
-import { getFastData, getCompetitors, getAssetData } from '../../../../services/firebase/db';
-import { BuySellDialog } from '../../../../components/dialogs';
+import { getCompetitors, getAssetData } from '../../../../services/firebase/db';
+import { BuySellDialog } from '../../../components/dialogs';
 import { useAuth } from '../../../../services/useAuth';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { METRICS, Q } from '@/app/compare/page';
+import { getFastData } from '../../../../services/firebase/api';
 
-const EXCHANGE_MAP: Record<string, string> = {}; // fill this if needed
 
 const fetchInfo = async (
   ticker: string,
@@ -109,12 +109,9 @@ const Metrics: React.FC = () => {
                 {/* Left info column */}
                 <div className="flex flex-col gap-2 flex-1">
                   {[
-                    ['Region', stockInfo?.region],
                     [stockInfo?.sector ? 'Sector' : 'Category', stockInfo?.sector || stockInfo?.category],
                     ['52 Week Range', fastInfo?.range ? `${fastInfo.range} ${stockInfo?.currency}` : 'NaN'],
-                    ['Exchange', stockInfo?.exchange || 'NaN'],
-                    ...(stockInfo?.category ? [['Category', stockInfo?.category]] : []),
-                    ...(stockInfo?.family ? [['Family', stockInfo?.family]] : []),
+                    ...(stockInfo?.category ? [['Category', stockInfo?.category]] : [])
                   ].map(([label, value]) => (
                     <div key={label} className="flex">
                       <div className="flex-1 font-bold">{label}</div>
@@ -146,12 +143,10 @@ const Metrics: React.FC = () => {
             {stockInfo.type !== 2 && (
               <div className="mt-4">
                 <h2 className="text-xl font-semibold">Chart</h2>
-                {ticker && stockInfo?.exchange && (
+                {ticker && (
                   <Chart
                     symbol={
-                      ticker.includes('.')
-                        ? `${EXCHANGE_MAP[stockInfo.exchange] || stockInfo.exchange}:${ticker.split('.')[0].replace('-', '_')}`
-                        : ticker
+                      ticker
                     }
                     height="420px"
                   />
@@ -181,7 +176,7 @@ const Metrics: React.FC = () => {
               <div className="flex flex-wrap gap-4 mt-4">
                 {competitors?.map((competitor, index) => (
                   <Link key={index} href={`/metrics/${competitor.ticker}/`}>
-                    <Card ticker={competitor.ticker} name={competitor.name} size={competitor.size} assetClass={competitor.assetClass} category={competitor.category} />
+                    <Card ticker={competitor.ticker} name={competitor.name} size={competitor.size} assetClass={competitor.assetClass} category='' />
                   </Link>
                 ))}
               </div>

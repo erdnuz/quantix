@@ -1,4 +1,4 @@
-import { Hero, PortfolioScreener } from '../../../components/composition';
+import { Hero, PortfolioScreener } from '../../components/composition';
 
 
 const Explore = () => 
