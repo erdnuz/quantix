@@ -18,10 +18,10 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
   };
 
   const metrics = [
-    { title: "Rec.", key: "an-rec" },
-    { title: "Max. Target", key: "an-max" },
-    { title: "Mean Target", key: "an-avg" },
-    { title: "Min. Target", key: "an-min" },
+    { title: "Rec.", key: "anRec" },
+    { title: "Max. Target", key: "anMax" },
+    { title: "Mean Target", key: "anAvg" },
+    { title: "Min. Target", key: "anMin" },
   ];
 
   const renderValue = (key: string, ticker: TickerData) => {

@@ -1,5 +1,6 @@
 'use client';
 
+import { Loading } from '@/components/primitive';
 import { Hero, ImagePanel } from '../components/composition';
 import { useState, useEffect } from 'react';
 

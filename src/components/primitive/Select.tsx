@@ -3,13 +3,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { IconChevronDown } from '../icons/IconChevronDown';
 
 interface SelectProps {
-  options: string[][];
+  options: Record<string, number|string|null>[];
   size?: 0 | 1;
   selected: number;
   setSelected: (index: number) => void;
 }
 
-export const Select: React.FC<SelectProps> = ({ options = [], size = 1, selected, setSelected }) => {
+export const Select: React.FC<SelectProps> = ({ options, size = 1, selected, setSelected }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -38,11 +38,11 @@ export const Select: React.FC<SelectProps> = ({ options = [], size = 1, selected
     <div ref={selectRef} className={`relative inline-block ${size === 0 ? 'min-w-[100px]' : 'min-w-[120px]'}`}>
       <div
         className={`flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-xl border border-gray-300 bg-white cursor-pointer ${
-          dropdownVisible ? 'rounded-t-xl font-semibold' : ''
+          dropdownVisible ? 'rounded-b-none font-semibold' : ''
         }`}
         onClick={handleToggleDropdown}
       >
-        <p className={`flex-1 truncate ${size === 0 ? 'text-sm' : 'text-base'}`}>{options[selected][0]}</p>
+        <p className={`flex-1 truncate ${size === 0 ? 'text-sm' : 'text-base'}`}>{options[selected].label}</p>
         {options.length > 1 ? (
           <IconChevronDown size={chevronSize} className={`${dropdownVisible ? 'invisible' : ''}`} />
         ) : (
@@ -52,7 +52,7 @@ export const Select: React.FC<SelectProps> = ({ options = [], size = 1, selected
 
       {dropdownVisible && (
         <div className="absolute top-full left-0 right-0 z-10 max-h-52 overflow-y-auto rounded-b-xl border border-gray-300 border-t-0 bg-gray-50">
-          {options.map((option, index) =>
+          {options.map((k, index) =>
             index !== selected ? (
               <p
                 key={index}
@@ -61,7 +61,7 @@ export const Select: React.FC<SelectProps> = ({ options = [], size = 1, selected
                 } ${size === 0 ? 'text-sm' : 'text-base'}`}
                 onClick={() => handleOptionSelect(index)}
               >
-                {option[0]}
+                {k.label}
               </p>
             ) : null
           )}

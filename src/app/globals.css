@@ -2,34 +2,34 @@
 
 @theme {
   /* Neutral Colors */
-  --color-light: #FFFFFF;
-  --color-dark: #121212;
-  --color-surface-light: #F7F7F7;
-  --color-surface-dark: #1E1E1E;
-  --color-primary-light: #111111;
-  --color-primary-dark: #E5E5E5;
-  --color-secondary-light: #4B4B4B;
-  --color-secondary-dark: #AAAAAA;
-  --color-accent-light: #2E2E2E;
-  --color-accent-dark: #A2A2A2;
-  --color-border-light: #E5E5E5;
-  --color-border-dark: #333333;
+  --color-light: #FFFFFF;       /* pure white */
+  --color-dark: #0A0A0A;        /* deeper black */
+  --color-surface-light: #F9FAFB; /* slightly brighter background */
+  --color-surface-dark: #181818;  /* true dark surface */
+  --color-primary-light: #1F2937; /* slate-like for text on light bg */
+  --color-primary-dark: #F3F4F6;  /* light gray for text on dark bg */
+  --color-secondary-light: #4B5563; /* muted gray for light mode */
+  --color-secondary-dark: #9CA3AF;  /* muted gray for dark mode */
+  --color-accent-light: #374151; /* accent for headings in light mode */
+  --color-accent-dark: #D1D5DB;  /* accent for headings in dark mode */
+  --color-border-light: #E5E7EB; /* border on light mode */
+  --color-border-dark: #2D2D2D;  /* border on dark mode */
 
   /* Brand Colors */
-  --color-brand-light: #0D3B66;
-  --color-brand-dark: #F1A7C2;
+  --color-brand-light: #1E3A8A;  /* strong blue tone for light mode */
+  --color-brand-dark: #93C5FD;   /* softer blue for dark mode */
 
   /* Status Colors */
-  --color-good: #10B981; /* Green */
-  --color-bad: #EF4444;  /* Red */
+  --color-good: #10B981; /* success green */
+  --color-bad: #EF4444;  /* error red */
 
   /* Hover States */
-  --color-primary-hover: #333333;
-  --color-secondary-hover: #6B7280;
-  --color-brand-hover: #F87171;
+  --color-primary-hover: #374151;    /* darker hover for light mode text */
+  --color-secondary-hover: #6B7280;  /* consistent muted hover */
+  --color-brand-hover: #2563EB;      /* vivid blue hover */
 
   /* Border States */
   --color-primary-border: #D1D5DB;
   --color-secondary-border: #9CA3AF;
-  --color-brand-border: #F3F4F6;
+  --color-brand-border: #E0E7FF;     /* soft blue border for brand */
 }

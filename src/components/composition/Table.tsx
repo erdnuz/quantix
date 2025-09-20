@@ -4,7 +4,7 @@ import { IconChevronDown, IconChevronUp } from "../icons";
 import { Pagination } from "./Pagination";
 import { Ranking } from "../primitive";
 
-const RANKING_COL_NAMES = ["OVERALL"];
+const RANKING_COL_NAMES = ["qOverall"];
 
 interface CellProps {
   children: any;

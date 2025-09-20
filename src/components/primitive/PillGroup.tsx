@@ -1,47 +1,67 @@
 'use client';
-import React from 'react';
+import React, { memo } from 'react';
 
-interface PillProps {
+interface PillProps<T> {
   size?: 0 | 1;
-  label: string;
+  label: T;
   selected: boolean;
   onClick: () => void;
 }
 
-const Pill: React.FC<PillProps> = ({ size = 1, label, selected, onClick }) => {
-  const baseClasses = 'flex flex-1 items-center justify-center rounded-lg cursor-pointer transition-colors';
-  const sizeClasses = size === 0 ? 'text-base py-1 px-4' : 'text-lg py-2 px-4';
+interface PillGroupProps<T> {
+  currentPill: T;
+  size?: 0 | 1;
+  onSelect: (option: T) => void;
+  options: T[];
+}
+
+function MemoPill<T extends string>({
+  size = 1,
+  label,
+  selected,
+  onClick,
+}: PillProps<T>) {
+  const baseClasses =
+    'flex flex-1 items-center justify-center rounded-lg cursor-pointer transition-colors duration-200 ease-in-out select-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-light dark:focus:ring-brand-dark';
+
+  const sizeClasses =
+    size === 0
+      ? 'text-sm py-1.5 px-3'
+      : 'text-base py-2.5 px-5'; // slightly larger for size=1
+
   const selectedClasses = selected
-    ? 'bg-brand-secondary text-on-brand-secondary'
-    : 'text-text-secondary hover:text-text-default';
+    ? 'bg-brand-light text-light dark:bg-brand-dark dark:text-dark'
+    : 'bg-surface-light dark:bg-surface-dark text-secondary-light dark:text-secondary-dark hover:bg-brand-hover hover:text-light dark:hover:bg-brand-hover dark:hover:text-dark active:scale-95';
+
   const classes = `${baseClasses} ${sizeClasses} ${selectedClasses}`;
 
   return (
-    <button className={classes} onClick={onClick}>
+    <button
+      type="button"
+      className={classes}
+      onClick={onClick}
+      aria-pressed={selected}
+    >
       {label}
     </button>
   );
-};
-
-interface PillGroupProps {
-  currentPill: number;
-  size?: 0 | 1;
-  onSelect: (index: number) => void;
-  options: string[];
 }
 
-export const PillGroup: React.FC<PillGroupProps> = ({ currentPill, size = 1, onSelect, options }) => {
+export const PillGroup = <T extends string>({
+  currentPill,
+  size = 1,
+  onSelect,
+  options,
+}: PillGroupProps<T>) => {
   return (
-    <div className="flex bg-neutral-secondary rounded-lg w-full min-w-fit">
-      {options.map((option, index) => (
-        <Pill
+    <div className="flex gap-2 bg-surface-light dark:bg-surface-dark rounded-lg p-1 shadow-sm w-full min-w-fit">
+      {options.map((option) => (
+        <MemoPill
           key={option}
           size={size}
           label={option}
-          selected={currentPill === index}
-          onClick={() => {
-            if (currentPill !== index) onSelect(index);
-          }}
+          selected={currentPill === option}
+          onClick={() => currentPill !== option && onSelect(option)}
         />
       ))}
     </div>

@@ -1,3 +1,4 @@
+import { AssetTab, FullETF, FullStock } from '../../../types';
 import { Ranking } from '../primitive';
 
 interface RowProps {
@@ -55,13 +56,13 @@ function Row({
 
       {/* Sector / Category */}
       <div className="flex-1">
-        <Ranking score={data[col + '_SECT']} large={isOverall} goodBad={goodBad} />
+        <Ranking score={data[col + 'PS']} large={isOverall} goodBad={goodBad} />
       </div>
 
       {/* Overall */}
       <div className="flex-1">
         <Ranking
-          score={data[type === 0 ? col + '_OVER' : col]}
+          score={data[type === 0 ? col + 'PO' : col]}
           large={isOverall}
           goodBad={goodBad}
         />
@@ -70,9 +71,16 @@ function Row({
   );
 }
 
+export type RankingOption = {
+  display: string;
+  column: keyof FullStock | keyof FullETF;
+  percent: boolean;
+  goodBad: boolean;
+};
+
 interface RankingTableProps {
-  currentTab: number;
-  options: [string, string, boolean?, boolean?][][];
+  currentTab: AssetTab;
+  options: Partial<Record<AssetTab, RankingOption[]>>;
   data?: Record<string, number>;
   t?: number;
   header?: string;
@@ -106,17 +114,17 @@ export function RankingTable({
       </div>
 
       {/* Rows */}
-      {options[currentTab].map((v) => {
-        if (data[v[1]]) {
+      {options[currentTab]?.map((v) => {
+        if (data[v.column]) {
           return (
             <Row
-              key={v[1]}
-              metric={v[0]}
-              col={v[1]}
+              key={v.column}
+              metric={v.display}
+              col={v.column}
               data={data}
-              percent={v[3]}
-              goodBad={!v[2]}
-              isOverall={t === 1 && v[0] === 'Overall'}
+              percent={v.percent}
+              goodBad={v.goodBad}
+              isOverall={t === 1 && v.column === 'qOverall'}
               type={t}
             />
           );

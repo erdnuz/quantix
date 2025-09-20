@@ -62,13 +62,12 @@ export const Search: React.FC<SearchProps> = ({
     setFilteredSuggestions(
       filtered
         .sort((a, b) => {
-          const aStarts = `${a.ticker} ${a.name}`.toLowerCase().startsWith(query.toLowerCase());
-          const bStarts = `${b.ticker} ${b.name}`.toLowerCase().startsWith(query.toLowerCase());
-          if (aStarts && !bStarts) return -1;
+          const aStarts = a.ticker.toLowerCase().startsWith(query.toLowerCase()) || a.name.toLowerCase().startsWith(query.toLowerCase());
+          const bStarts = b.ticker.toLowerCase().startsWith(query.toLowerCase()) || b.name.toLowerCase().startsWith(query.toLowerCase());
           if (!aStarts && bStarts) return 1;
-          return 0;
+          if (aStarts && !bStarts) return -1;
+          else return b.size - a.size;
         })
-        .slice(0, 5) // top 5 suggestions
     );
     previousQueryRef.current = query;
   }, [query]);
@@ -112,7 +111,7 @@ export const Search: React.FC<SearchProps> = ({
             bg-surface-light dark:bg-surface-dark shadow-sm
           "
         >
-          {filteredSuggestions.map(({ ticker, name }, index) =>
+          {filteredSuggestions.slice(0, 5).map(({ ticker, name }, index) =>
             onClick ? (
               <div
                 key={ticker}

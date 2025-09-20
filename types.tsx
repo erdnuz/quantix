@@ -17,7 +17,7 @@ export interface Portfolio {
   favourites: number;
   cash: number;
   initialCash: number;
-  primaryClass?: 'Equity' | 'ETF';
+  primaryClass?: AssetClass;
   '3m'?: number;
   all?: number;
   '1y'?:number;
@@ -30,17 +30,20 @@ export interface Portfolio {
   hist?: Record<string, number>[];
 
 }
+export type AssetClass = "Equity" | "ETF"
 
 export interface ProxyAsset {
     ticker: string;
     name: string;
     size: number;
-    assetClass: "Equity" | "ETF";
-    category: string;
+    assetClass: AssetClass;
+    sector: string;
+    category?: string;
 }
 
 export interface TableStock extends ProxyAsset {
         volume:number;
+        marketCorrelation:number;
         dividendYield:number;
 
         threeYearGrowth:number;
@@ -55,7 +58,7 @@ export interface TableStock extends ProxyAsset {
         returnOnEquity:number;
         returnOnAssets:number;
 
-        wacc:number;
+        
         priceToEarnings:number;
         priceToSales:number;
         priceToBook:number;
@@ -78,6 +81,7 @@ export interface TableStock extends ProxyAsset {
         martin:number;
         omega:number;
 
+        wacc:number;
         altmanZ:number;
         assetsToLiabilities:number;
         debtToAssets:number;
@@ -96,6 +100,7 @@ export interface TableStock extends ProxyAsset {
 
 export interface TableETF extends ProxyAsset {
         volume:number;
+        marketCorrelation:number;
         dividendYield:number;
         expenses:number;
         turnover:number;
@@ -144,7 +149,7 @@ export type FullStock = {
     numAn:number;
     anRec:number;
     anMin:number;
-    anMean:number;
+    anAvg:number;
     anMax:number;
 } & TableStock & WithPSPO<Omit<TableStock, "ticker" | "name" | "category" | "assetClass">>;
 
@@ -162,6 +167,14 @@ export type Filter = {
   label?: string;
   onRemove?: () => void;
 };
+
+export type AssetTab = 'Profile' | 'Growth' | 'Risk' | 'Performance' | 'Profitability' | 'Leverage' | 'Valuation' | 'Q-Scores'
+
+export type SelectOption = {
+    column:string;
+    label:string;
+    options: Record<string, number | string | null>[];
+}
 
 // Callback types
 export type SuccessCallback<T = any> = (result: T) => void;

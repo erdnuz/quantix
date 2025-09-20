@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Chart, RankingTable, Analysis, PieChart } from '../../../components/composition';
 import { Button, TabGroup, Card, Loading } from '../../../components/primitive';
@@ -8,9 +8,9 @@ import { BuySellDialog } from '../../../components/dialogs';
 import { useAuth } from '../../../../services/useAuth';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { METRICS, Q } from '@/app/compare/page';
 import { getFastData } from '../../../../services/firebase/api';
-
+import { AssetTab } from '../../../../types';
+import { METRICS, Q, tabOptions } from '../../../../options';
 
 const fetchInfo = async (
   ticker: string,
@@ -24,11 +24,10 @@ const fetchInfo = async (
   const fastDataPromise = getFastData({ticker, onSuccess:setFastData});
   const dataPromise = getAssetData({ticker}).then(async (data) => {
     if (data) {
-        setData(data);
-        const competitors = await getCompetitors({ticker:data.ticker});
-        setCompetitors(competitors);
+      setData(data);
+      const competitors = await getCompetitors({ticker:data.ticker});
+      setCompetitors(competitors);
     }
-    
   });
 
   await Promise.all([fastDataPromise, dataPromise]);
@@ -36,7 +35,7 @@ const fetchInfo = async (
 };
 
 const Metrics: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState(0);
+  const [currentTab, setCurrentTab] = useState<AssetTab>('Profile');
   const [stockInfo, setStockInfo] = useState<any>({});
   const [fastInfo, setFastInfo] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,10 +47,6 @@ const Metrics: React.FC = () => {
 
   const { currentUser } = useAuth();
 
-  const tabOptions = stockInfo?.V
-    ? ['Profile', 'Growth', 'Performance', 'Risk', 'Valuation', 'Profitability', 'Leverage']
-    : ['Profile', 'Growth', 'Performance', 'Risk'];
-
   useEffect(() => {
     if (ticker) {
       fetchInfo(ticker, setStockInfo, setFastInfo, setCompetitors, setLoading);
@@ -59,31 +54,32 @@ const Metrics: React.FC = () => {
   }, [ticker]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-12 bg-surface-light min-h-screen p-6 sm:p-12">
       <BuySellDialog isOpen={dialogOpen} ticker={ticker} onClose={() => setDialogOpen(false)} />
 
-      <div className="w-full flex flex-col gap-4 px-6 py-6">
-        <div className="flex justify-between w-full items-start">
-          <div className="flex flex-col gap-1 text-left">
-            <h1 className="text-3xl font-bold">
+      <div className="flex flex-col gap-6 w-full bg-light border border-border-light rounded-lg p-6 sm:p-12 shadow-sm">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold text-primary-light">
               {stockInfo?.name}{' '}
-              <span className="text-gray-500 text-sm">({ticker})</span>
+              <span className="text-secondary-light text-sm">({ticker})</span>
             </h1>
 
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-medium flex items-baseline">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-medium flex items-baseline text-primary-light">
                 {fastInfo?.price?.toFixed(2)}
-                <sub className="ml-1 text-xs text-gray-500">{stockInfo?.currency}</sub>
+                <sub className="ml-1 text-xs text-secondary-light">{stockInfo?.currency}</sub>
               </h2>
-              <h2
+              <span
                 className={`text-sm px-2 py-0.5 rounded-full border ${
                   fastInfo?.change >= 0
-                    ? 'border-green-500 bg-green-100 text-green-600'
-                    : 'border-red-500 bg-red-100 text-red-600'
+                    ? 'border-good bg-good/20 text-good'
+                    : 'border-bad bg-bad/20 text-bad'
                 }`}
               >
                 {fastInfo?.change !== undefined ? `${(100 * fastInfo.change).toFixed(2)}%` : ''}
-              </h2>
+              </span>
             </div>
           </div>
 
@@ -92,98 +88,139 @@ const Metrics: React.FC = () => {
               label="Add / Remove"
               disabled={!currentUser}
               onClick={() => currentUser && setDialogOpen(true)}
+              className="bg-primary-light text-light hover:bg-accent-light"
             />
           )}
         </div>
 
         {loading ? (
-          <Loading />
+          <div className="flex justify-center py-12">
+            <Loading />
+          </div>
         ) : (
-          <div className="flex flex-col w-full gap-4">
-            <TabGroup currentTab={currentTab} onSelect={setCurrentTab} options={tabOptions} />
+          <div className="flex flex-col gap-8">
+            <TabGroup<AssetTab>
+              currentTab={currentTab}
+              onSelect={setCurrentTab}
+              options={tabOptions(stockInfo.assetClass).filter(o => o !== 'Q-Scores')}
+              />
 
-            <RankingTable currentTab={currentTab} options={METRICS} data={stockInfo} />
+            <RankingTable
+              currentTab={currentTab}
+              options={METRICS(stockInfo.assetClass)}
+              data={stockInfo}
+              />
 
-            {currentTab === 0 && (
-              <div className="flex flex-col md:flex-row gap-4">
-                {/* Left info column */}
+            {/* Profile Details */}
+            {currentTab === 'Profile' && (
+              <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex flex-col gap-2 flex-1">
                   {[
-                    [stockInfo?.sector ? 'Sector' : 'Category', stockInfo?.sector || stockInfo?.category],
-                    ['52 Week Range', fastInfo?.range ? `${fastInfo.range} ${stockInfo?.currency}` : 'NaN'],
+                    ['Sector', stockInfo?.sector],
+                    ['52 Week Range', fastInfo.range],
                     ...(stockInfo?.category ? [['Category', stockInfo?.category]] : [])
                   ].map(([label, value]) => (
-                    <div key={label} className="flex">
-                      <div className="flex-1 font-bold">{label}</div>
-                      <div className="flex-1">{value || 'NaN'}</div>
-                    </div>
+                    <div className="flex items-center gap-6 w-full">
+                          {/* Metric name */}
+                          <div className="flex-1">
+                            <h3
+                              className="font-bold text-base md:text-sm"
+                            
+                            >
+                              {label}
+                            </h3>
+                          </div>
+                    
+                          
+                            <div className="flex-[0.65]">
+                              <h3 className="text-base md:text-sm">
+                                {value}
+                              </h3>
+                            </div>
+                          
+                        </div>
                   ))}
                 </div>
 
-                {/* Right charts/analysis */}
-                {stockInfo?.['num-an'] ? (
+                {/* Charts / Analysis */}
+                {stockInfo?.numAn ? (
                   <Analysis
-                    className="hidden md:flex"
+                    className="hidden md:flex flex-1"
                     price={fastInfo?.price}
-                    numAnalysts={stockInfo?.['num-an']}
-                    rec={stockInfo?.['an-rec']}
-                    minTarget={stockInfo?.['an-min']}
-                    meanTarget={stockInfo?.['an-avg']}
-                    maxTarget={stockInfo?.['an-max']}
+                    numAnalysts={stockInfo?.numAn}
+                    rec={stockInfo?.anRec}
+                    minTarget={stockInfo?.anMin}
+                    meanTarget={stockInfo?.anAvg}
+                    maxTarget={stockInfo?.anMax}
                   />
                 ) : (
-                  <div className="flex-1"></div>
+                  <div className="flex-1" />
                 )}
 
-                {stockInfo?.['plot-holdings'] && <PieChart title="Top Holdings" data={stockInfo?.['plot-holdings']} />}
-                {stockInfo?.['plot-sectors'] && <PieChart title="Top Sectors" data={stockInfo?.['plot-sectors']} />}
+                {stockInfo?.plotHoldings && (
+                  <PieChart title="Top Holdings" data={stockInfo?.plotHoldings}  />
+                )}
+                {stockInfo?.plotSectors && (
+                  <PieChart title="Top Sectors" data={stockInfo?.plotSectors} />
+                )}
               </div>
             )}
 
+            {/* Main Chart */}
             {stockInfo.type !== 2 && (
-              <div className="mt-4">
-                <h2 className="text-xl font-semibold">Chart</h2>
+              <div className="mt-6">
+                <h2 className="text-2xl font-semibold text-primary-light mb-2">Chart</h2>
                 {ticker && (
-                  <Chart
-                    symbol={
-                      ticker
-                    }
-                    height="420px"
-                  />
+                  <Chart symbol={ticker} height="420px"  />
                 )}
               </div>
             )}
 
+            {/* Q-Scores Table */}
             <div className="mt-8">
-              <RankingTable currentTab={0} options={Q} data={stockInfo} t={1} header="Q-Scores" />
+              <RankingTable
+                currentTab={'Q-Scores'}
+                options={Q}
+                data={stockInfo}
+                t={1}
+                header="Q-Scores"
+              />
             </div>
 
+            {/* Mobile Analysis */}
             {stockInfo?.['num-an'] && (
               <Analysis
                 className="flex md:hidden mt-4"
                 price={fastInfo?.price}
-                numAnalysts={stockInfo?.['num-an']}
-                rec={stockInfo?.['an-rec']}
-                minTarget={stockInfo?.['an-min']}
-                meanTarget={stockInfo?.['an-avg']}
-                maxTarget={stockInfo?.['an-max']}
+                numAnalysts={stockInfo?.numAn}
+                rec={stockInfo?.anRec}
+                minTarget={stockInfo?.anMin}
+                meanTarget={stockInfo?.anAvg}
+                maxTarget={stockInfo?.anMax}
               />
             )}
 
+            {/* Competitors */}
             <div className="mt-8">
-              <h3 className="text-lg font-semibold">Top Competitors</h3>
-
+              <h3 className="text-lg font-semibold text-primary-light">Top Competitors</h3>
               <div className="flex flex-wrap gap-4 mt-4">
                 {competitors?.map((competitor, index) => (
                   <Link key={index} href={`/metrics/${competitor.ticker}/`}>
-                    <Card ticker={competitor.ticker} name={competitor.name} size={competitor.size} assetClass={competitor.assetClass} category='' />
+                    <Card
+                      ticker={competitor.ticker}
+                      name={competitor.name}
+                      size={competitor.size}
+                      assetClass={competitor.assetClass}
+                      category=""
+                      sector=""
+                    />
                   </Link>
                 ))}
               </div>
 
-              <div className="w-1/3 mt-4 min-w-[fit-content]">
+              <div className="w-full sm:w-1/3 mt-4">
                 <Link
-                  className="btn brand"
+                  className="btn bg-brand-light text-light hover:bg-brand-hover w-full text-center rounded-lg px-4 py-2"
                   href={{ pathname: '/compare', query: { t: [ticker, ...competitors.map((c) => c.ticker)] } }}
                 >
                   Compare to Peers

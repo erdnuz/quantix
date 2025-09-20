@@ -269,13 +269,15 @@ export const getStockIdsAndNames = async (): Promise<ProxyAsset[]> => {
     const stockData: ProxyAsset[] = snapshot.docs.map((doc) => {
       const assetClass = doc.get('asset-class') ?? null;
       const size = assetClass === 'Equity' ? doc.get('market-cap') : doc.get('assets');
-      const category = assetClass === 'Equity' ? doc.get('sector') : doc.get('category');
-
+      const category = assetClass === 'Equity' ? undefined : doc.get('category');
+      const sector = assetClass === 'Equity' ? doc.get('sector') : doc.get('category');
+      
       return {
         ticker: doc.id,
         name: doc.get('name'),
         assetClass,
         size,
+        sector,
         category,
       };
     });
@@ -303,13 +305,23 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
 
     if (assetClass === 'Equity') {
       return {
+
+        numAn: data['num-an'],
+        anRec: data['an-rec'],
+        anMin: data['an-min'],
+        anAvg:data['an-avg'],
+        anMax:data['an-max'],
+
         assetClass,
         name: data['name'],
         ticker: assetSnap.id,
+        marketCorrelation: data['market-corr'],
+        marketCorrelationPS: data['market-corr_SECT'],
+        marketCorrelationPO: data['market-corr_OVER'],
         size: data['market-cap'],
         sizePS: data['market-cap_SECT'],
         sizePO: data['market-cap_OVER'],
-        category: data['sector'],
+        sector: data['sector'],
         volume: data['volume'],
         volumePS: data['volume_SECT'],
         volumePO: data['volume_OVER'],
@@ -485,27 +497,17 @@ export const getUserFavourites = async ({favourites}: {favourites: string[]}): P
 
 interface GetTableDataParams {
   equity: boolean; // true = equities, false = ETFs
-  filtered: boolean; // true = apply thresholds
   onSuccess: (data: TableStock[] | TableETF[]) => void;
   onError?: (err: any) => void;
 }
 
-export async function getTableData({ equity, filtered, onSuccess, onError }: GetTableDataParams) {
+export async function getTableData({ equity, onSuccess, onError }: GetTableDataParams) {
   try {
     const collectionName = equity ? 'equities' : 'etfs';
     const stocksCollection = collection(firestore, collectionName);
 
-    let q: Query<DocumentData>; // <-- use Query type
-
-    if (filtered) {
-      if (equity) {
-        q = query(stocksCollection, where('market-cap', '>=', 1e9)); // >= 1B
-      } else {
-        q = query(stocksCollection, where('assets', '>=', 50e6)); // >= 50M
-      }
-    } else {
-      q = query(stocksCollection); // can still wrap in query()
-    }
+    let q: Query<DocumentData> = query(stocksCollection); // can still wrap in query()
+    
 
     // Then:
     const snapshot = await getDocs(q);
@@ -513,17 +515,111 @@ export async function getTableData({ equity, filtered, onSuccess, onError }: Get
     let data: TableStock[] | TableETF[];
     if (equity) {
       data = snapshot.docs.map((doc) => {
-          return {
+        const data = doc.data();
+        return {
+          assetClass: data['asset-class'],
+          name: data['name'],
           ticker: doc.id,
-          ...doc.data()
+          size: data['market-cap'],
+          sector: data['sector'],
+          volume: data['volume'],
+          dividendYield: data['yield'],
+
+          threeYearGrowth: data['3y'],
+          sixMonthGrowth: data['6mo'],
+          cagr: data['cagr'],
+          oneYearGrowth: data['yoy'],
+
+          dividendGrowth: data['div-g'],
+          earningsGrowth: data['earnings-g'],
+          revenueGrowth: data['revenue-g'],
+          profitMargin: data['profit-m'],
+          returnOnEquity: data['roe'],
+          returnOnAssets: data['roa'],
+
+          priceToEarnings: data['p-earnings'],
+          priceToSales: data['p-sales'],
+          priceToBook: data['p-book'],
+          priceToEarningsToGrowth: data['peg'],
+
+          avgDrawdown: data['avg-d'],
+          maxDrawdown: data['max-d'],
+          beta: data['beta'],
+          standardDeviationReturns: data['std-dev'],
+          var1: data['var1'],
+          var5: data['var5'],
+          var10: data['var10'],
+
+          calmar: data['calmar'],
+          alpha: data['alpha'],
+          sharpe: data['sharpe'],
+          sortino: data['sortino'],
+          mSquared: data['m-squared'],
+          martin: data['martin'],
+          omega: data['omega'],
+
+          altmanZ: data['altman-z'],
+          assetsToLiabilities: data['assets-l'],
+          debtToAssets: data['debt-a'],
+          debtToEquity: data['debt-e'],
+          debtToEBIT: data['debt-ebit'],
+          wacc: data['wacc'],
+
+          qOverall: data['OVERALL'],
+          qGrowth: data['G'],
+          qRisk: data['R'],
+          qPerformance: data['PE'],
+          qLeverage: data['L'],
+          qValuation: data['V'],
+          qProfitability: data['PR'],
         } as TableStock;
       });
     }
     else {
       data = snapshot.docs.map((doc) => {
-          return {
+        const data = doc.data();
+        return {
+          assetClass: data['asset-class'],
+          name: data['name'],
           ticker: doc.id,
-          ...doc.data()
+          size: data['assets'] * 1000,
+          sector: data['sector'],
+          volume: data['volume'],
+          dividendYield: data['yield'],
+
+          threeYearGrowth: data['3y'],
+          sixMonthGrowth: data['6mo'],
+          cagr: data['cagr'],
+          oneYearGrowth: data['yoy'],
+
+          dividendGrowth: data['div-g'],
+          expenses:data['expenses'],
+          turnover:data['turnover'],
+          sectorDiversity:data['sector-diversity'],
+          holdingsDiversity:data['holding-diversity'],
+
+          priceToEarnings: data['p-earnings'],
+
+          avgDrawdown: data['avg-d'],
+          maxDrawdown: data['max-d'],
+          beta: data['beta'],
+          standardDeviationReturns: data['std-dev'],
+          var1: data['var1'],
+          var5: data['var5'],
+          var10: data['var10'],
+
+          calmar: data['calmar'],
+          alpha: data['alpha'],
+          sharpe: data['sharpe'],
+          sortino: data['sortino'],
+          mSquared: data['m-squared'],
+          martin: data['martin'],
+          omega: data['omega'],
+
+          qOverall: data['OVERALL'],
+          qGrowth: data['G'],
+          qRisk: data['R'],
+          qPerformance: data['PE'],
         } as TableETF;
       });
     }

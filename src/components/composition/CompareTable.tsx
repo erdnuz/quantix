@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { Ranking } from '../primitive';
+import { AssetTab } from '../../../types';
+import { RankingOption } from './RankingTable';
 
 interface RowProps {
   metric: string;
@@ -44,7 +46,7 @@ const Row: React.FC<RowProps> = ({
         {data.map((ticker, idx) => (
           <div key={idx} className="flex-1">
             <Ranking
-              score={ticker[type === 0 ? `${col}_OVER` : col]}
+              score={ticker[type === 0 ? `${col}PO` : col]}
               large={isOverall}
               goodBad={goodBad}
               number={
@@ -63,8 +65,8 @@ const Row: React.FC<RowProps> = ({
 };
 
 interface CompareTableProps {
-  currentTab: number;
-  options: [string, string, boolean, boolean][][];
+  currentTab: AssetTab;
+  options: Partial<Record<AssetTab, RankingOption[]>>;
   data?: Record<string, any>[];
   style?: number;
   header?: string;
@@ -94,17 +96,17 @@ export const CompareTable: React.FC<CompareTableProps> = ({
       </div>
 
       {/* Data Rows */}
-      {options[currentTab].map((v) => {
-        if (data.some((t) => t?.[v[1]] !== undefined)) {
+      {options[currentTab]?.map((v) => {
+        if (data.some((t) => t?.[v.column] !== undefined)) {
           return (
             <Row
-              key={v[1]}
-              metric={v[0]}
-              col={v[1]}
+              key={v.column}
+              metric={v.display}
+              col={v.column}
               data={data}
-              goodBad={!v[2]}
-              percent={v[3]}
-              isOverall={style === 1 && v[0] === 'Overall'}
+              percent={v.percent}
+              goodBad={v.goodBad}
+              isOverall={style == 1 && v.column === 'qOverall'}
               type={style}
             />
           );

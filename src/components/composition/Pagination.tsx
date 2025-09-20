@@ -90,8 +90,8 @@ export const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage,
           max={totalPages}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Go"
-          className="w-16 p-2 rounded-md border border-border-light dark:border-border-dark text-center text-primary-light dark:text-primary-dark bg-surface-light dark:bg-surface-dark focus:outline-none focus:ring-1 focus:ring-accent-light dark:focus:ring-accent-dark"
+          placeholder="Page #"
+          className="w-24 p-2 rounded-md border border-border-light dark:border-border-dark text-center text-primary-light dark:text-primary-dark bg-surface-light dark:bg-surface-dark focus:outline-none focus:ring-1 focus:ring-accent-light dark:focus:ring-accent-dark"
         />
         <Button
           type="brand"

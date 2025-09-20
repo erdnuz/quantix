@@ -1,8 +1,9 @@
 import React from "react";
 import { Select } from "../primitive";
+import { SelectOption } from "../../../types";
 
 interface SelectGroupProps {
-  optionData: [string, string, any[]][];
+  optionData: SelectOption[];
   selected: number[];
   setSelected: (index: number, value: number) => void;
 }
@@ -10,13 +11,13 @@ interface SelectGroupProps {
 export const SelectGroup: React.FC<SelectGroupProps> = ({ optionData, selected, setSelected }) => {
   return (
     <div className="flex flex-row flex-wrap gap-4 md:gap-6">
-      {optionData.map((group, index) => (
+      {optionData.map((o, index) => (
         <div key={index} className="flex flex-col gap-1">
-          <label className="ml-1 text-sm text-gray-700">{group[1]}</label>
+          <label className="ml-1 text-sm text-gray-700">{o.label}</label>
           <Select
             selected={selected[index]}
             setSelected={(value) => setSelected(index, value)}
-            options={group[2]}
+            options={o.options}
           />
         </div>
       ))}
