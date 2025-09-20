@@ -24,7 +24,7 @@ export const ImagePanel: React.FC<ImagePanelProps> = ({
   query = null
 }) => {
   return (
-    <section className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-6 lg:gap-12 py-12  bg-light dark:bg-dark rounded-xl shadow-sm`}>
+    <section className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-6 lg:gap-12 p-12  bg-light dark:bg-dark rounded-xl shadow-sm`}>
       
       {/* Text Content */}
       <div className="flex-1 text-center lg:text-left space-y-4">

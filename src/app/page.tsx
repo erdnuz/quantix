@@ -30,7 +30,7 @@ const Home: React.FC = () => {
         title="Quantix" 
         subtitle="Empowering Investors with Data-Driven Insights" 
       />
-
+      <div className="flex flex-col p-12 gap-12" >
       <ImagePanel
         title="Build and Explore Portfolios"
         subtitle="Community Portfolios for Every Investor"
@@ -61,6 +61,7 @@ const Home: React.FC = () => {
         reverse={false}
         href="/screener"
       />
+      </div>
 
     </div>
   );

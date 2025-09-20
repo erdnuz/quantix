@@ -1,8 +1,8 @@
 import json
 import os
 from datetime import datetime
-from yahoo.yfHelper import yfHelper
 import pandas as pd
+import yfinance as yf
 
 class MarketDataManager:
     def __init__(self, json_file="./market_data/market_data.json"):
@@ -35,8 +35,8 @@ class MarketDataManager:
         Simulate fetching market returns and RFR from an external source.
         Replace this function with real API calls to get the data.
         """
-        market_returns = yfHelper("^GSPC").price_monthly_short().pct_change().dropna()
-        rfr = yfHelper("^TNX").price_and_change()["price"] / 100
+        market_returns = get_market_returns()
+        rfr = get_rfr()
         
         return market_returns, rfr
 
@@ -67,3 +67,14 @@ class MarketDataManager:
             "rfr": self.data.get("rfr"),
             "last_update": self.data.get("last_update"),
         }
+    
+   
+def get_market_returns():
+    his = yf.Ticker('^GSPC').history(period='5y', interval='1mo')
+    his.index = pd.to_datetime(his.index).tz_localize(None)
+    return his.ffill().dropna()['Close'].pct_change().dropna()
+
+def get_rfr(): 
+    dat = yf.Ticker('^TNX').fast_info
+    current_price = dat["lastPrice"]
+    return current_price / 100

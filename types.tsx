@@ -151,13 +151,13 @@ export type FullStock = {
     anMin:number;
     anAvg:number;
     anMax:number;
-} & TableStock & WithPSPO<Omit<TableStock, "ticker" | "name" | "category" | "assetClass">>;
+} & TableStock & WithPSPO<Omit<TableStock, "ticker" | "name" | "category" | "assetClass" | "sector">>;
 
 export type FullETF = {
     plotSectors: Record<string, number>;
     plotHoldings: Record<string, number>;
 
-} & TableETF & WithPSPO<Omit<TableETF, "ticker" | "name" | "category" | "assetClass">>;
+} & TableETF & WithPSPO<Omit<TableETF, "ticker" | "name" | "category" | "assetClass" | "sector">>;
 
 
 export type Filter = {

@@ -61,14 +61,14 @@ const Metrics: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
           <div className="flex flex-col gap-1">
-            <h1 className="text-3xl font-bold text-primary-light">
+            <h1 className="text-5xl font-bold text-primary-light">
               {stockInfo?.name}{' '}
-              <span className="text-secondary-light text-sm">({ticker})</span>
+              <span className="text-secondary-light text-lg">({ticker})</span>
             </h1>
 
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-medium flex items-baseline text-primary-light">
-                {fastInfo?.price?.toFixed(2)}
+              <h2 className="text-2xl font-medium flex items-baseline text-primary-light">
+                ${fastInfo?.price?.toFixed(2)}
                 <sub className="ml-1 text-xs text-secondary-light">{stockInfo?.currency}</sub>
               </h2>
               <span
@@ -202,7 +202,7 @@ const Metrics: React.FC = () => {
 
             {/* Competitors */}
             <div className="mt-8">
-              <h3 className="text-lg font-semibold text-primary-light">Top Competitors</h3>
+              <h3 className="text-2xl font-semibold text-primary-light">Top Competitors</h3>
               <div className="flex flex-wrap gap-4 mt-4">
                 {competitors?.map((competitor, index) => (
                   <Link key={index} href={`/metrics/${competitor.ticker}/`}>

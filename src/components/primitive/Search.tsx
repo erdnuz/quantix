@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { IconSearch } from '../icons/IconSearch';
 import { getStockIdsAndNames } from '../../../services/firebase/db';
@@ -8,79 +8,65 @@ import { ProxyAsset } from '../../../types';
 interface SearchProps {
   label?: string;
   onClick?: ((id: string) => void) | null;
+  filter?: ((asset: ProxyAsset) => boolean) | null;
 }
 
-export const Search: React.FC<SearchProps> = ({
-  label = 'Search',
-  onClick = null,
-}) => {
+export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null, filter = null }) => {
   const [query, setQuery] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState<ProxyAsset[]>([]);
   const [suggestions, setSuggestions] = useState<ProxyAsset[]>([]);
-  const previousQueryRef = useRef('');
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Fetch suggestions once
   useEffect(() => {
     getStockIdsAndNames().then((data) => setSuggestions(data));
   }, []);
 
-  const reset = () => {
-    setDropdownVisible(false);
-    setQuery('');
-  };
-
-  const filterSuggestions = (input: string, previousResults: ProxyAsset[]) => {
-    const lowerInput = input.toLowerCase();
-    const fillerWords = /(the|inc\.|company|corporation)/gi;
-
-    if (
-      input.length > previousQueryRef.current.length &&
-      lowerInput.startsWith(previousQueryRef.current.toLowerCase()) &&
-      previousQueryRef.current.length > 0
-    ) {
-      return previousResults.filter(({ ticker, name }) => {
-        const cleanName = name?.toLowerCase().replace(fillerWords, '').trim();
-        return ticker.toLowerCase().startsWith(lowerInput) || cleanName?.startsWith(lowerInput);
-      });
-    }
-
-    return suggestions.filter(({ ticker, name }) => {
-      const cleanName = name?.toLowerCase().replace(fillerWords, '').trim();
-      return ticker.toLowerCase().startsWith(lowerInput) || cleanName?.startsWith(lowerInput);
-    });
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuery = e.target.value;
-    setQuery(newQuery);
-    setDropdownVisible(newQuery.length > 0);
-  };
-
-  useEffect(() => {
-    const filtered = filterSuggestions(query, filteredSuggestions);
-    setFilteredSuggestions(
-      filtered
-        .sort((a, b) => {
-          const aStarts = a.ticker.toLowerCase().startsWith(query.toLowerCase()) || a.name.toLowerCase().startsWith(query.toLowerCase());
-          const bStarts = b.ticker.toLowerCase().startsWith(query.toLowerCase()) || b.name.toLowerCase().startsWith(query.toLowerCase());
-          if (!aStarts && bStarts) return 1;
-          if (aStarts && !bStarts) return -1;
-          else return b.size - a.size;
-        })
-    );
-    previousQueryRef.current = query;
-  }, [query]);
-
+  // Handle outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        reset();
+        setDropdownVisible(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Filtered & sorted suggestions
+  const filteredSuggestions = useMemo(() => {
+    if (!query) return [];
+
+    const lowerQuery = query.toLowerCase();
+    const fillerWords = /(the|inc\.|company|corporation)/gi;
+
+    const filtered = suggestions.filter(({ ticker, name }) => {
+      const cleanName = name?.toLowerCase().replace(fillerWords, '').trim();
+      return ticker.toLowerCase().startsWith(lowerQuery) || cleanName?.startsWith(lowerQuery);
+    });
+
+    const finalFiltered = filter ? filtered.filter(filter) : filtered;
+
+    // Sort matches: exact start matches first, then by size descending
+    return finalFiltered.sort((a, b) => {
+      const aStarts = a.ticker.toLowerCase().startsWith(lowerQuery) || a.name.toLowerCase().startsWith(lowerQuery);
+      const bStarts = b.ticker.toLowerCase().startsWith(lowerQuery) || b.name.toLowerCase().startsWith(lowerQuery);
+      if (!aStarts && bStarts) return 1;
+      if (aStarts && !bStarts) return -1;
+      return (b.size || 0) - (a.size || 0);
+    });
+  }, [query, suggestions, filter]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    setDropdownVisible(e.target.value.length > 0);
+  };
+
+  const handleSelect = (ticker: string) => {
+    if (onClick) onClick(ticker);
+    setDropdownVisible(false);
+    setQuery('');
+  };
 
   return (
     <div ref={searchRef} className={`relative inline-block`}>
@@ -103,7 +89,7 @@ export const Search: React.FC<SearchProps> = ({
       </div>
 
       {/* Dropdown */}
-      {dropdownVisible && filteredSuggestions.length > 0 && (
+      {dropdownVisible && (filter ? filteredSuggestions.filter(filter) : filteredSuggestions).length > 0 && (
         <div
           className="
             absolute top-full left-0 right-0 z-10 max-h-52 overflow-y-auto
@@ -111,7 +97,7 @@ export const Search: React.FC<SearchProps> = ({
             bg-surface-light dark:bg-surface-dark shadow-sm
           "
         >
-          {filteredSuggestions.slice(0, 5).map(({ ticker, name }, index) =>
+          {(filter ? filteredSuggestions.filter(filter) : filteredSuggestions).slice(0, 5).map(({ ticker, name }, index) =>
             onClick ? (
               <div
                 key={ticker}
@@ -120,10 +106,7 @@ export const Search: React.FC<SearchProps> = ({
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
                   ${index === filteredSuggestions.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
                 `}
-                onClick={() => {
-                  onClick(ticker);
-                  reset();
-                }}
+                onClick={() => handleSelect(ticker)}
               >
                 <span className="font-semibold">{ticker}</span> - <span>{name}</span>
               </div>
@@ -136,7 +119,7 @@ export const Search: React.FC<SearchProps> = ({
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
                   ${index === filteredSuggestions.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
                 `}
-                onClick={reset}
+                onClick={() => setDropdownVisible(false)}
               >
                 <span className="font-semibold">{ticker}</span> - <span>{name}</span>
               </Link>

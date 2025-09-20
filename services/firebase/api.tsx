@@ -1,64 +1,77 @@
 import { Portfolio, SuccessCallback, ErrorCallback } from "../../types";
 
-
 /**
  * Fetch portfolio data by ID.
- * Currently returns a placeholder object; will be implemented later.
  */
-export async function getPortfolioData({ id }: { id: string }): Promise<Portfolio> {
-  // Placeholder: return a minimal portfolio structure
-  return {
-    id,
-    title: 'Sample Portfolio',
-    userId: 'user123',
-    date: new Date().toISOString(),
-    favourites: 0,
-    description: 'This is a placeholder portfolio.',
-    tags: [],
-    actions: {},
-    df: {},
-    hist: [],
-    cash: 0,
-    initialCash: 0,
-    shares: {},
-  } as Portfolio;
+export async function getPortfolioData({ id }: { id: string }): Promise<Portfolio | null> {
+  try {
+    const response = await fetch(`http://127.0.0.1:5001/quant-algo-4430a/us-central1/get_portfolio_data?t=${encodeURIComponent(id)}`);
+    if (!response.ok) {
+      console.error("Error fetching portfolio data:", response.statusText);
+      return null;
+    }
+    const data = await response.json();
+    return data as Portfolio;
+  } catch (err) {
+    console.error("Error fetching portfolio data:", err);
+    return null;
+  }
 }
 
-// Fetch compare data for multiple tickers (prices + correlation + plot)
-export async function getCompareData({tickers} : {tickers: string[]}): Promise<{
+/**
+ * Fetch compare data for multiple tickers (prices + correlation + plot)
+ */
+export async function getCompareData({
+  tickers,
+}: {
+  tickers: string[];
+}): Promise<{
   plot: Record<string, Record<string, number>>;
   corr: Record<string, Record<string, number>>;
   prices: Record<string, number>;
 } | null> {
   try {
-    const plot: Record<string, Record<string, number>> = {};
-    const prices: Record<string, number> = {};
-    const corr: Record<string, Record<string, number>> = {};
-
-    
-    return { plot, corr, prices };
+    const params = tickers.map((t) => `t=${encodeURIComponent(t)}`).join("&");
+    const response = await fetch(`http://127.0.0.1:5001/quant-algo-4430a/us-central1/get_compare_info?${params}`);
+    if (!response.ok) {
+      console.error("Error fetching compare data:", response.statusText);
+      return null;
+    }
+    const data = await response.json();
+    return {
+      plot: data.plot || {},
+      corr: data.corr || {},
+      prices: data.prices || {},
+    };
   } catch (err) {
-    console.error('Error fetching compare data:', err);
+    console.error("Error fetching compare data:", err);
     return null;
   }
 }
 
-
+/**
+ * Fetch fast data for a single ticker
+ */
 export async function getFastData({
   ticker,
   onSuccess,
-  onError,
+  onError
 }: {
   ticker: string;
   onSuccess: SuccessCallback;
   onError?: ErrorCallback;
 }): Promise<void> {
   try {
-    onSuccess({
-      price: 157.69,
-      change: 4.09,
-    });
+    const url = `http://127.0.0.1:5001/quant-algo-4430a/us-central1/get_fast_data?t=${encodeURIComponent(ticker)}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      const errText = await response.text();
+      onError?.(`Error fetching fast data: ${errText}`);
+      return;
+    }
+    const data = await response.json();
+    onSuccess(data);
   } catch (err) {
-    onError?.("Error fetching price data.");
+    onError?.(`Error fetching fast data: ${(err as Error).message}`);
   }
 }

@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 from market_data import MarketDataManager
-from yahoo.currency import CurrencyConverter
 from portfolio.helpers import get_pnl, get_df
 
 class Portfolio:

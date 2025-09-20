@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import {  useSearchParams } from 'next/navigation';
 import {
   CompareTable,
   Hero,
@@ -12,7 +12,7 @@ import {
 } from '../../components/composition';
 import { Button, TabGroup, Card, Search, Loading } from '../../components/primitive';
 import { getAssetData } from '../../../services/firebase/db';
-import { AssetTab, FullETF, FullStock } from '../../../types';
+import { AssetTab, FullETF, FullStock, ProxyAsset } from '../../../types';
 import { getCompareData } from '../../../services/firebase/api';
 import { METRICS, Q, tabOptions } from '../../../options';
 
@@ -25,8 +25,30 @@ const Compare: React.FC = () => {
   const [prices, setPrices] = useState<Record<string, number>>({});
 
   const searchParams = useSearchParams();
-  const t = searchParams.getAll('t');
-  const initial = t ? (Array.isArray(t) ? t : [t]) : null;
+
+  useEffect(() => {
+    const t = searchParams.getAll('t');
+    if (t.length && tickers.length === 0) {
+      addTickers(t, setTickers);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (tickers.length === 0) {
+      // Clear the query string without reloading
+      const url = new URL(window.location.href);
+      url.searchParams.delete('t');
+      window.history.replaceState(null, '', url.toString());
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('t'); // clear existing tickers
+    tickers.forEach((t) => url.searchParams.append('t', t.ticker));
+
+    window.history.replaceState(null, '', url.toString());
+  }, [tickers]);
+
 
   const addTicker = async (
     ticker: string,
@@ -34,6 +56,7 @@ const Compare: React.FC = () => {
   ) => {
     const d = await getAssetData({ ticker });
     if (!d) return;
+    if(tickers[0]&&tickers[0].assetClass != d.assetClass) return;
 
     setData((prev) => {
       if (d.assetClass === 'Equity') {
@@ -43,6 +66,8 @@ const Compare: React.FC = () => {
       }
     });
   };
+
+  
 
 
   const addTickers = async (tickers: string[], setData: React.Dispatch<React.SetStateAction<FullStock[] | FullETF[]>>) => {
@@ -64,10 +89,6 @@ const Compare: React.FC = () => {
   };
 
   useEffect(() => {
-    if (initial && tickers.length === 0) addTickers(initial, setTickers);
-  }, [initial]);
-
-  useEffect(() => {
     if (tickers.length > 0) {
       setLoading(true);
       getCompareData({tickers:tickers.map((t) => t.ticker)}).then((data) => {
@@ -86,13 +107,13 @@ const Compare: React.FC = () => {
   }, [tickers]);
 
   return (
-    <div className="flex flex-col gap-16 bg-surface-light min-h-screen">
+    <div className="flex flex-col bg-surface-light min-h-screen">
       <Hero 
         title="Compare Assets" 
         subtitle="Compare the Best Stocks, ETFs, and Mutual Funds" 
       />
 
-      <div className="flex flex-col gap-6 w-full p-6 sm:p-12">
+      <div className="flex flex-col gap-6 w-full p-6">
         <div className="flex flex-wrap justify-center gap-6">
           {tickers.map((competitor, index) => (
             <Link key={index} href={`/metrics/${competitor.ticker}/`}>
@@ -102,7 +123,7 @@ const Compare: React.FC = () => {
                 size={competitor.size}
                 assetClass={competitor.assetClass}
                 category={competitor.category}
-                sector=""
+                sector={competitor.sector}
               />
             </Link>
           ))}
@@ -116,6 +137,14 @@ const Compare: React.FC = () => {
             className="bg-primary-light text-light hover:bg-accent-light"
           />
           {tickers.length <5 &&<Search 
+            filter= {(asset : ProxyAsset)=>{
+              
+              if (tickers?.[0]) {
+                console.log(asset.assetClass, tickers[0].assetClass)
+                return asset.assetClass == tickers[0].assetClass && !tickers.some((t)=>t.ticker==asset.ticker)
+              }
+              return true
+            }}
             label="Add Asset" 
             onClick={handleClick} 
           />}
@@ -124,11 +153,13 @@ const Compare: React.FC = () => {
 
       {tickers.length > 1 ? (
         loading ? (
-          <div className="flex justify-center mt-12">
+          <div className="flex justify-center mt-6">
             <Loading />
           </div>
         ) : (
-          <div className="flex flex-col gap-8 p-12 sm:p-24">
+          <div className="flex flex-col gap-8 p-12">
+
+
             <TabGroup<AssetTab>
               currentTab={currentTab}
               onSelect={setCurrentTab}
@@ -145,7 +176,6 @@ const Compare: React.FC = () => {
               <h1 className="text-2xl font-semibold text-primary-light mb-3">Chart</h1>
               <CompareChart 
                 lines={chartData} 
-                loaded={Object.keys(chartData).length > 0} 
               />
             </div>
 
@@ -173,7 +203,7 @@ const Compare: React.FC = () => {
           </div>
         )
       ) : (
-        <div className="flex flex-col items-center justify-center mt-12 text-center text-secondary-light">
+        <div className="flex flex-col items-center justify-center py-12 text-center text-secondary-light">
           <h1 className="text-3xl font-bold mb-2">Nothing to show...</h1>
           <h2 className="text-xl">Add at least 2 assets to start comparing</h2>
         </div>

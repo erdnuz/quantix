@@ -28,7 +28,7 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
     const value = ticker[key];
 
     // Recommendation column
-    if (key === "an-rec") {
+    if (key === "anRec") {
       let text = "NaN";
       if (value < 2) text = "Strong Buy";
       else if (value < 3) text = "Buy";
