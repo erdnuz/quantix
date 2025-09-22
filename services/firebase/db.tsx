@@ -137,7 +137,6 @@ export const createPortfolio = async ({
     created: formattedDate,
   };
 
-  console.log(portfolioData)
 
   const portfoliosCollection = collection(firestore, 'portfolios');
   const docRef = await addDoc(portfoliosCollection, portfolioData);
@@ -770,7 +769,9 @@ export async function getPortfolioDoc({ id }: { id: string }): Promise<Portfolio
     const docRef = doc(firestore, 'portfolios', id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists) return null;
-    return { id: docSnap.id, ...docSnap.data() } as Portfolio;
+    const data = docSnap.data();
+    if (!data) return null;
+    return data as Portfolio;
   } catch (error) {
     console.error('Error fetching portfolio document:', error);
     return null;

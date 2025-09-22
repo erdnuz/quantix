@@ -25,6 +25,8 @@ export interface Portfolio {
   description: string;
   tags: PortfolioTag[];
 
+  
+
   cash: number;
   initialCash: number;
 
@@ -33,12 +35,21 @@ export interface Portfolio {
   shares: Record<string, number>;
   actions: Record<string, Record<string, number>>;
 
-  primaryAssetClass?: AssetClass | 'Mized';
+  primaryAssetClass?: AssetClass | 'Mixed';
+  dividendYield?: number;
 
   threeMonthGrowth?: number;
   oneYearGrowth?:number;
   allTimeGrowth?: number;
+  sixMonthGrowth?: number;
   cagr?: number;
+
+  
+
+    assetWeight: Record<string, number>;
+    sectorWeight : Record<string, number>;
+   assetContrib: Record<string, number>;
+  sectorContrib: Record<string, number>;
 
   maxDrawdown?: number;
   avgDrawdown?: number;
@@ -46,9 +57,9 @@ export interface Portfolio {
   sharpe?: number;
   alpha?: number;
 
-  df?: Record<string, Record<string, number>>;
-  holdings?: Record<string, number>[];
-  hist?: Record<string, number>[];
+  holdingsDict?: Record<string, any>[];
+  actionsDict?: Record<string, any>[];
+  historicalReturns?: Record<string, number>[];
 
 }
 export type AssetClass = "Equity" | "ETF"

@@ -131,6 +131,11 @@ def get_portfolio_data(req: https_fn.Request) -> https_fn.Response:
         p = Portfolio(tickers=actions, initial_cash=initial_cash, db=db)
         basic, adv = p.get_info()
 
+        for k, v in (basic | adv).items():
+            print(k, v)
+
+
+
         portfolio_ref.update(basic)
         if basic:
             return https_fn.Response(json.dumps(basic | adv), status=200, content_type="application/json")

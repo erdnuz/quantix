@@ -89,18 +89,18 @@ class Portfolio:
         portfolio_series = self.holdings['portfolio'].astype(float)
         curr_val = float(portfolio_series.iloc[-1])
 
-        def period_return(delta: timedelta):
+        def period_return(days):
             end_date = portfolio_series.index[-1]
-            start_date = end_date - delta
+            start_date = end_date - timedelta(days=days)
             start_val = portfolio_series.loc[portfolio_series.index >= start_date].iloc[0]
-            return float(curr_val / start_val - 1)
+            return float((curr_val / start_val)**(365/days) - 1)
 
         returns = {
-            'all': float(curr_val - 1),
-            '1y': period_return(timedelta(days=365)),
-            '6m': period_return(timedelta(days=182)),
-            '3m': period_return(timedelta(days=91)),
-            '1m': period_return(timedelta(days=30))
+            'allTimeGrowth': float(curr_val - 1),
+            'oneYearGrowth': period_return(days=365),
+            'sixMonthGrowth': period_return(days=182),
+            'threeMonthGrowth': period_return(days=91),
+            'oneMonthGrowth': period_return(days=30)
         }
 
         # CAGR
@@ -112,8 +112,8 @@ class Portfolio:
         # Risk metrics
         rolling_max = portfolio_series.cummax()
         drawdown = 1 - portfolio_series / rolling_max
-        returns['max_drawdown'] = float(drawdown.max())
-        returns['avg_drawdown'] = float(drawdown.mean())
+        returns['maxDrawdown'] = float(drawdown.max())
+        returns['avgDrawdown'] = float(drawdown.mean())
 
         # Alpha & Sharpe
         alpha = beta = sharpe = None
@@ -136,7 +136,7 @@ class Portfolio:
         returns['sharpe'] = sharpe
 
         history = {k.strftime('%Y-%m-%d'): float(v) for k, v in portfolio_series.sub(1).items()}
-        return returns, {'hist': history}
+        return returns, {'historicalReturns': history}
 
     def get_info(self):
         if not self.tickers or self.holdings.empty:
@@ -157,6 +157,8 @@ class Portfolio:
         df['open_pnl'] = (df['price'] / df['avg_buy'] - 1).fillna(0).astype(float)
 
         asset_weight = {k: float(v) for k, v in df.groupby('asset-class')['weight'].sum().items()}
+        asset_weight['Cash'] = 1 - sum([k for k in asset_weight.values()])
+        
         primary_asset = max(asset_weight, key=asset_weight.get) if asset_weight and max(asset_weight.values()) >= 0.5 * sum(asset_weight.values()) else 'Mixed'
         sector_weight = {k: float(v) for k, v in df.groupby('sector')['weight'].sum().items()}
         asset_contrib = {k: float(v) for k, v in df.groupby('asset-class')['contrib'].sum().items()}
@@ -165,22 +167,22 @@ class Portfolio:
 
         holdings_columns = ['ticker','name','asset-class','sector','shares','avg_buy','price','open_pnl','weight','yield','cagr']
         holdings = df[[c for c in holdings_columns if c in df.columns]].loc[df['shares'] != 0]
-        holdings_dict = {
-            str(k): {c: (float(v) if isinstance(v, (np.floating, np.integer, np.int64, np.float64)) else v)
-                     for c, v in row.items()} 
+        holdings_dict = [
+            {'ticker':k} | {c: (float(v) if isinstance(v, (np.floating, np.integer, np.int64, np.float64)) else v)
+                     for c, v in row.items()}
             for k, row in holdings.T.to_dict().items()
-        }
+        ]
 
         return {
             **basic,
-            'primary_class': str(primary_asset),
-            'yield': div_yield
+            'primaryAssetClass': str(primary_asset),
+            'dividendYield': div_yield
         }, {
             **adv,
-            'asset_weight': asset_weight,
-            'sector_weight': sector_weight,
-            'asset_contrib': asset_contrib,
-            'sector_contrib': sector_contrib,
-            'actions': self.actions,
-            'df': holdings_dict
+            'assetWeight': asset_weight,
+            'sectorWeight': sector_weight,
+            'assetContrib': asset_contrib,
+            'sectorContrib': sector_contrib,
+            'actionsDict': self.actions,
+            'holdingsDict': holdings_dict
         }
