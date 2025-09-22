@@ -207,6 +207,7 @@ const PortfolioPage = () => {
               [
                 { column: "alpha", label: "Alpha" },
                 { column: "sharpe", label: "Sharpe" },
+                { column: "beta", label: "Beta" },
                 { column: "maxDrawdown", label: "Max Drawdown" },
                 { column: "avgDrawdown", label: "Avg Drawdown" },
               ] as {column:(keyof Portfolio), label:string}[]
@@ -217,7 +218,8 @@ const PortfolioPage = () => {
               >
                 <p className="text-xl md:text-xl font-bold">
                   {data[item.column]
-                    ? `${(100 * (data[item.column] as number)).toFixed(2)}%`
+                    ? 
+                    item.column == 'beta'?(data[item.column] as number).toFixed(2):`${(100 * (data[item.column] as number)).toFixed(2)}%`
                     : "—"}
                 </p>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">

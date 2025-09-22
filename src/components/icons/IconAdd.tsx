@@ -1,6 +1,6 @@
 import { Icon } from "./Icon";
 
-export const IconMenu : React.FC<{
+export const IconAdd : React.FC<{
   size?: number | string;
   className?: string;
   onClick?: () => void;
@@ -9,14 +9,15 @@ export const IconMenu : React.FC<{
   className,
   onClick,
 }) => (
-  <Icon size={size} className={className} viewBox="0 0 48 48" isClickable={true} onClick={onClick}>
+  <Icon size={size} className={className} viewBox="0 0 24 24" isClickable={true} onClick={onClick}>
         <path 
-    d="M6 24H42M6 12H42M6 36H42" 
+    d="M11 13H5V11H11V5H13V11H19V13H13V19H11V13Z"
     stroke="currentColor" 
-    strokeWidth="4" 
+    strokeWidth="2" 
     strokeLinecap="round" 
     strokeLinejoin="round"/>
   </Icon>
 
 );
+
 

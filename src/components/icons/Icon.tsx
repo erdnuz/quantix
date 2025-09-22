@@ -7,7 +7,7 @@ interface IconProps {
   className?: string;
   children: ReactNode;
   viewBox?: string;
-  fillIcon:boolean;
+  fillIcon?:boolean;
   hoverStrokeColor?: string; // Tailwind class
   defaultStrokeColor?: string; // Tailwind class
   isClickable?: boolean;

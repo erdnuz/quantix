@@ -56,6 +56,7 @@ export interface Portfolio {
 
   sharpe?: number;
   alpha?: number;
+  beta?:number;
 
   holdingsDict?: Record<string, any>[];
   actionsDict?: Record<string, any>[];

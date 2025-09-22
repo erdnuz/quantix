@@ -127,9 +127,22 @@ class Portfolio:
             portfolio_ret = portfolio_ret[portfolio_ret.index.isin(market_returns.index)]
             market_ret_aligned = market_returns.loc[portfolio_ret.index]
 
-            beta = float(np.cov(portfolio_ret, market_ret_aligned)[0, 1] / market_ret_aligned.var())
-            alpha = float(portfolio_ret.mean() - (rfr_adj + beta * (market_ret_aligned.mean() - rfr_adj)))
-            sharpe = float((portfolio_ret.mean() - rfr_adj) / portfolio_ret.std())
+            portfolio_gross = 1 + portfolio_ret
+            market_gross = 1 + market_ret_aligned
+
+            portfolio_monthly = portfolio_gross.resample('ME').prod() - 1
+            market_monthly = market_gross.resample('ME').prod() - 1
+            
+
+            # Step 3: Calculate beta
+            cov_matrix = np.cov(portfolio_monthly, market_monthly)
+            beta = float(cov_matrix[0, 1] / market_monthly.var())
+
+            # Step 4: Calculate alpha (assuming rfr_adj is monthly risk-free rate)
+            alpha = float(portfolio_monthly.mean() - (rfr_adj + beta * (market_monthly.mean() - rfr_adj)))
+
+            # Step 5: Calculate Sharpe ratio
+            sharpe = float((portfolio_monthly.mean() - rfr_adj) / portfolio_monthly.std())
 
             market_prices = (market_ret_aligned + 1).cumprod() - 1
             marketRet = {k.strftime('%Y-%m-%d'): float(v) for k, v in market_prices.items()}

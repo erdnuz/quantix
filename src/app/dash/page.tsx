@@ -4,12 +4,13 @@ import { useAuth } from '../../../services/useAuth';
 import { useEffect, useState } from 'react';
 import { PortfolioCard, Hero } from '../../components/composition';
 import Link from 'next/link';
+import { Button } from '@/components/primitive';
 
 const Dash = () => {
     const { currentUser } = useAuth();
     const [portfolios, setPortfolios] = useState<any[]>([]);
     const [favourites, setFavourites] = useState<any[]>([]);
-    const [target, setTarget] = useState<any>();  // Start as undefined
+    const [target, setTarget] = useState<any>();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,55 +26,63 @@ const Dash = () => {
             return;
         }
 
-        getUserPortfolios({userId:target.id}).then(setPortfolios);
+        getUserPortfolios({ userId: target.id }).then(setPortfolios);
 
         if (target.id && target.favourites?.length > 0) {
-            getUserFavourites({ favourites:target.favourites } ).then(setFavourites);
+            getUserFavourites({ favourites: target.favourites }).then(setFavourites);
         }
     }, [target, currentUser, loading]);
 
     if (loading) return null;
 
     return (
-        <div className="px-16 py-16 flex flex-col gap-4 md:px-6 md:py-6">
-    <h2 className="text-4xl font-bold mb-4">Your portfolios</h2>
+        <div className="flex flex-col gap-12 ">
+            
+            {/* Hero / Welcome Section */}
+            <Hero 
+            title="Your Portfolios" 
+            subtitle="Manage and track all your portfolios in one place" 
+/>
 
-    {portfolios.length > 0 ? (
-        <div className="w-full flex flex-wrap gap-2">
-            {portfolios.map((p) => (
-                <PortfolioCard key={p.id} portfolio={p} />
-            ))}
+            {/* Portfolios Section */}
+            <section className="flex flex-col p-12 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* "Create Portfolio" Card */}
+                    <Link href="/dash/create"
+                    className='mb-6'>
+                        <div className="flex flex-col h-full items-center justify-center p-6 border rounded-lg shadow-md cursor-pointer hover:shadow-lg transition duration-200 text-center bg-white">
+                            <div className="text-4xl font-bold mb-2 text-brand">+</div>
+                            <div className="font-semibold text-lg">Create Portfolio</div>
+                        </div>
+                    </Link>
+
+                    {/* Existing Portfolios */}
+                    {portfolios.length > 0 ? (
+                        portfolios.map((p) => (
+                            <PortfolioCard key={p.id} portfolio={p} />
+                        ))
+                    ) : null}
+                </div>
+
+                {portfolios.length === 0 && (
+                    <div className="flex flex-col items-center text-center py-12 text-gray-500">
+                        <p>No portfolios yet. Use the card above to create your first one.</p>
+                    </div>
+                )}
+            </section>
+
+            {/* Favourites Section */}
+            {favourites.length > 0 && (
+                <section className="flex flex-col gap-6">
+                    <h2 className="text-4xl font-bold">Your Favourites</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {favourites.map((p) => (
+                            <PortfolioCard key={p.id} portfolio={p} />
+                        ))}
+                    </div>
+                </section>
+            )}
         </div>
-    ) : (
-        <div className="flex flex-col w-full items-center text-center">
-            <h2 className="text-2xl font-semibold">You don't have any portfolios yet</h2>
-        </div>
-    )}
-
-    {/* Always show the create link */}
-    <div className="flex flex-col w-full items-center text-center mt-4">
-        <h3 className="text-lg font-semibold">
-            <Link 
-                href="/dash/create" 
-                className="text-brand hover:text-brand-hover cursor-pointer"
-            >
-                Create a new portfolio
-            </Link>
-        </h3>
-    </div>
-
-    {favourites.length > 0 && (
-        <div className="w-full mt-8">
-            <h2 className="text-4xl font-bold mb-4">Your favourites</h2>
-            <div className="flex flex-wrap gap-4">
-                {favourites.map((p) => (
-                    <PortfolioCard key={p.id} portfolio={p} />
-                ))}
-            </div>
-        </div>
-    )}
-</div>
-
     );
 }
 

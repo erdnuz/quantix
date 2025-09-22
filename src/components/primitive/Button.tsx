@@ -1,5 +1,5 @@
 import React from "react";
-import { IconTrash } from "../icons";
+import { IconAdd, IconTrash } from "../icons";
 
 interface ButtonProps {
   type?: "primary" | "secondary" | "brand"; // theme-based button types
@@ -7,7 +7,7 @@ interface ButtonProps {
   className?: string;
   disabled?: boolean;
   onClick?: () => void;
-  icon?: "none" | "trash";
+  icon?: "none" | "trash" | "plus";
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -53,7 +53,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   // If destructive/trash action, override colors with accent
   const iconClasses =
-    icon === "trash"
+    icon !== "none"
       ? `
         bg-accent-light dark:bg-accent-dark text-light dark:text-dark 
         hover:bg-primary-light dark:hover:bg-primary-dark
@@ -73,6 +73,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
     >
       {icon === "trash" && <IconTrash size={18} />}
+      {icon === "plus" && <IconAdd size={24} />}
       <span>{label}</span>
     </button>
   );
