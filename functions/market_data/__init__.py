@@ -70,7 +70,7 @@ class MarketDataManager:
     
    
 def get_market_returns():
-    his = yf.Ticker('^GSPC').history(period='5y', interval='1mo')
+    his = yf.Ticker('^GSPC').history(period='5y', interval='1d')
     his.index = pd.to_datetime(his.index).tz_localize(None)
     return his.ffill().dropna()['Close'].pct_change().dropna()
 

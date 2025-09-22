@@ -38,7 +38,10 @@ const PortfolioPage = () => {
   const [invalid, setInvalid] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{'portfolio':Record<'time' | 'value', any>[],'market':Record<'time'|'value', any>[]}>({
+    'portfolio':[],
+    'market':[]
+  });
 
   const params = useParams();
   const t = params.portfolioId;
@@ -65,11 +68,14 @@ const PortfolioPage = () => {
       }
       setData({ ...portfolio, ...data });
 
-      if (data.historicalReturns) {
+      if (data.historicalReturns && data.marketReturns) {
         const chart = Object.entries(data.historicalReturns).map(
           ([time, value]: any) => ({ time, value })
         );
-        setChartData(chart);
+        const marketChart = Object.entries(data.marketReturns).map(
+          ([time, value]: any) => ({ time, value })
+        );
+        setChartData({'portfolio':chart, 'market':marketChart});
       }
       setLoading(false);
     });
@@ -146,7 +152,7 @@ const PortfolioPage = () => {
               isFilled={isFavourite}
               onClick={() => handleFavourite(!isFavourite)}
             />
-            <p className="text-base md:text-lg">{formatNumber(favouriteCount)}</p>
+            <p className="text-base md:text-xl">{formatNumber(favouriteCount)}</p>
           </div>
         </div>
 
@@ -193,75 +199,119 @@ const PortfolioPage = () => {
       {/* Performance Metrics */}
       {data?.allTimeGrowth && (
         <>
-          <h3 className="text-lg md:text-xl font-bold mt-10 mb-4  pt-6">
+          <h3 className="text-xl md:text-xl font-bold mt-10 mb-4  pt-6">
             Performance Metrics
           </h3>
           <div className="flex flex-row gap-6">
             {(
               [
-                "cagr",
-                "alpha",
-                "sharpe",
-                "maxDrawdown",
-                "avgDrawdown",
-              ] as (keyof Portfolio)[]
-            ).map((col) => (
+                { column: "alpha", label: "Alpha" },
+                { column: "sharpe", label: "Sharpe" },
+                { column: "maxDrawdown", label: "Max Drawdown" },
+                { column: "avgDrawdown", label: "Avg Drawdown" },
+              ] as {column:(keyof Portfolio), label:string}[]
+            ).map((item) => (
               <div
-                key={col}
+                key={item.column}
                 className="flex flex-col items-center bg-gray-50 p-4 rounded-lg"
               >
-                <p className="text-lg md:text-xl font-bold">
-                  {data[col]
-                    ? `${(100 * (data[col] as number)).toFixed(2)}%`
+                <p className="text-xl md:text-xl font-bold">
+                  {data[item.column]
+                    ? `${(100 * (data[item.column] as number)).toFixed(2)}%`
                     : "—"}
                 </p>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">
-                  {col}
+                  {item.label}
                 </p>
               </div>
             ))}
           </div>
 
           {/* Historical Returns */}
-          <h3 className="text-lg md:text-xl font-bold mt-10 mb-4 pt-6">
-            Historical Returns
+          <h3 className="text-xl md:text-xl font-bold mt-10 mb-4 pt-6">
+            Historical Returns (Annualized)
           </h3>
           <div className="flex flex-row gap-6">
             {(
               [
-                "allTimeGrowth",
-                "oneYearGrowth",
-                "sixMonthGrowth",
-                "threeMonthGrowth",
-                "oneMonthGrowth",
-              ] as (keyof Portfolio)[]
-            ).map((col) => (
+                { column: "allTimeGrowth", label: "All Time" },
+                { column: "oneYearGrowth", label: "1 Year" },
+                { column: "sixMonthGrowth", label: "6 Months" },
+                { column: "threeMonthGrowth", label: "3 Months" },
+                { column: "oneMonthGrowth", label: "1 Month" },
+              ] as { column: keyof Portfolio; label: string }[]
+            ).map((item) => (
               <div
-                key={col}
+                key={item.column}
                 className="flex flex-col items-center bg-gray-50 p-4 rounded-lg"
               >
-                <p className="text-lg md:text-xl font-bold">
-                  {data[col]
-                    ? `${(100 * (data[col] as number)).toFixed(2)}%`
+                <p className="text-xl md:text-xl font-bold">
+                  {data?.[item.column] != null
+                    ? `${(100 * (data[item.column] as number)).toFixed(2)}%`
                     : "—"}
                 </p>
-                <p className="text-xs text-gray-500">{col}</p>
+                <p className="text-xs text-gray-500">{item.label}</p>
               </div>
             ))}
           </div>
+
         </>
       )}
 
       {/* Chart */}
-      {chartData.length > 3 && (
+      {chartData.portfolio.length > 3 && (
         <div className="mt-8 w-full h-full">
-          <BaselineChart data={chartData} actions={portfolio?.actions} />
+          <BaselineChart data={chartData} />
         </div>
       )}
 
+      {data?.holdingsDict && (
+  <>
+    <h3 className="text-xl md:text-xl font-bold mt-10 mb-4">
+      Holdings
+    </h3>
+    <div className="mt-4 flex flex-wrap gap-6">
+      <Table 
+        header={['Ticker','Name','Class','Sector','Shares','Avg. Buy','Price','Open PnL', 'Weight','Div. Yield']}
+        data={data.holdingsDict}
+        columnDetails={{
+          public:['ticker','name', 'asset-class','sector','shares', 'avg_buy','price', 'open_pnl','weight', 'yield'],
+          price:['avg_buy','price'],
+          percent:['open_pnl', 'weight', 'yield'],
+          neutral: ['yield']
+        }}
+        defSort='weight'
+      />
+    </div>
+  </>
+)}
+
+{data?.actionsDict && (
+  <>
+    <h3 className="text-xl md:text-xl font-bold mt-10 mb-4">
+      Actions History
+    </h3>
+    <div className="mt-4 flex flex-wrap gap-6">
+      <Table 
+        header={['Ticker', 'Date','Shares',  'Price']}
+        data={data.actionsDict.map((a) => ({ 
+          ...a, 
+          shares: a.action === 1 ? a.shares : -a.shares
+        }))}
+        columnDetails={{
+          public:['ticker', 'date', 'shares', 'price'],
+          price:['price'],
+          baseLine:['shares']
+        }}
+        defSort='date'
+      />
+    </div>
+  </>
+)}
+
       {(data?.holdingsDict?.length || 0) > 0 && (
         <>
-          <h3 className="text-lg md:text-xl font-bold mt-10 mb-4 pt-6">
+          <h3 className="text-xl md:text-xl font-bold mt-10 mb-4 pt-6">
             Holdings Breakdown
           </h3>
           <div className="mt-4 flex flex-wrap gap-6">
@@ -298,7 +348,7 @@ const PortfolioPage = () => {
             />
           </div>
 
-          <h3 className="text-lg md:text-xl font-bold mt-10 mb-4">
+          <h3 className="text-xl md:text-xl font-bold mt-10 mb-4">
             Contribution Breakdown
           </h3>
           <div className="mt-4 flex flex-wrap gap-6">
@@ -336,6 +386,12 @@ const PortfolioPage = () => {
           </div>
         </>
       )}
+
+
+      
+
+      
+
       </div>
     </div>
   );

@@ -131,12 +131,16 @@ class Portfolio:
             alpha = float(portfolio_ret.mean() - (rfr_adj + beta * (market_ret_aligned.mean() - rfr_adj)))
             sharpe = float((portfolio_ret.mean() - rfr_adj) / portfolio_ret.std())
 
+            market_prices = (market_ret_aligned + 1).cumprod() - 1
+            marketRet = {k.strftime('%Y-%m-%d'): float(v) for k, v in market_prices.items()}
+        else:
+            marketRet = {}
         returns['alpha'] = alpha
         returns['beta'] = beta
         returns['sharpe'] = sharpe
 
         history = {k.strftime('%Y-%m-%d'): float(v) for k, v in portfolio_series.sub(1).items()}
-        return returns, {'historicalReturns': history}
+        return returns, {'historicalReturns': history, 'marketReturns':marketRet}
 
     def get_info(self):
         if not self.tickers or self.holdings.empty:
@@ -159,7 +163,13 @@ class Portfolio:
         asset_weight = {k: float(v) for k, v in df.groupby('asset-class')['weight'].sum().items()}
         asset_weight['Cash'] = 1 - sum([k for k in asset_weight.values()])
         
-        primary_asset = max(asset_weight, key=asset_weight.get) if asset_weight and max(asset_weight.values()) >= 0.5 * sum(asset_weight.values()) else 'Mixed'
+        non_cash_assets = {k: v for k, v in asset_weight.items() if k.lower() != 'cash'} if asset_weight else {}
+
+        primary_asset = (
+            max(non_cash_assets, key=non_cash_assets.get)
+            if non_cash_assets and max(non_cash_assets.values()) > 0.75 * sum(non_cash_assets.values())
+            else 'Mixed'
+        )
         sector_weight = {k: float(v) for k, v in df.groupby('sector')['weight'].sum().items()}
         asset_contrib = {k: float(v) for k, v in df.groupby('asset-class')['contrib'].sum().items()}
         sector_contrib = {k: float(v) for k, v in df.groupby('sector')['contrib'].sum().items()}

@@ -14,6 +14,7 @@ interface CellProps {
   isNeutral: boolean;
   isTicker: boolean;
   isPrice: boolean;
+  isColored: boolean;
   isHeader: boolean;
   isIndex: boolean;
   sort?: () => void;
@@ -28,6 +29,7 @@ const Cell: React.FC<CellProps> = ({
   isNeutral,
   isTicker,
   isPrice,
+  isColored,
   isHeader,
   isIndex,
   sort,
@@ -50,7 +52,7 @@ const Cell: React.FC<CellProps> = ({
   const indexClasses = isIndex ? "font-semibold bg-surface-light dark:bg-surface-dark" : "";
   const rankingClasses = isRanking ? "min-w-[140px]" : "";
 
-  const textColor = isPercent && !isHeader && !isNeutral
+  const textColor = ((isPercent && !isHeader && !isNeutral) || isColored)
     ? children >= 0
       ? "text-good"
       : "text-bad"
@@ -76,9 +78,9 @@ const Cell: React.FC<CellProps> = ({
           {children ? `$${Number(children).toFixed(2)}` : "NaN"}
         </p>
       ) : typeof children === "number" && !isNaN(children) ? (
-        <p className="text-primary-light dark:text-primary-dark">{formatLargeNumber(children)}</p>
+        <p className={isColored?textColor:"text-primary-light dark:text-primary-dark"}>{isColored&&children>=0&&'+'}{isColored?children:formatLargeNumber(children)}</p>
       ) : (
-        <p className="truncate max-w-[150px] text-primary-light dark:text-primary-dark">{children || "NaN"}</p>
+        <p className={`truncate max-w-[150px] text-primary-light dark:text-primary-dark ${textColor}`}>{children || "NaN"}</p>
       )}
 
       {isSortable ? (
@@ -109,6 +111,7 @@ interface TableProps {
     neutral?: string[];
     large?: string[];
     price?: string[];
+    baseLine?: string[]
   };
   error?: string;
   defSort?: string | null;
@@ -211,6 +214,7 @@ export const Table: React.FC<TableProps> = ({
                     isPercent={false}
                     isPrice={false}
                     isIndex={false}
+                    isColored={false}
                     isTicker={index === 0}
                     sort={() => handleSort(cell)}
                   >
@@ -233,6 +237,7 @@ export const Table: React.FC<TableProps> = ({
                       isRanking={RANKING_COL_NAMES.includes(columnName)}
                       isPercent={columnDetails.percent?.includes(columnName) || false}
                       isNeutral={columnDetails.neutral?.includes(columnName) || false}
+                      isColored={columnDetails.baseLine?.includes(columnName) || false}
                       isPrice={columnDetails.price?.includes(columnName) || false}
                     >
                       {columnName === "ticker" ? (
@@ -249,8 +254,6 @@ export const Table: React.FC<TableProps> = ({
                         >
                           {row[columnName]}
                         </a>
-                      ) : columnName === "action" ? (
-                        ["Sell", "Buy"][row[columnName]]
                       ) : (
                         row[columnName]
                       )}

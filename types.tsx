@@ -60,6 +60,7 @@ export interface Portfolio {
   holdingsDict?: Record<string, any>[];
   actionsDict?: Record<string, any>[];
   historicalReturns?: Record<string, number>[];
+  marketReturns?: Record<string, number>[];
 
 }
 export type AssetClass = "Equity" | "ETF"

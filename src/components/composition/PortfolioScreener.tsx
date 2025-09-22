@@ -14,10 +14,10 @@ const tagItems: PortfolioTag[] = [
 
 const header = ['Name', 'Asset Class', 'YoY Return', '3mo Return', 'CAGR', 'Sharpe', 'Alpha', 'Max Drawdown'];
 
-const columnDets: Record<'public' | 'percent' | 'percentNeutral', (keyof Portfolio)[]> = {
+const columnDets: Record<'public' | 'percent' | 'neutral', (keyof Portfolio)[]> = {
   public: ['title', 'primaryAssetClass', 'oneYearGrowth', 'threeMonthGrowth', 'cagr', 'sharpe', 'alpha', 'maxDrawdown'],
-  percent: ['oneYearGrowth', 'threeMonthGrowth', 'cagr', 'sharpe', 'alpha'], 
-  percentNeutral: ['maxDrawdown'], 
+  percent: ['oneYearGrowth', 'threeMonthGrowth', 'cagr', 'sharpe', 'alpha', 'maxDrawdown'], 
+  neutral: ['maxDrawdown'], 
 };
 
 const optionData: SelectOption[] = [
@@ -109,6 +109,10 @@ export const PortfolioScreener = () => {
       fit: (asset: Record<string, any>) => {
         if (selectedIndices.length === 0) return true;
         return asset.tags?.some((tag : PortfolioTag) => selectedIndices.includes(tagItems.indexOf(tag))) ?? false;
+      },
+      onRemove: () => {
+        setSelectedTagIndices([])
+        removeFilterInternal('tags')
       }
     };
     setFilters(prev => [...prev.filter(f => f.id !== newFilter.id), newFilter]);
@@ -174,7 +178,7 @@ export const PortfolioScreener = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-16 md:p-6">
+    <div className="flex flex-col gap-4 p-12">
       <div className="flex flex-row gap-4 flex-wrap md:flex-col">
         <div className="flex-1">
           <SelectGroup
@@ -183,7 +187,10 @@ export const PortfolioScreener = () => {
             setSelected={handleSelectChange}
           />
         </div>
-        <div className="flex-1">
+        <h3 className="text-lg mt-6">
+          Portfolio Tags:
+        </h3>
+        <div className="flex-1 max-w-xl">
           <TagGroup
             items={tagItems}
             iconType="hash"
