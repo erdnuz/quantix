@@ -75,3 +75,42 @@ export async function getFastData({
     onError?.(`Error fetching fast data: ${(err as Error).message}`);
   }
 }
+
+export const portfolioAction = async ({
+  portfolioId,
+  ticker,
+  shares,
+  onSuccess,
+  onError,
+}: {
+  portfolioId: string;
+  ticker: string;
+  shares: number;
+  onSuccess: () => void;
+  onError?: (err: any) => void;
+}) => {
+  try {
+    const url = `http://127.0.0.1:5001/quant-algo-4430a/us-central1/portfolio_action`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        portfolioId,
+        ticker,
+        shares,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      if (onError) onError(`Error performing portfolio action: ${errText}`);
+      return;
+    }
+
+    onSuccess();
+  } catch (err) {
+    if (onError) onError(err);
+  }
+};

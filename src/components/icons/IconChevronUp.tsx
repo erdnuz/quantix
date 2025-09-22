@@ -7,7 +7,7 @@ export const IconChevronUp : React.FC<{
   size = 16,
   className
 }) => (
-  <Icon size={size} className={className}>
+  <Icon fillIcon={false} size={size} className={className}>
     <path
       d="M12 10L8 6L4 10"
       stroke="var(--svg-stroke-color)"

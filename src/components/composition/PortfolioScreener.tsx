@@ -4,104 +4,173 @@ import { Table, SelectGroup } from '.';
 import { useState, useEffect } from 'react';
 import { TagGroup, FilterGroup } from '../primitive';
 import { getPortfolios } from '../../../services/firebase/db';
-import { Portfolio } from '../../../types';
+import { Filter, Portfolio, PortfolioTag, SelectOption } from '../../../types';
 
-const tagItems = [
+const tagItems: PortfolioTag[] = [
   "Growth", "Value", "Dividend", "Balanced", "Aggressive", "Conservative",
-  "Emerging Markets", "Emerging Tech", "Small Cap", "Large Cap", "Diversified", "Global",
+  "Emerging Markets", "Emerging Tech", "Small Cap", "Large Cap", "Diversified", 
   "Short-term", "Long-term",
 ];
 
 const header = ['Name', 'Asset Class', 'YoY Return', '3mo Return', 'CAGR', 'Sharpe', 'Alpha', 'Max Drawdown'];
-const columnDets = {
-  public: ['title', 'primary_class', '1y', '3m', 'cagr', 'sharpe', 'alpha', 'max_drawdown'],
-  percent: ['1y', '3m', 'cagr', 'sharpe', 'alpha'], 
-  percentNeutral: ['max_drawdown'], 
-  large: ['shares'],
-  price: ['price','avg-buy']
+
+const columnDets: Record<'public' | 'percent' | 'percentNeutral', (keyof Portfolio)[]> = {
+  public: ['title', 'primaryAssetClass', 'oneYearGrowth', 'threeMonthGrowth', 'cagr', 'sharpe', 'alpha', 'maxDrawdown'],
+  percent: ['oneYearGrowth', 'threeMonthGrowth', 'cagr', 'sharpe', 'alpha'], 
+  percentNeutral: ['maxDrawdown'], 
 };
 
-const optionData: [string, string, any[]][] = [
-  ['cagr', 'CAGR (%)', [['Any'], ['> 5%', 0.05, null], ['> 10%', 0.1, null], ['> 20%', 0.2, null], ['> 40%', 0.40, null]]], 
-  ['1y', '1y Return', [['Any'], ['> 5%', 0.05, null], ['> 10%', 0.10, null], ['> 25%', 0.25, null], ['> 40%', 0.40, null]]],  
-  ['alpha', 'Alpha', [['Any'], ['> 0%', 0, null], ['> 1%', 0.01, null], ['> 2%', 0.02, null], ['> 4%', 0.04, null]]],
-  ['sharpe', 'Sharpe', [['Any'], ['> 10%', 0.1, null], ['> 20%', 0.2, null], ['> 30%', 0.3, null], ['> 40%', 0.4, null]]],
-  ['max_drawdown', 'Max. DD', [['Any'], ['< 10%', null, 0.10], ['< 25%', null, 0.25], ['< 50%', null, 0.50], ['< 80%', null, 0.80]]],
-  ['yield', 'Yield (%)', [['Any'], ['> 0.5%', 0.005, null], ['> 1%', 0.01, null], ['> 2%', 0.02, null], ['> 4%', 0.04, null]]], 
-  ['primary_class', 'Asset Class', [['Any'], ['Equity', 'Equity', 'Equity'], ['ETF', 'ETF', 'ETF'], ['Mutual Fund', 'Mutual Fund', 'Mutual Fund'], ['Diversified', 'Diversified', 'Diversified']]],
+const optionData: SelectOption[] = [
+  {
+    column:'cagr', label:'CAGR (%)', options:[
+      {label:'Any'},
+      {label:'> 5%', lowerBound: 0.05}, 
+      {label:'> 10%', lowerBound:0.1}, 
+      {label:'> 20%', lowerBound:0.2}, 
+      {label:'> 40%',lowerBound: 0.40}
+    ]
+  }, 
+  {
+    column:'oneYearGrowth', label:'YoY Growth', options:[
+      {label:'Any'},
+      {label:'> 5%', lowerBound: 0.05}, 
+      {label:'> 10%', lowerBound:0.1}, 
+      {label:'> 20%', lowerBound:0.2}, 
+      {label:'> 40%',lowerBound: 0.40}
+    ]
+  },  
+  {
+    column:'alpha', label:'Alpha', options:[
+      {label:'Any'},
+      {label:'> 0%', lowerBound: 0.0001}, 
+      {label:'> 0.5%', lowerBound:0.005}, 
+      {label:'> 1%', lowerBound:0.01}, 
+      {label:'> 2%',lowerBound: 0.02}
+    ]
+  },
+  {
+    column:'sharpe', label:'Sharpe', options:[
+      {label:'Any'},
+      {label:'> 10%', lowerBound: 0.1}, 
+      {label:'> 20%', lowerBound:0.2}, 
+      {label:'> 30%', lowerBound:0.3}, 
+      {label:'> 40%',lowerBound: 0.40}
+    ]
+  },
+  {
+    column:'maxDrawdown', label:'Max. DD', options:[
+      {label:'Any'},
+      {label:'< 5%', upperBound: 0.05}, 
+      {label:'< 10%', upperBound:0.1}, 
+      {label:'< 20%', upperBound:0.2}, 
+      {label:'< 40%', upperBound: 0.40}
+    ]
+  },
+  {
+    column:'yield', label:'Yield (%)', options:[
+      {label:'Any'},
+      {label:'> 0.5%', lowerBound:0.005}, 
+      {label:'> 1%', lowerBound:0.01}, 
+      {label:'> 2%', lowerBound:0.02},
+      {label:'> 4%', lowerBound:0.04}
+    ]
+  },
+  {
+    column:'primaryAssetClass', label:'Asset Class', options:[
+      {label:'Any'},
+      {label:'Equity', eq:'Equity'}, 
+      {label:'ETF', eq:'ETF'}, 
+      {label:'Mixed', eq:'Mixed'}
+    ]
+  }
 ];
 
 export const PortfolioScreener = () => {
-  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
+  const [selectedTagIndices, setSelectedTagIndices] = useState<number[]>([]);
   const [tableData, setTableData] = useState<Portfolio[]>([]);
-  const [filters, setFilters] = useState<any[]>([]);
-  const [selectStates, setSelectStates] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
-
-  function addIndiceFilter(selected: number[]) {
-    const s = selected;
-    const newFilter = {
-      id: 'tags',
-      fit: s.length > 0 ? (asset: any) => asset.tags.some((tag: number) => s.includes(tag)) : () => true
-    };
-    setFilters(prev => [
-      ...prev.filter(f => f.id !== newFilter.id),
-      newFilter
-    ]);
-    setSelectedIndices(selected);
-  }
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [selectStates, setSelectStates] = useState<number[]>(Array(optionData.length).fill(0));
 
   useEffect(() => {
     getPortfolios().then(setTableData);
   }, []);
 
-  const handleSelectChange = (index: number, value: number) => {
-    if (value === 0) removeFilter(index);
-    else addFilter(index, value);
-
-    setSelectStates(prev => {
-      const newStates = [...prev];
-      newStates[index] = value;
-      return newStates;
-    });
+  // Filter based on **tag indices**
+  const addTagFilter = (selectedIndices: number[]) => {
+    setSelectedTagIndices(selectedIndices);
+    if (selectedIndices.length == 0) {
+      setFilters(prev => [...prev.filter(f => f.id != 'tags')])
+      return;
+    }
+    const newFilter: Filter = {
+      id: 'tags',
+      display: 'Tags',
+      label: selectedIndices.map((i) => tagItems[i]).join(' or '),
+      fit: (asset: Record<string, any>) => {
+        if (selectedIndices.length === 0) return true;
+        return asset.tags?.some((tag : PortfolioTag) => selectedIndices.includes(tagItems.indexOf(tag))) ?? false;
+      }
+    };
+    setFilters(prev => [...prev.filter(f => f.id !== newFilter.id), newFilter]);
+    
   };
 
-  const removeF = ({ id }: { id: string }) => {
+  const addSelectFilter = ({ index, value }: { index:number, value:number }) => {
+    const option = optionData[index];
+    if (value === 0) {
+      removeFilterInternal(option.column);
+      setSelectStates(prev => {
+        const copy = [...prev];
+        copy[index] = 0;
+        return copy;
+      });
+      return;
+    }
+
+    const lowerBound = option.options[value].lowerBound;
+    const upperBound = option.options[value].upperBound;
+    const eq = option.options[value].eq;
+
+    const filter: Filter = {
+      display: option.label,
+      label: option.options[value].label,
+      id: option.column,
+      fit: (asset: Record<string, any>) => {
+        const cell = asset[option.column as keyof Portfolio];
+        return (
+          cell != null &&
+          (lowerBound == null || (cell as number) >= lowerBound) &&
+          (upperBound == null || (cell as number) < upperBound) &&
+          (eq == null || cell === eq)
+        );
+      },
+      onRemove: () => {
+        removeFilterInternal(option.column);
+        setSelectStates(prev => {
+          const copy = [...prev];
+          copy[index] = 0;
+          return copy;
+        });
+      }
+    };
+    setSelectStates(prev => {
+          const copy = [...prev];
+          copy[index] = value;
+          return copy;
+        })
+    addFilterInternal(filter);
+  };
+
+  const addFilterInternal = (newFilter: Filter) => {
+    setFilters(prev => prev.some(f => f.id === newFilter.id) ? prev.map(f => f.id === newFilter.id ? newFilter : f) : [...prev, newFilter]);
+  };
+
+  const removeFilterInternal = (id: string) => {
     setFilters(prev => prev.filter(f => f.id !== id));
   };
 
-  const addFilter = (index: number, value: number) => {
-    const [col, disp, options] = optionData[index];
-    const [lab, n1, n2] = options[value];
-    const newFilter = {
-      display: disp,
-      id: disp,
-      fit: (asset: any) => {
-        if (asset[col as string] === null) return false;
-        if (n1 === n2) return asset[col as string] === n1;
-        return (!n1 || asset[col as string] >= n1) && (!n2 || asset[col as string] < n2);
-      },
-      label: lab,
-      onRemove: () => { delFilter({ groupIndex: index }); removeF({ id: disp as string }); }
-    };
-
-    setFilters(prev => {
-      const exists = prev.some(f => f.display === newFilter.display);
-      if (exists) return prev.map(f => f.display === newFilter.display ? newFilter : f);
-      return [...prev, newFilter];
-    });
-  };
-
-  const removeFilter = (index: number) => {
-    const disp = optionData[index][1];
-    setFilters(prev => prev.filter(f => f.id !== disp));
-  };
-
-  const delFilter = ({ groupIndex }: { groupIndex: number }) => {
-    setSelectStates(prev => {
-      const newStates = [...prev];
-      newStates[groupIndex] = 0;
-      return newStates;
-    });
+  const handleSelectChange = (index: number, value: number) => {
+    addSelectFilter({ index, value });
   };
 
   return (
@@ -119,8 +188,8 @@ export const PortfolioScreener = () => {
             items={tagItems}
             iconType="hash"
             size={1}
-            selectedIndices={selectedIndices}
-            setSelectedIndices={addIndiceFilter}
+            selectedIndices={selectedTagIndices}
+            setSelectedIndices={addTagFilter}
           />
         </div>
       </div>

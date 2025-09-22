@@ -1,8 +1,7 @@
-import { Portfolio, ProxyAsset, SuccessCallback, ErrorCallback, TableETF, TableStock, User, FullStock, FullETF } from '../../types';
+import { Portfolio, ProxyAsset, SuccessCallback, ErrorCallback, TableETF, TableStock, User, FullStock, FullETF, Favourite, PortfolioTag } from '../../types';
 import { firestore } from './initialization'; 
 import {
   collection,
-  increment,
   setDoc,
   getDoc,
   addDoc,
@@ -16,7 +15,9 @@ import {
   Query,
   orderBy,
   limit,
+  getCountFromServer,
 } from 'firebase/firestore';
+import { useAuth } from '../useAuth';
 
 // ------------------ USERS -------------------
 
@@ -64,19 +65,6 @@ export const getUserById = async ({
   return userDoc.exists() ? ({ ...userDoc.data(), id: userDoc.id } as User) : null;
 };
 
-export const getUserByUsername = async ({
-  username,
-}: {
-  username: string;
-}): Promise<User | null> => {
-  const userRef = collection(firestore, 'users');
-  const result = await getDocs(query(userRef, where('username', '==', username)));
-  if (!result.empty) {
-    const docSnap = result.docs[0];
-    return { ...docSnap.data(), id: docSnap.id } as User;
-  }
-  return null;
-};
 
 export const addUser = async ({
   user,
@@ -85,7 +73,7 @@ export const addUser = async ({
   user: User;
   onSuccess: (user: User) => void;
 }): Promise<User> => {
-  const { id, firstName, lastName, username } = user;
+  const { id } = user;
   const userRef = doc(firestore, 'users', id);
   await setDoc(userRef, user);
   onSuccess(user);
@@ -130,7 +118,7 @@ export const createPortfolio = async ({
   data,
   onSuccess,
 }: {
-  data: Omit<Portfolio, 'id' | 'favourites' | 'shares' | 'actions' | 'date'>;
+  data: Omit<Portfolio, 'id'>;
   onSuccess: (id: string) => void;
 }): Promise<void> => {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -139,27 +127,21 @@ export const createPortfolio = async ({
     day: '2-digit',
   }).format(Date.now());
 
+
   const portfolioData: Omit<Portfolio, 'id'> = {
     ...data,
-    favourites: 0,
     cash: data.cash,
     initialCash: data.cash,
     shares: {},
     actions: {},
-    date: formattedDate,
+    created: formattedDate,
   };
+
+  console.log(portfolioData)
 
   const portfoliosCollection = collection(firestore, 'portfolios');
   const docRef = await addDoc(portfoliosCollection, portfolioData);
   onSuccess(docRef.id);
-};
-
-type PortfolioActionParams = {
-  portfolio: string;
-  ticker: string;
-  shares: number;
-  onSuccess: () => void;
-  onError?: (err?: any) => void;
 };
 
 export const getPortfolios = async (): Promise<Portfolio[]> => {
@@ -180,20 +162,6 @@ export const getPortfolios = async (): Promise<Portfolio[]> => {
 };
 
 
-export const portfolioAction = async ({
-  portfolio,
-  ticker,
-  shares,
-  onSuccess,
-  onError,
-}: PortfolioActionParams): Promise<void> => {
-  try {
-    // Do your DB or API call here
-    onSuccess();
-  } catch (err) {
-    if (onError) onError(err);
-  }
-};
 
 export const getUserPortfolios = async ({
   userId,
@@ -213,11 +181,16 @@ export const updatePortfolio = async ({
 }): Promise<void> => {
   try {
     const portDocRef = doc(firestore, 'portfolios', portfolio.id!);
-    await updateDoc(portDocRef, portfolio as DocumentData);
+    await updateDoc(portDocRef, {
+      title: portfolio.title,
+      description: portfolio.description,
+      tags: portfolio.tags,
+    });
   } catch (error) {
     console.error('Error updating portfolio:', error);
   }
 };
+
 
 export const deletePortfolio = async ({
   portfolioId,
@@ -232,21 +205,6 @@ export const deletePortfolio = async ({
     onSuccess?.();
   } catch (error) {
     console.error('Error deleting portfolio:', error);
-  }
-};
-
-export const incrementFavourites = async ({
-  id,
-  a,
-}: {
-  id: string;
-  a: number;
-}): Promise<void> => {
-  const portfolioDocRef = doc(firestore, 'portfolios', id);
-  try {
-    await updateDoc(portfolioDocRef, { favourites: increment(a) });
-  } catch (error) {
-    console.error('Error incrementing favourites:', error);
   }
 };
 
@@ -816,5 +774,68 @@ export async function getPortfolioDoc({ id }: { id: string }): Promise<Portfolio
   } catch (error) {
     console.error('Error fetching portfolio document:', error);
     return null;
+  }
+}
+
+
+
+// Get all favourites for a given user
+export async function getFavourites({ userId }: { userId: string }): Promise<Favourite[]> {
+  try {
+    const favsRef = collection(firestore, 'favourites');
+    const q = query(favsRef, where('fromUser', '==', userId));
+    const querySnap = await getDocs(q);
+
+    return querySnap.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
+    })) as Favourite[];
+  } catch (error) {
+    console.error('Error fetching favourites:', error);
+    return [];
+  }
+}
+
+// Get the count of favourites for a given portfolio
+export async function getFavouriteCount({ portfolioId }: { portfolioId: string }): Promise<number> {
+  try {
+    const favsRef = collection(firestore, 'favourites');
+    const q = query(favsRef, where('toPortfolio', '==', portfolioId));
+
+    // Using Firestore count aggregation for efficiency
+    const snapshot = await getCountFromServer(q);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error('Error fetching favourite count:', error);
+    return 0;
+  }
+}
+
+export async function toggleFavourite({ portfolioId, userId, att }: { portfolioId: string; userId: string, att: 'Add' | 'Remove' }): Promise<void> {
+  try {
+    const favsRef = collection(firestore, 'favourites');
+
+    // Check if favourite already exists
+    const q = query(
+      favsRef,
+      where('fromUser', '==', userId),
+      where('toPortfolio', '==', portfolioId)
+    );
+    const snapshot = await getDocs(q);
+
+    if (att == 'Add' && snapshot.empty) {
+      // Add new favourite
+      await addDoc(favsRef, {
+        fromUser: userId,
+        toPortfolio: portfolioId,
+      } as Favourite);
+    } else if (att == 'Remove') {
+      // Remove existing favourite(s)
+      for (const docSnap of snapshot.docs) {
+        await deleteDoc(docSnap.ref);
+      }
+    }
+  } catch (error) {
+    console.error('Error toggling favourite:', error);
   }
 }

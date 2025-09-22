@@ -11,6 +11,7 @@ export const IconSearch: React.FC<{
 }) => (
   <Icon
     size={size}
+    fillIcon={false}
     className={`text-secondary-light dark:text-secondary-dark ${className}`}
     isClickable={isClickable}
   >

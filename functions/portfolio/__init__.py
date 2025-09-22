@@ -5,15 +5,13 @@ from datetime import datetime, timedelta
 from market_data import MarketDataManager
 from portfolio.helpers import get_pnl, get_df
 
+
 class Portfolio:
     def __init__(self, tickers: dict, initial_cash: float, db):
-        """
-        tickers: dict of ticker -> {date: shares_change}
-        """
         self.db = db
         self.m_data = MarketDataManager().get_data()
-        self.initial_cash = initial_cash
-        self.cash = initial_cash
+        self.initial_cash = float(initial_cash)
+        self.cash = self.initial_cash
         self.actions = []
         self.holdings = pd.DataFrame()
         self.weights = {}
@@ -21,148 +19,168 @@ class Portfolio:
         self.num = {}
         self.price = {}
         self.avg_buy = {}
-        self.value = initial_cash
+        self.value = self.initial_cash
         self.tickers = tickers
 
+        print(f"[DEBUG] Initializing Portfolio with tickers: {tickers}, initial_cash: {initial_cash}")
         self._process_tickers(tickers)
 
     # --- Internal helpers ---
     def _prepare_prices(self, tickers: dict):
-        all_dates = {pd.to_datetime(d) for t in tickers for d in tickers[t].keys()}
+        print("[DEBUG] Preparing prices...")
+        all_dates = {pd.to_datetime(d).tz_localize(None) for t in tickers for d in tickers[t].keys()}
         min_date = min(all_dates) - timedelta(weeks=1)
         tick_list = list(tickers.keys())
-        prices = yf.download(tick_list, start=min_date.strftime('%Y-%m-%d'), interval='1d')['Close'].ffill()
+        print(f"[DEBUG] Downloading data for tickers: {tick_list} starting from {min_date}")
+
+        prices = yf.download(
+            tick_list,
+            start=min_date.strftime('%Y-%m-%d'),
+            interval='1d'
+        )['Close'].ffill()
+
+        print(f"[DEBUG] Prices fetched, head:\n{prices.head()}")
         return prices
 
     def _process_tickers(self, tickers: dict):
-        tickers = {t: a for t, a in tickers.items() if a}  # remove empty actions
+        tickers = {t: a for t, a in tickers.items() if a}
         if not tickers:
+            print("[DEBUG] No valid tickers with actions.")
             return
 
         prices = self._prepare_prices(tickers)
 
         for ticker, actions in tickers.items():
-            actions_std = {pd.to_datetime(d): qty for d, qty in actions.items()}
+            print(f"[DEBUG] Processing {ticker} with actions: {actions}")
+            actions_series = pd.Series({pd.to_datetime(d): float(qty) for d, qty in actions.items()})
+
             price_series = prices[ticker].dropna()
             if price_series.empty:
+                print(f"[DEBUG] No daily prices found for {ticker}, fetching hourly history.")
                 price_series = yf.Ticker(ticker).history(period='max', interval='1h')['Close'].ffill()
 
-            if not price_series.empty:
-                pnl, val, cash_diff, action_list, num_shares, last_price, avg_buy = get_pnl(actions_std, price_series)
+            if price_series.empty:
+                print(f"[WARNING] No price data available for {ticker}, skipping.")
+                continue
 
-                self.cash += cash_diff
-                self.holdings[ticker] = pnl
-                self.contrib[ticker] = pnl.iloc[-1]
-                self.weights[ticker] = val
-                self.num[ticker] = num_shares
-                self.price[ticker] = last_price
-                self.avg_buy[ticker] = avg_buy
-                self.actions += [{**a, 'ticker': ticker} for a in action_list]
+            pnl, val, cash_diff, action_list, num_shares, last_price, avg_buy = get_pnl(actions_series, price_series)
+            print(f"[DEBUG] {ticker} -> last_price: {last_price}, cash_diff: {cash_diff}")
+
+            self.cash += float(cash_diff)
+            self.holdings[ticker] = pnl.astype(float)
+            self.contrib[ticker] = float(pnl.iloc[-1])
+            self.weights[ticker] = float(val)
+            self.num[ticker] = float(num_shares)
+            self.price[ticker] = float(last_price)
+            self.avg_buy[ticker] = float(avg_buy)
+            self.actions += [{**a, 'ticker': ticker} for a in action_list]
 
         if not self.holdings.empty:
             total_value = self.holdings.sum(axis=1) + self.initial_cash
             self.holdings['portfolio'] = total_value / self.initial_cash
-            self.value = total_value.iloc[-1]
+            self.value = float(total_value.iloc[-1])
+            print(f"[DEBUG] Portfolio value updated: {self.value}")
 
     # --- Returns & performance metrics ---
     def _compute_returns(self):
         if 'portfolio' not in self.holdings or self.holdings.empty:
             return {}, {}
 
-        portfolio_series = self.holdings['portfolio']
-        curr_val = portfolio_series.iloc[-1]
-        all_time = curr_val - 1
+        portfolio_series = self.holdings['portfolio'].astype(float)
+        curr_val = float(portfolio_series.iloc[-1])
 
-        # Approximate returns
-        def period_return(days):
-            if len(portfolio_series) >= days:
-                return curr_val / portfolio_series.iloc[-days] - 1
-            return all_time
+        def period_return(delta: timedelta):
+            end_date = portfolio_series.index[-1]
+            start_date = end_date - delta
+            start_val = portfolio_series.loc[portfolio_series.index >= start_date].iloc[0]
+            return float(curr_val / start_val - 1)
 
         returns = {
-            'all': all_time,
-            '1y': period_return(252),
-            '6m': period_return(126),
-            '3m': period_return(63),
-            '1m': period_return(21)
+            'all': float(curr_val - 1),
+            '1y': period_return(timedelta(days=365)),
+            '6m': period_return(timedelta(days=182)),
+            '3m': period_return(timedelta(days=91)),
+            '1m': period_return(timedelta(days=30))
         }
 
         # CAGR
-        total_days = len(portfolio_series)
-        years = min(5, total_days / 252)
-        start_value = portfolio_series.iloc[max(0, total_days - int(years * 252))]
-        returns['cagr'] = (curr_val / start_value) ** (1 / years) - 1
+        total_days = (portfolio_series.index[-1] - portfolio_series.index[0]).days
+        years = max(total_days / 365, 1e-6)
+        start_value = float(portfolio_series.iloc[0])
+        returns['cagr'] = float((curr_val / start_value) ** (1 / years) - 1)
 
         # Risk metrics
         rolling_max = portfolio_series.cummax()
         drawdown = 1 - portfolio_series / rolling_max
-        returns['max_drawdown'] = drawdown.max()
+        returns['max_drawdown'] = float(drawdown.max())
+        returns['avg_drawdown'] = float(drawdown.mean())
 
         # Alpha & Sharpe
+        alpha = beta = sharpe = None
         if self.m_data and len(portfolio_series) > 93:
-            market_returns = pd.Series(self.m_data.get("market_returns"))
-            rfr = self.m_data.get("rfr")
-            rfr_adj = (1 + rfr) ** (1/12) - 1
+            market_returns = pd.Series(self.m_data.get("market_returns")).astype(float)
+            rfr = float(self.m_data.get("rfr"))
+            rfr_adj = (1 + rfr) ** (1 / 12) - 1
 
             portfolio_ret = portfolio_series.pct_change().dropna()
             market_returns.index = pd.to_datetime(market_returns.index)
             portfolio_ret = portfolio_ret[portfolio_ret.index.isin(market_returns.index)]
             market_ret_aligned = market_returns.loc[portfolio_ret.index]
 
-            beta = np.cov(portfolio_ret, market_ret_aligned)[0, 1] / market_ret_aligned.var()
-            alpha = portfolio_ret.mean() - (rfr_adj + beta * (market_ret_aligned.mean() - rfr_adj))
-            sharpe = (portfolio_ret.mean() - rfr_adj) / portfolio_ret.std()
-        else:
-            alpha = beta = sharpe = None
+            beta = float(np.cov(portfolio_ret, market_ret_aligned)[0, 1] / market_ret_aligned.var())
+            alpha = float(portfolio_ret.mean() - (rfr_adj + beta * (market_ret_aligned.mean() - rfr_adj)))
+            sharpe = float((portfolio_ret.mean() - rfr_adj) / portfolio_ret.std())
 
         returns['alpha'] = alpha
         returns['beta'] = beta
         returns['sharpe'] = sharpe
 
-        return returns, {'hist': portfolio_series.sub(1).to_dict()}
+        history = {k.strftime('%Y-%m-%d'): float(v) for k, v in portfolio_series.sub(1).items()}
+        return returns, {'hist': history}
 
     def get_info(self):
-        if not self.tickers or not self.holdings.any().any():
+        if not self.tickers or self.holdings.empty:
             return {}, {}
 
         basic, adv = self._compute_returns()
 
-        # Normalize weights & contributions
-        total_val = self.value
-        weights = {k: v / total_val for k, v in self.weights.items()}
-        contrib = {k: v / (total_val - self.initial_cash) for k, v in self.contrib.items()}
+        total_val = float(self.value)
+        weights = {k: float(v / total_val) for k, v in self.weights.items()}
+        contrib = {k: float(v / (total_val - self.initial_cash)) for k, v in self.contrib.items()}
 
         df = get_df(self.tickers.keys(), self.db)
-        df['weight'] = df.index.map(weights).fillna(0)
-        df['contrib'] = df.index.map(contrib).fillna(0)
-        df['shares'] = df.index.map(self.num).fillna(0)
-        df['price'] = df.index.map(self.price).fillna(0)
-        df['avg_buy'] = df.index.map(self.avg_buy).fillna(0)
-        df['open_pnl'] = df['price'] / df['avg_buy'] - 1
+        df['weight'] = df.index.map(weights).fillna(0).astype(float)
+        df['contrib'] = df.index.map(contrib).fillna(0).astype(float)
+        df['shares'] = df.index.map(self.num).fillna(0).astype(float)
+        df['price'] = df.index.map(self.price).fillna(0).astype(float)
+        df['avg_buy'] = df.index.map(self.avg_buy).fillna(0).astype(float)
+        df['open_pnl'] = (df['price'] / df['avg_buy'] - 1).fillna(0).astype(float)
 
-        # Asset/sector/region breakdown
-        asset_weight = df.groupby('asset-class')['weight'].sum()
-        primary_asset = asset_weight.idxmax() if asset_weight.max() >= 0.5 * asset_weight.sum() else 'Diversified'
-        sector_weight = df.groupby('sector')['weight'].sum().to_dict()
-        asset_contrib = df.groupby('asset-class')['contrib'].sum().to_dict()
-        sector_contrib = df.groupby('sector')['contrib'].sum().to_dict()
-        div_yield = (df['yield'] * df['weight']).sum()
+        asset_weight = {k: float(v) for k, v in df.groupby('asset-class')['weight'].sum().items()}
+        primary_asset = max(asset_weight, key=asset_weight.get) if asset_weight and max(asset_weight.values()) >= 0.5 * sum(asset_weight.values()) else 'Mixed'
+        sector_weight = {k: float(v) for k, v in df.groupby('sector')['weight'].sum().items()}
+        asset_contrib = {k: float(v) for k, v in df.groupby('asset-class')['contrib'].sum().items()}
+        sector_contrib = {k: float(v) for k, v in df.groupby('sector')['contrib'].sum().items()}
+        div_yield = float((df['yield'] * df['weight']).sum())
 
         holdings_columns = ['ticker','name','asset-class','sector','shares','avg_buy','price','open_pnl','weight','yield','cagr']
         holdings = df[[c for c in holdings_columns if c in df.columns]].loc[df['shares'] != 0]
+        holdings_dict = {
+            str(k): {c: (float(v) if isinstance(v, (np.floating, np.integer, np.int64, np.float64)) else v)
+                     for c, v in row.items()} 
+            for k, row in holdings.T.to_dict().items()
+        }
 
-        result = {
+        return {
             **basic,
             'primary_class': str(primary_asset),
             'yield': div_yield
-        }
-
-        return result, {
+        }, {
             **adv,
-            'asset_weight': asset_weight.to_dict(),
+            'asset_weight': asset_weight,
             'sector_weight': sector_weight,
             'asset_contrib': asset_contrib,
             'sector_contrib': sector_contrib,
             'actions': self.actions,
-            'df': holdings.T.to_dict()
+            'df': holdings_dict
         }

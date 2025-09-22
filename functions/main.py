@@ -6,6 +6,7 @@ import pandas as pd
 import json
 import time
 from portfolio import Portfolio
+import datetime
 
 cred = credentials.Certificate("./quant-algo-4430a-firebase-adminsdk-l8bgg-1b126ee4ee.json")
 firebase_admin.initialize_app(cred)
@@ -34,9 +35,12 @@ def get_fast_data(req: https_fn.Request) -> https_fn.Response:
 
 
 
-@https_fn.on_request(cors=options.CorsOptions(
+@https_fn.on_request(
+    cors=options.CorsOptions(
         cors_origins="*",
-        cors_methods=["get", "post", "options"],))
+        cors_methods=["get", "post", "options"],
+    )
+)
 def get_compare_info(req: https_fn.Request) -> https_fn.Response:
     try:
         tickers = req.args.getlist('t')  # Extract tickers from query params
@@ -98,9 +102,12 @@ def get_compare_info(req: https_fn.Request) -> https_fn.Response:
 
 
 
-@https_fn.on_request(cors=options.CorsOptions(
+@https_fn.on_request(
+    cors=options.CorsOptions(
         cors_origins="*",
-        cors_methods=["get", "post", "options"],))
+        cors_methods=["get", "post", "options"],
+    )
+)
 def get_portfolio_data(req: https_fn.Request) -> https_fn.Response:
     portfolio_id = req.args.get('t')  # Fetch portfolio ID
     if not portfolio_id:
@@ -132,6 +139,90 @@ def get_portfolio_data(req: https_fn.Request) -> https_fn.Response:
     except IndexError as e:
         print(e)
         return https_fn.Response(json.dumps({"error": f"Error fetching stock data: {str(e)}"}), status=500, content_type="application/json")
+    
+
+@https_fn.on_request(
+    cors=options.CorsOptions(
+        cors_origins="*",
+        cors_methods=["get", "post", "options"],
+    )
+)
+def portfolio_action(req: https_fn.Request) -> https_fn.Response:
+    if req.method != "POST":
+        return https_fn.Response("Method not allowed", status=405)
+
+    try:
+        body = req.get_json()
+        portfolio_id = body.get("portfolioId")
+        ticker = body.get("ticker")
+        shares_delta = body.get("shares")
+
+        if not portfolio_id or not ticker or shares_delta is None:
+            return https_fn.Response(
+                json.dumps({"error": "portfolioId, ticker, and shares are required"}),
+                status=400,
+                content_type="application/json"
+            )
+
+        portfolio_ref = db.collection("portfolios").document(portfolio_id)
+        snapshot = portfolio_ref.get()
+        if not snapshot.exists:
+            return https_fn.Response(
+                json.dumps({"error": "Portfolio not found"}),
+                status=404,
+                content_type="application/json"
+            )
+
+        data = snapshot.to_dict()
+
+        # Fetch price
+        price_info = yf.Ticker(ticker).fast_info
+        price = price_info.get('lastPrice')
+        if price is None or price <= 0:
+            return https_fn.Response(
+                json.dumps({"error": "Error fetching price"}),
+                status=400,
+                content_type="application/json"
+            )
+
+        # Update shares and cash
+        current_shares = data.get("shares", {}).get(ticker, 0)
+        new_shares = current_shares + shares_delta
+
+        current_cash = data.get("cash", 0)
+        new_cash = current_cash - shares_delta * price
+        if new_cash < 0:
+            return https_fn.Response(
+                json.dumps({"error": "Insufficient cash"}),
+                status=400,
+                content_type="application/json"
+            )
+
+        # Update actions
+        current_actions = data.get("actions", {}).get(ticker, {})
+        timestamp = datetime.datetime.now().isoformat()
+        new_actions = {**current_actions, timestamp: shares_delta}
+
+        # Update Firestore document
+        portfolio_ref.update({
+            f"shares.{ticker}": new_shares,
+            f"actions.{ticker}": new_actions,
+            "cash": new_cash,
+        })
+
+        return https_fn.Response(
+            json.dumps({"message": "Portfolio updated successfully"}),
+            status=200,
+            content_type="application/json"
+        )
+
+    except Exception as e:
+        return https_fn.Response(
+            json.dumps({"error": str(e)}),
+            status=500,
+            content_type="application/json"
+        )
+
     
 # Cache expiry time (10 minutes)
 CACHE_EXPIRY = 600

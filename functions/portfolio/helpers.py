@@ -1,65 +1,84 @@
 import pandas as pd
 import numpy as np
 
-def get_pnl(actions: dict, prices: pd.Series):
+def get_pnl(actions, prices):
     """
     Vectorized PnL calculation.
-    actions: dict of date -> shares bought/sold (+/-)
-    prices: pd.Series of prices indexed by date
+    
+    Parameters:
+        actions: dict of date -> shares bought/sold (+/-)
+        prices: pd.Series of prices indexed by date
+        
     Returns:
-        total_value_series, last_value, last_cash, actions_list, num_shares, last_price, avg_buy_price
+        total_value_series (pd.Series), last_value (float), last_cash (float), 
+        actions_list (list), num_shares (float), last_price (float), avg_buy_price (float)
     """
+    # Standardize prices
     prices = prices.copy()
     prices.index = pd.to_datetime(prices.index)
-    prices = prices.groupby(prices.index).last().ffill()
+    prices = prices.groupby(prices.index).last().sort_index().ffill()
+
+    if prices.empty:
+        return pd.Series(dtype=float), 0.0, 0.0, [], 0.0, 0.0, 0.0
 
     # Standardize actions
-    actions_df = pd.DataFrame([
-        {'date': pd.to_datetime(d), 'shares': qty, 'price': prices.get(pd.to_datetime(d), np.nan)}
-        for d, qty in actions.items()
-    ]).dropna(subset=['price']).set_index('date').sort_index()
+    actions_series = pd.Series(actions).astype(float)
+    actions_series.index = pd.to_datetime(actions_series.index)
 
-    # Create a full date index
-    full_index = pd.date_range(prices.index.min(), prices.index.max())
-    actions_full = actions_df.reindex(full_index, fill_value=0)
+    # Unified date index
+    full_index = prices.index.union(actions_series.index)
+    actions_aligned = actions_series.reindex(full_index, fill_value=0).values
+    prices_aligned = prices.reindex(full_index).ffill().values
 
-    # Cumulative shares
-    cum_shares = actions_full['shares'].cumsum()
-    # Cash effects
-    cash_diffs = -(actions_full['shares'] * actions_full['price']).cumsum()
-    # Portfolio value
-    total_value = cum_shares * prices.reindex(full_index).ffill() + cash_diffs
+    # Cumulative shares and cash impact
+    cum_shares = np.cumsum(actions_aligned)
+    cash_diffs = -np.cumsum(actions_aligned * prices_aligned)
+    total_value = cum_shares * prices_aligned + cash_diffs
 
     # Average buy price
-    buys = actions_full['shares'].clip(lower=0)
-    cum_buy_shares = buys.cumsum()
-    cum_buy_cost = (buys * actions_full['price']).cumsum()
-    avg_buy_price = cum_buy_cost.iloc[-1] / cum_buy_shares.iloc[-1] if cum_buy_shares.iloc[-1] > 0 else 0
+    buys = np.clip(actions_aligned, 0, None)
+    cum_buy_shares = np.cumsum(buys)
+    cum_buy_cost = np.cumsum(buys * prices_aligned)
+    avg_buy_price = float(cum_buy_cost[-1] / cum_buy_shares[-1]) if cum_buy_shares[-1] > 0 else 0.0
 
     # Actions list
+    mask = actions_aligned != 0
     actions_list = [
-        {'date': d.strftime('%Y-%m-%d'), 'shares': abs(row['shares']), 'action': int(row['shares'] > 0), 'price': row['price']}
-        for d, row in actions_full.iterrows() if row['shares'] != 0
+        {
+            'date': d.strftime('%Y-%m-%d'),
+            'shares': float(abs(shares)),
+            'action': int(shares > 0),
+            'price': float(price)
+        }
+        for d, shares, price in zip(full_index[mask], actions_aligned[mask], prices_aligned[mask])
     ]
 
-    last_price = prices.reindex(full_index).ffill().iloc[-1]
-    num_shares = cum_shares.iloc[-1]
-    last_cash = cash_diffs.iloc[-1]
-    last_value = total_value.iloc[-1]
+    # Last values
+    last_price = float(prices_aligned[-1])
+    num_shares = float(cum_shares[-1])
+    last_cash = float(cash_diffs[-1])
+    last_value = float(total_value[-1])
 
-    return total_value, last_value, last_cash, actions_list, num_shares, last_price, avg_buy_price
+    # Convert to pd.Series
+    total_value_series = pd.Series(total_value, index=full_index, dtype=float)
+
+    return total_value_series, last_value, last_cash, actions_list, num_shares, last_price, avg_buy_price
+
 
 def get_df(tickers, db):
     """
     Fetch asset information from Firestore for a list of tickers.
-
-    tickers: list of ticker symbols
-    db: Firestore database object
-
+    
+    Parameters:
+        tickers: list of ticker symbols
+        db: Firestore database object
+        
     Returns:
-        pd.DataFrame with asset data, indexed by ticker
+        pd.DataFrame indexed by ticker, with JSON-safe values
     """
-    # Construct document references in Firestore
+    if not tickers:
+        return pd.DataFrame()
+
     doc_refs = [db.collection("assets").document(ticker) for ticker in tickers]
     docs = db.get_all(doc_refs)
 
@@ -68,6 +87,10 @@ def get_df(tickers, db):
         if doc.exists:
             doc_data = doc.to_dict()
             doc_data['ticker'] = doc.id
+            # Ensure numeric values are float
+            for k, v in doc_data.items():
+                if isinstance(v, (np.integer, np.int64, int, np.floating, np.float64)):
+                    doc_data[k] = float(v)
             data.append(doc_data)
 
     if not data:

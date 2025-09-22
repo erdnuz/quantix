@@ -244,7 +244,7 @@ export const Table: React.FC<TableProps> = ({
                         </a>
                       ) : columnName === "title" ? (
                         <a
-                          href={`/portfolio/${row.id}/`}
+                          href={`/portfolios/${row.id}/`}
                           className="px-2 py-0.5 bg-accent-light dark:bg-accent-dark text-light dark:text-dark rounded-full"
                         >
                           {row[columnName]}

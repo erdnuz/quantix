@@ -11,21 +11,14 @@ export const IconStar : React.FC<{
   isFilled=false,
   onClick
 }) => {
-  const defaultFillColor = isFilled
-    ? "var(--sds-color-icon-default-default)"  // Filled with color
-    : "none";  // No fill for unfilled state
 
-  const defaultStrokeColor = isFilled
-    ? "none"  // No stroke when filled
-    : "var(--sds-color-icon-default-default)";  // Stroke color when not filled
   
 
   return (
     <Icon
       size={size}
       className={className}
-      defaultFillColor={defaultFillColor}
-      defaultStrokeColor={defaultStrokeColor}
+      fillIcon={isFilled}
       isClickable = {true}
       onClick={onClick}
     >

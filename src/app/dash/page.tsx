@@ -3,6 +3,7 @@ import { getUserPortfolios, getUserFavourites } from '../../../services/firebase
 import { useAuth } from '../../../services/useAuth';
 import { useEffect, useState } from 'react';
 import { PortfolioCard, Hero } from '../../components/composition';
+import Link from 'next/link';
 
 const Dash = () => {
     const { currentUser } = useAuth();
@@ -53,7 +54,10 @@ const Dash = () => {
                     <div className="flex flex-col w-full items-center text-center">
                         <h2 className="text-2xl font-semibold">You don't have any portfolios yet</h2>
                         <h3 className="text-lg mt-2">
-                            <a href="/portfolios" className="text-blue-500 hover:underline cursor-pointer">Create your first?</a>
+                            <Link 
+                            href="/dash/create" className="text-blue-500 hover:underline cursor-pointer">
+                                Create your first?
+                                </Link>
                         </h3>
                     </div>
                 )}

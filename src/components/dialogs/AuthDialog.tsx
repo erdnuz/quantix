@@ -17,17 +17,10 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
   handleSaveLoginChange,
   setCurrentUser,
 }) => {
-  const [currentDialog, setCurrentDialog] = useState<"login" | "register" | "resetPassword">("login");
   const [error, setError] = useState<string>("");
-
-  // Switch dialogs
-  const openLoginDialog = () => setCurrentDialog("login");
-  const openRegisterDialog = () => setCurrentDialog("register");
-  const openResetPasswordDialog = () => setCurrentDialog("resetPassword");
 
   const closeDialog = () => {
     setError("");
-    setCurrentDialog("login");
     onClose();
   };
 
@@ -51,15 +44,13 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
 
   return (
     <div>
-      {currentDialog === "login" && (
+      
         <LoginDialog
           onClose={closeDialog}
           handleSaveLoginChange={handleSaveLoginChange}
-          onReturn={openLoginDialog}
           onApiLogin={handleLoginApi}
           topError={error}
         />
-      )}
       
     </div>
   );

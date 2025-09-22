@@ -5,26 +5,47 @@ export interface User {
   firstName: string;
   lastName: string;
   username: string;
-  favourites?: string[]
 }
+
+export interface Favourite {
+  id: string;
+  fromUser: string;
+  toPortfolio: string;
+}
+
+export type PortfolioTag = "Growth" | "Value" | "Dividend" | "Balanced" | "Aggressive" | "Conservative" |
+  "Emerging Markets" | "Emerging Tech" | "Small Cap" | "Large Cap" | "Diversified" | 
+  "Short-term"|"Long-term"
+
 
 export interface Portfolio {
   id: string;
   userId: string;
   title: string;
-  description?: string;
-  tags?: number[];
-  favourites: number;
+  description: string;
+  tags: PortfolioTag[];
+
   cash: number;
   initialCash: number;
-  primaryClass?: AssetClass;
-  '3m'?: number;
-  all?: number;
-  '1y'?:number;
+
+  created: string;
+
   shares: Record<string, number>;
   actions: Record<string, Record<string, number>>;
-  date?: string | null;
+
+  primaryAssetClass?: AssetClass | 'Mized';
+
+  threeMonthGrowth?: number;
+  oneYearGrowth?:number;
+  allTimeGrowth?: number;
   cagr?: number;
+
+  maxDrawdown?: number;
+  avgDrawdown?: number;
+
+  sharpe?: number;
+  alpha?: number;
+
   df?: Record<string, Record<string, number>>;
   holdings?: Record<string, number>[];
   hist?: Record<string, number>[];
@@ -173,7 +194,7 @@ export type AssetTab = 'Profile' | 'Growth' | 'Risk' | 'Performance' | 'Profitab
 export type SelectOption = {
     column:string;
     label:string;
-    options: Record<string, number | string | null>[];
+    options: {label:string, lowerBound?:number|null, upperBound?:number|null, eq?:any}[];
 }
 
 // Callback types

@@ -1,6 +1,5 @@
 'use client';
 import React, { ReactNode } from "react";
-import { IconArrowLeft } from "../icons";
 
 interface BaseDialogProps {
   onReturn?: () => void;
@@ -22,15 +21,14 @@ export const BaseDialog: React.FC<BaseDialogProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-light dark:bg-dark rounded-xl shadow-lg max-w-md mx-4 relative"
+        className="bg-light dark:bg-dark rounded-xl shadow-lg w-full max-w-3xl mx-4 relative"
         onClick={(e) => e.stopPropagation()}
       >
-
-        {/* Header with centered title */}
-        <div className="flex items-center justify-center p-4">
-          <div className="w-full text-primary-light dark:text-primary-dark text-lg text-center">
-            {children}
-          </div>
+        {/* Optional header can be added here if needed */}
+        
+        {/* Body */}
+        <div className="w-full p-4 text-primary-light dark:text-primary-dark">
+          {children}
         </div>
       </div>
     </div>

@@ -3,11 +3,13 @@ import React, { useState, useEffect } from "react";
 import { BaselineChart, PieChart, Table } from "../../../components/composition";
 import { IconStar, IconUser, IconEdit } from "../../../components/icons";
 import { Select, Loading } from "../../../components/primitive";
-import { getPortfolioDoc, getUserById, incrementFavourites } from "../../../../services/firebase/db";
+import { getFavouriteCount, getFavourites, getPortfolioDoc, getUserById, getUserFavourites, toggleFavourite } from "../../../../services/firebase/db";
 import { useAuth } from "../../../../services/useAuth";
 import { EditPortfolioDialog } from "../../../components/dialogs";
 import { useParams } from "next/navigation";
 import { getPortfolioData } from "../../../../services/firebase/api";
+import { Portfolio } from "../../../../types";
+
 
 const holdingColumnDets = {
   public: ["ticker", "name", "type", "sector", "region", "shares", "avg-buy", "price", "weight", "open-pnl"],
@@ -38,11 +40,12 @@ const tagItems = [
   "Short-term", "Long-term",
 ];
 
-const Portfolio = () => {
-  const { currentUser, update } = useAuth();
+const PortfolioPage = () => {
+  const { currentUser } = useAuth();
   const [selected, setSelected] = useState(0);
   const [isFavourite, setIsFavourite] = useState(false);
-  const [portfolio, setPortfolio] = useState<any>(null);
+  const [ favouriteCount, setFavouriteCount] = useState<number>(0)
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [data, setData] = useState<any>(null);
   const [author, setAuthor] = useState<any>(null);
   const [invalid, setInvalid] = useState(false);
@@ -62,7 +65,11 @@ const Portfolio = () => {
     getPortfolioDoc({id:t as string}).then((data) => {
       setPortfolio(data);
       portData = data;
-      if (data) getUserById({ id:data.userId}).then(setAuthor);
+      if (data) {
+        getUserById({ id:data.userId}).then(setAuthor);
+        getFavouriteCount({portfolioId: data.id}).then(setFavouriteCount)
+      }
+
     });
 
     getPortfolioData({id:t as string}).then((data) => {
@@ -84,24 +91,30 @@ const Portfolio = () => {
 
   useEffect(() => {
     if (!currentUser) return setIsFavourite(false);
-    setIsFavourite((portfolio?.userId === currentUser.id || currentUser?.favourites?.includes(portfolio?.id)) as boolean);
+
+    getFavourites({userId:currentUser.id})
+    .then((data) =>{
+      setIsFavourite(data.some((f) => f.toPortfolio == portfolio?.id))
+    })
   }, [currentUser, portfolio]);
 
   function handleFavourite(isF: boolean) {
-    if (!currentUser || currentUser.id === portfolio?.userId) return;
-    setIsFavourite(isF);
+    if (!portfolio || !currentUser || currentUser.id === portfolio?.userId) return;
 
-    const prev: string[] = currentUser.favourites || [];
     if (isF) {
-      currentUser.favourites = [...prev, t as string];
-      incrementFavourites({id: portfolio.id, a:1});
-      setPortfolio((prev: any) => ({ ...prev, favourites: prev.favourites + 1 }));
+      toggleFavourite({portfolioId: portfolio.id, userId:currentUser.id, att:'Add'})
+        .then(() =>{
+        setIsFavourite(isF);
+        setFavouriteCount((prev) => prev+1);
+      })
+
     } else {
-      currentUser.favourites = prev.filter((i) => i !== t);
-      incrementFavourites({id: portfolio.id, a:-1});
-      setPortfolio((prev: any) => ({ ...prev, favourites: prev.favourites - 1 }));
+      toggleFavourite({portfolioId: portfolio.id, userId:currentUser.id, att:'Remove'})
+      .then(() =>{
+        setIsFavourite(isF);
+        setFavouriteCount((prev) => prev-1);
+      })
     }
-    update(currentUser);
   }
 
   function setTimeframe(s: number) {
@@ -130,7 +143,7 @@ const Portfolio = () => {
     <div className="px-6 md:px-16">
       <EditPortfolioDialog portfolio={portfolio} isOpen={dialogOpen} onClose={() => setDialogOpen(false)} setPortfolio={setPortfolio} />
 
-      <h1 className="text-sm text-gray-500 mt-4">Created {portfolio?.date}</h1>
+      <h1 className="text-sm text-gray-500 mt-4">Created {portfolio?.created}</h1>
 
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6 mt-2">
         <div className="flex-1 flex flex-col md:flex-row items-start gap-4">
@@ -150,7 +163,7 @@ const Portfolio = () => {
 
           <div className="flex items-end gap-1 mt-4 md:mt-0">
             <IconStar size="32" isFilled={isFavourite} onClick={() => handleFavourite(!isFavourite)} />
-            <p className="text-base md:text-lg">{formatNumber(portfolio?.favourites || 0)}</p>
+            <p className="text-base md:text-lg">{formatNumber(favouriteCount)}</p>
           </div>
         </div>
 
@@ -240,4 +253,4 @@ const Portfolio = () => {
   );
 };
 
-export default Portfolio;
+export default PortfolioPage;

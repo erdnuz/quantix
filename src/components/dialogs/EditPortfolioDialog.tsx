@@ -3,13 +3,13 @@ import { Button } from "../primitive/Button";
 import { BaseDialog } from "./BaseDialog";
 import { TagGroup } from "../primitive";
 import { deletePortfolio, updatePortfolio } from "../../../services/firebase/db";
-import { Portfolio } from "../../../types";
+import { Portfolio, PortfolioTag } from "../../../types";
 
 const tagItems = [
   "Growth", "Value", "Dividend", "Balanced", "Aggressive", "Conservative",
   "Emerging Markets", "Emerging Tech", "Small Cap", "Large Cap", "Diversified", "Global",
   "Short-term", "Long-term",
-];
+] as PortfolioTag[];
 
 
 interface EditPortfolioDialogProps {
@@ -43,16 +43,16 @@ export function EditPortfolioDialog({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
-  const [selectedIndices, setSelectedIndices] = useState<number[]>(portfolio?.tags || []);
+  const [selectedIndices, setSelectedIndices] = useState<number[]>(portfolio?.tags.map(t => tagItems.indexOf(t)) || []);
 
   useEffect(() => {
-    setSelectedIndices(portfolio?.tags || []);
+    setSelectedIndices(portfolio?.tags.map(t => tagItems.indexOf(t)) || []);
   }, [portfolio]);
 
   function close() {
     setTitle("");
     setDescription("");
-    setSelectedIndices(portfolio?.tags || []);
+    setSelectedIndices(portfolio?.tags.map(t => tagItems.indexOf(t)) || []);
     setError("");
     onClose();
   }
@@ -62,7 +62,7 @@ export function EditPortfolioDialog({
 
     const titleChanged = title && title !== portfolio.title;
     const descriptionChanged = description && description !== portfolio.description;
-    const tagsChanged = selectedIndices && selectedIndices !== portfolio.tags;
+    const tagsChanged = selectedIndices && selectedIndices !== portfolio?.tags.map(t => tagItems.indexOf(t));
 
     if (!(titleChanged || descriptionChanged || tagsChanged)) {
       close();
@@ -73,7 +73,7 @@ export function EditPortfolioDialog({
       ...portfolio,
       title: title || portfolio.title,
       description: description || portfolio.description,
-      tags: selectedIndices || portfolio.tags,
+      tags: selectedIndices.map(i => tagItems[i]) || portfolio.tags,
     };
 
     await updatePortfolio({ portfolio: newPortfolio});
@@ -146,26 +146,30 @@ export function EditPortfolioDialog({
 
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 mb-3">
-        <Button
-          type="secondary"
-          label="Cancel"
-          onClick={close}
-        />
-        <Button
-          type="brand"
-          label="Update"
-          onClick={handleUpdatePortfolio}
-        />
-      </div>
-
+     {/* Action Buttons */}
+    <div className="flex gap-3 mb-3 w-full">
+      <Button
+        type="secondary"
+        label="Cancel"
+        onClick={close}
+        className="flex-2"
+      />
       <Button
         type="brand"
-        icon="trash"
-        label="Delete Portfolio"
-        onClick={handleDeletePortfolio}
+        label="Update"
+        onClick={handleUpdatePortfolio}
+        className="flex-1 text-center justify-center"
       />
+    </div>
+
+    <Button
+      type="primary"
+      icon="trash"
+      label="Delete Portfolio"
+      onClick={handleDeletePortfolio}
+      className="w-full justify-center text-base"
+    />
+
     </BaseDialog>
   );
 }

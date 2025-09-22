@@ -1,4 +1,4 @@
-import { Hero, PortfolioScreener } from '../../components/composition';
+import { Hero, NewPortfolio, PortfolioScreener } from '../../components/composition';
 
 
 const Explore = () => 
@@ -7,7 +7,8 @@ const Explore = () =>
     <div>
 
         <Hero title="Explore Community Portfolios" subtitle="Gain insights from portfolios create by the community"/>
-        <PortfolioScreener />
+        <PortfolioScreener />:
+        
     
     </div>
 );

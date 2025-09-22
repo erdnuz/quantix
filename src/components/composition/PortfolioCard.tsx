@@ -13,16 +13,16 @@ const tagItems = [
 ];
 
 export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
-  const { id, title, date, description, tags } = portfolio;
+  const { id, title, created, description, tags } = portfolio;
 
   return (
-    <Link href={`/portfolio/${id}/`} className="block">
+    <Link href={`/portfolios/${id}/`} className="block">
       <div className="flex flex-col w-full max-w-[600px] mb-4 p-4 rounded-lg border border-gray-300 cursor-pointer">
         {/* Top section: Title, Date, Description */}
         <div className="flex flex-col gap-2">
           <div className="flex flex-col-reverse">
             <h3 className="text-lg font-semibold">{title}</h3>
-            <p className="text-xs text-gray-500">{date}</p>
+            <p className="text-xs text-gray-500">{created}</p>
           </div>
           <p className="text-sm truncate">{description}</p>
         </div>
@@ -30,12 +30,12 @@ export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
         {/* Tags */}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
-            {tags.map((tagIndex, index) => (
+            {tags.map((tag, index) => (
               <span
                 key={index}
                 className="text-xs px-2 py-1 rounded-full bg-gray-200 border border-gray-300 whitespace-nowrap"
               >
-                {tagItems[tagIndex]}
+                {tag}
               </span>
             ))}
           </div>

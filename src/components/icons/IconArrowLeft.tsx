@@ -15,6 +15,7 @@ export const IconArrowLeft: React.FC<{
     className={className}
     isClickable={!!onClick}
     onClick={onClick}
+    fillIcon={false}
     defaultStrokeColor="currentColor" // use Tailwind text color
     hoverStrokeColor="text-gray-500"  // optional hover stroke
   >
