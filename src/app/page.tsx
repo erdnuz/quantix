@@ -29,7 +29,7 @@ const Home: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col gap-16 bg-bg-primary-light dark:bg-dark">
+    <div className="flex flex-col gap-16 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50">
       <Hero 
         title="Quantix" 
         subtitle="Empowering Investors with Data-Driven Insights" 

@@ -24,8 +24,9 @@ export const Card: React.FC<ProxyAsset> = ({
       flex flex-col items-center gap-2 p-4 sm:p-6 
       border border-border-light dark:border-border-dark 
       rounded-lg max-w-[180px] cursor-pointer 
-      bg-light dark:bg-dark 
-      hover:bg-surface-light dark:hover:bg-surface-dark
+      shadow-lg
+      bg-surface-light dark:bg-surface-dark 
+      hover:bg-surface-light-hover dark:hover:bg-surface-dark-hover
       transition-colors
     ">
       <h2 className="text-lg font-semibold truncate text-primary-light dark:text-primary-dark">{ticker}</h2>

@@ -27,6 +27,18 @@ export const BaselineChart: React.FC<BaselineChartProps> = ({ data }) => {
   const lineSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
   const roRef = useRef<ResizeObserver | null>(null);
   const [visibleRange, setVisibleRange] = useState<{ from: Logical; to: Logical } | null>(null);
+  const [isDark, setIsDark] = useState<boolean>(
+      typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+    );
+  
+    // Watch for system theme changes
+    useEffect(() => {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+  
+      mediaQuery.addEventListener('change', handler);
+      return () => mediaQuery.removeEventListener('change', handler);
+    }, []);
 
   const timeToMs = (t: any) => {
     if (t instanceof Date) return t.getTime();
@@ -55,9 +67,25 @@ export const BaselineChart: React.FC<BaselineChartProps> = ({ data }) => {
       const chart = createChart(containerRef.current!, {
         width: w,
         height: h,
-        layout: { textColor: '#000', background: { color: '#fff' } },
-        rightPriceScale: { visible: true, borderVisible: false, scaleMargins: { top: 0.1, bottom: 0.1 } },
-        timeScale: { borderVisible: false, secondsVisible: false },
+        layout: {
+          textColor: isDark ? '#f3f4f6' : '#1a1f40',
+          background: { color: isDark ? '#1a1f40' : '#f3f4f6' },
+        },
+        grid: {
+          vertLines: { color: isDark ? '#2D2D2D' : '#E2E8F0' },
+          horzLines: { color: isDark ? '#2D2D2D' : '#E2E8F0' },
+        },
+        rightPriceScale: {
+          visible: true,
+          borderVisible: false,
+          scaleMargins: { top: 0.1, bottom: 0.1 },
+          borderColor: isDark ? '#2D2D2D' : '#E2E8F0',
+        },
+        timeScale: {
+          borderVisible: false,
+          secondsVisible: false,
+          borderColor: isDark ? '#2D2D2D' : '#E2E8F0',
+        },
       } as DeepPartial<TimeChartOptions>);
 
       // Baseline series
@@ -201,7 +229,7 @@ export const BaselineChart: React.FC<BaselineChartProps> = ({ data }) => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-96 border border-gray-300 rounded-lg overflow-hidden"
+      className="relative w-full h-96 border border-border-light dark:border-border-dark rounded-lg shadow-lg overflow-hidden"
     />
   );
 };

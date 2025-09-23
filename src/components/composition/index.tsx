@@ -8,7 +8,6 @@ export { CompareTable } from './CompareTable';
 export { CorrelationTable } from './CorrelationTable';
 export { PieChart } from './PieChart';
 export { Chart } from './Chart';
-export { PlotChart } from './PlotChart';
 export { CompareChart } from './CompareChart';
 export { BaselineChart } from './BaselineChart';
 export { Table } from './Table';

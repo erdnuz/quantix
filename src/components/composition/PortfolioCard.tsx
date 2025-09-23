@@ -9,17 +9,19 @@ export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
   const { id, title, created, description, tags } = portfolio;
 
   return (
-    <Link href={`/portfolios/${id}/`} className="block h-full">
-      <div className="flex flex-col w-full max-w-[600px] mb-6 p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer bg-white dark:bg-gray-800">
-        
+    <Link href={`/portfolios/${id}/`} className="block">
+      <div className="flex flex-col w-full max-w-[600px] shadow-lg p-6 rounded-xl border hover:shadow-xl transition-shadow duration-300 cursor-pointer
+                      bg-surface-light dark:bg-surface-dark
+                      border-border-light dark:border-border-dark">
+
         {/* Top section: Title and Date */}
         <div className="flex flex-row gap-1 justify-between items-baseline">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-          <p className="text-xs text-gray-400 dark:text-gray-300">Created {created}</p>
+          <h3 className="text-xl font-semibold text-[var(--color-primary-light)] dark:text-[var(--color-primary-dark)]">{title}</h3>
+          <p className="text-xs text-[var(--color-secondary-light)] dark:text-[var(--color-secondary-dark)]">Created {created}</p>
         </div>
 
         {/* Description */}
-        <p className="text-sm mt-3 text-gray-700 dark:text-gray-300 line-clamp-2">{description}</p>
+        <p className="text-sm mt-3 text-[var(--color-text-light)] dark:text-[var(--color-text-dark)] line-clamp-2">{description}</p>
 
         {/* Tags */}
         {tags && tags.length > 0 && (
@@ -27,7 +29,11 @@ export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
             {tags.map((tag, index) => (
               <span
                 key={index}
-                className="text-xs px-3 py-1 rounded-full bg-gray-100 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 text-gray-700 dark:text-gray-200 whitespace-nowrap"
+                className="text-xs px-3 py-1 rounded-full border
+                           bg-[var(--color-surface-light-secondary)] dark:bg-[var(--color-surface-dark-secondary)]
+                           border-[var(--color-border-light)] dark:border-[var(--color-border-dark)]
+                           text-[var(--color-text-light)] dark:text-[var(--color-text-dark)]
+                           whitespace-nowrap"
               >
                 {tag}
               </span>
@@ -36,30 +42,30 @@ export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
         )}
 
         {/* Stats row */}
-<div className="flex w-full mt-4 gap-4">
-  {Object.entries({
-    primaryAssetClass: 'Class',
-    oneYearGrowth: '1y',
-    threeMonthGrowth: '3mo',
-    cagr: 'CAGR'
-  }).map(([columnName, display]) => (
-    <div
-      key={columnName}
-      className="flex flex-col flex-none items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-lg py-3 px-4 min-w-[80px] grow"
-    >
-      <p className="text-base font-medium text-gray-900 dark:text-gray-100">
-        {portfolio[columnName as keyof Portfolio] !== undefined
-          ? columnName === 'primaryAssetClass'
-            ? (portfolio[columnName as keyof Portfolio] as string)
-            : `${(100 * (portfolio[columnName as keyof Portfolio] as number)).toFixed(2)}%`
-          : 'NaN'}
-      </p>
-      <p className="text-sm text-gray-400 dark:text-gray-300">{display}</p>
-    </div>
-  ))}
-</div>
-
-
+        <div className="flex w-full mt-4 gap-4">
+          {Object.entries({
+            primaryAssetClass: 'Class',
+            oneYearGrowth: '1y',
+            threeMonthGrowth: '3mo',
+            cagr: 'CAGR'
+          }).map(([columnName, display]) => (
+            <div
+              key={columnName}
+              className="flex flex-col flex-none items-center justify-center 
+                         rounded-lg py-3 px-4 min-w-[80px] grow
+                         bg-[var(--color-surface-light)] dark:bg-[var(--color-surface-dark)]"
+            >
+              <p className="text-base font-medium text-[var(--color-text-light)] dark:text-[var(--color-text-dark)]">
+                {portfolio[columnName as keyof Portfolio] !== undefined
+                  ? columnName === 'primaryAssetClass'
+                    ? (portfolio[columnName as keyof Portfolio] as string)
+                    : `${(100 * (portfolio[columnName as keyof Portfolio] as number)).toFixed(2)}%`
+                  : 'NaN'}
+              </p>
+              <p className="text-sm text-[var(--color-secondary-light)] dark:text-[var(--color-secondary-dark)]">{display}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </Link>
   );

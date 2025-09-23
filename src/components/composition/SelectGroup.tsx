@@ -13,7 +13,9 @@ export const SelectGroup: React.FC<SelectGroupProps> = ({ optionData, selected, 
     <div className="flex flex-row flex-wrap gap-4 md:gap-6">
       {optionData.map((o, index) => (
         <div key={index} className="flex flex-col gap-1">
-          <label className="ml-1 text-sm text-gray-700">{o.label}</label>
+          <label className="ml-1 text-sm text-secondary-light dark:text-secondary-dark">
+            {o.label}
+          </label>
           <Select
             selected={selected[index]}
             setSelected={(value) => setSelected(index, value)}

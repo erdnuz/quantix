@@ -107,7 +107,7 @@ const Compare: React.FC = () => {
   }, [tickers]);
 
   return (
-    <div className="flex flex-col bg-surface-light min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Hero 
         title="Compare Assets" 
         subtitle="Compare the Best Stocks, ETFs, and Mutual Funds" 
@@ -173,7 +173,7 @@ const Compare: React.FC = () => {
             />
 
             <div className="mt-6">
-              <h1 className="text-2xl font-semibold text-primary-light mb-3">Chart</h1>
+              <h1 className="text-2xl font-semibold mb-3">Chart</h1>
               <CompareChart 
                 lines={chartData} 
               />
@@ -195,7 +195,7 @@ const Compare: React.FC = () => {
             )}
 
             <div className="mt-6">
-              <h1 className="text-2xl font-semibold text-primary-light mb-3">Correlation</h1>
+              <h1 className="text-2xl font-semibold mb-3">Correlation</h1>
               <CorrelationTable 
                 data={corr} 
               />
@@ -203,7 +203,7 @@ const Compare: React.FC = () => {
           </div>
         )
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 text-center text-secondary-light">
+        <div className="flex flex-col items-center justify-center py-12 text-center">
           <h1 className="text-3xl font-bold mb-2">Nothing to show...</h1>
           <h2 className="text-xl">Add at least 2 assets to start comparing</h2>
         </div>

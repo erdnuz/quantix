@@ -39,7 +39,11 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-50 min-h-screen">
+      <body className="
+        bg-light text-primary-light 
+        dark:bg-dark dark:text-primary-dark 
+        min-h-screen
+      ">
         <AuthProvider>
           <AppContent>
             {children}

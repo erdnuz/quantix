@@ -94,7 +94,7 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
           className="
             absolute top-full left-0 right-0 z-10 max-h-52 overflow-y-auto
             rounded-b-2xl border border-border-light dark:border-border-dark border-t-0
-            bg-surface-light dark:bg-surface-dark shadow-sm
+            bg-light dark:bg-dark shadow-sm
           "
         >
           {(filter ? filteredSuggestions.filter(filter) : filteredSuggestions).slice(0, 5).map(({ ticker, name }, index) =>
@@ -115,7 +115,7 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
                 key={ticker}
                 href={`/metrics/${ticker}/`}
                 className={`
-                  block px-4 py-2 text-primary-light dark:text-primary-dark truncate
+                  block px-4 py-2 truncate
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
                   ${index === filteredSuggestions.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
                 `}

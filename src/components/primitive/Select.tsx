@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { IconChevronDown } from '../icons/IconChevronDown';
 
 interface SelectProps {
-  options: Record<string, number|string|null>[];
+  options: Record<string, number | string | null>[];
   size?: 0 | 1;
   selected: number;
   setSelected: (index: number) => void;
@@ -36,28 +36,32 @@ export const Select: React.FC<SelectProps> = ({ options, size = 1, selected, set
 
   return (
     <div ref={selectRef} className={`relative inline-block ${size === 0 ? 'min-w-[100px]' : 'min-w-[120px]'}`}>
+      {/* Selected Value */}
       <div
-        className={`flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-xl border border-gray-300 bg-white cursor-pointer ${
+        className={`flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-xl border bg-surface-light border-border-light dark:bg-surface-dark dark:border-border-dark cursor-pointer ${
           dropdownVisible ? 'rounded-b-none font-semibold' : ''
         }`}
         onClick={handleToggleDropdown}
       >
-        <p className={`flex-1 truncate ${size === 0 ? 'text-sm' : 'text-base'}`}>{options[selected].label}</p>
+        <p className={`flex-1 truncate ${size === 0 ? 'text-sm' : 'text-base'} text-primary-light dark:text-primary-dark`}>
+          {options[selected].label}
+        </p>
         {options.length > 1 ? (
-          <IconChevronDown size={chevronSize} className={`${dropdownVisible ? 'invisible' : ''}`} />
+          <IconChevronDown size={chevronSize} className={`${dropdownVisible ? 'invisible' : ''} text-secondary-light dark:text-secondary-dark`} />
         ) : (
           <div style={{ width: chevronSize, height: chevronSize }} />
         )}
       </div>
 
+      {/* Dropdown */}
       {dropdownVisible && (
-        <div className="absolute top-full left-0 right-0 z-10 max-h-52 overflow-y-auto rounded-b-xl border border-gray-300 border-t-0 bg-gray-50">
+        <div className="absolute top-full left-0 right-0 z-10 max-h-52 overflow-y-auto rounded-b-xl border border-border-light border-t-0 bg-surface-light dark:border-border-dark dark:bg-surface-dark shadow-light dark:shadow-dark">
           {options.map((k, index) =>
             index !== selected ? (
               <p
                 key={index}
-                className={`px-3 py-2 cursor-pointer w-full truncate hover:bg-gray-100 hover:text-gray-900 ${
-                  index === options.length - 1 ? '' : 'border-b border-gray-300'
+                className={`px-3 py-2 cursor-pointer w-full truncate text-primary-light dark:text-primary-dark hover:bg-primary-hover dark:hover:bg-primary-hover hover:text-accent-light dark:hover:text-accent-dark ${
+                  index === options.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'
                 } ${size === 0 ? 'text-sm' : 'text-base'}`}
                 onClick={() => handleOptionSelect(index)}
               >

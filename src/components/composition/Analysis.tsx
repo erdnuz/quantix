@@ -44,12 +44,12 @@ export const Analysis: React.FC<AnalysisProps> = ({
 
   return (
     <div
-      className={`border border-gray-300 rounded-xl p-5 m-4 flex flex-col gap-3 ${className}`}
+      className={`border border-border-light dark:border-border-dark rounded-xl p-5 m-4 flex flex-col gap-3 ${className}`}
     >
       {/* Header */}
       <div className="flex justify-between gap-3">
         <h3 className="text-lg font-semibold m-0 flex-1">Analysis</h3>
-        <p className="text-sm text-gray-500 mb-1 flex-1">{numAnalysts} Analysts</p>
+        <p className="text-sm text-secondary-light dark:text-secondary-dark mb-1 flex-1">{numAnalysts} Analysts</p>
       </div>
 
       {/* Recommendation */}

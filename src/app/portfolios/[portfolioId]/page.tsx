@@ -121,10 +121,10 @@ const PortfolioPage = () => {
         onClose={() => setDialogOpen(false)}
         setPortfolio={setPortfolio}
       />
-      <div className="p-12 border border-border-light rounded-lg shadow-lg">
+      <div className="p-12 border border-border-light dark:border-border-dark rounded-lg shadow-lg">
 
       {/* Title Section */}
-      <h1 className="text-xs text-gray-500 mt-4">
+      <h1 className="text-xs text-secondary-light dark:text-secondary-dark mt-4">
         {portfolio?.created && `Created on ${portfolio.created}`}
       </h1>
 
@@ -136,7 +136,7 @@ const PortfolioPage = () => {
               href ={portfolio && currentUser?.id === portfolio?.userId? "/dash/"
                     : `/dash/${author?.id}/`}
               
-              className="flex items-center gap-2 cursor-pointer text-gray-500 mt-1"
+              className="flex items-center gap-2 cursor-pointer text-secondary-light dark:text-secondary-dark mt-1"
             >
               <IconUser size="20" onClick={()=>{}} />
               <p className="text-sm">
@@ -162,7 +162,7 @@ const PortfolioPage = () => {
         )}
       </div>
 
-      <p className="mt-4 max-w-xl text-sm md:text-base text-gray-700">
+      <p className="mt-4 max-w-xl text-sm md:text-base text-secondary-light dark:text-secondary-dark">
         {portfolio?.description}
       </p>
 
@@ -170,7 +170,7 @@ const PortfolioPage = () => {
         {portfolio?.tags?.map((tag: PortfolioTag) => (
           <span
             key={tag}
-            className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs md:text-sm"
+            className="bg-brand-light dark:bg-brand-dark  text-light dark:text-dark px-2 py-1 rounded-full text-xs md:text-sm"
           >
             {tag}
           </span>
@@ -213,7 +213,7 @@ const PortfolioPage = () => {
             ).map((item) => (
               <div
                 key={item.column}
-                className="flex flex-col items-center bg-gray-50 p-4 rounded-lg"
+                className="flex flex-col items-centerp-4 rounded-lg"
               >
                 <p className="text-xl md:text-xl font-bold">
                   {data[item.column]
@@ -221,7 +221,7 @@ const PortfolioPage = () => {
                     item.column == 'beta'?(data[item.column] as number).toFixed(2):`${(100 * (data[item.column] as number)).toFixed(2)}%`
                     : "—"}
                 </p>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                <p className="text-xs text-secondary-light dark:text-secondary-dark tracking-wide">
                   {item.label}
                 </p>
               </div>
@@ -244,14 +244,14 @@ const PortfolioPage = () => {
             ).map((item) => (
               <div
                 key={item.column}
-                className="flex flex-col items-center bg-gray-50 p-4 rounded-lg"
+                className="flex flex-col items-center p-4 rounded-lg"
               >
                 <p className="text-xl md:text-xl font-bold">
                   {data?.[item.column] != null
                     ? `${(100 * (data[item.column] as number)).toFixed(2)}%`
                     : "—"}
                 </p>
-                <p className="text-xs text-gray-500">{item.label}</p>
+                <p className="text-xs text-secondary-light dark:text-secondary-dark">{item.label}</p>
               </div>
             ))}
           </div>

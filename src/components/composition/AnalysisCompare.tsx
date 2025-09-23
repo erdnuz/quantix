@@ -13,7 +13,7 @@ interface AnalysisCompareProps {
 export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, prices }) => {
   const formatPercentage = (value: number) => {
     const percentage = ((value - 1) * 100).toFixed(2);
-    const colorClass = parseFloat(percentage) >= 0 ? "text-green-600" : "text-red-600";
+    const colorClass = parseFloat(percentage) >= 0 ? "text-good" : "text-bad";
     return <span className={`${colorClass}`}>({percentage}%)</span>;
   };
 
@@ -38,15 +38,15 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
 
       const colorClass =
         value < 3
-          ? "text-green-600"
+          ? "text-green-500 dark:text-green-400"
           : value < 4
-          ? "text-gray-400"
+          ? "text-gray-500 dark:text-gray-400"
           : value < 6
-          ? "text-red-600"
-          : "text-gray-500";
+          ? "text-red-500 dark:text-red-400"
+          : "text-gray-400 dark:text-gray-500";
 
       return (
-        <h3 className={`text-sm md:text-base font-medium ${colorClass} m-0`}>
+        <h3 className={`text-sm md:text-base  font-medium ${colorClass} m-0`}>
           {text}
         </h3>
       );
@@ -54,7 +54,7 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
 
     // Other metrics
     return (
-      <h3 className="text-sm md:text-base font-medium m-0">
+      <h3 className="text-sm md:text-base font-medium m-0 text-primary-light dark:text-primary-dark">
         {value ? Number(value).toFixed(2) : "NaN"}{" "}
         {value ? formatPercentage(value / prices[ticker.ticker]) : null}
       </h3>
@@ -62,15 +62,17 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
   };
 
   return (
-    <div className="border border-gray-300 rounded-xl mt-4 p-5 bg-gray-50 flex flex-col gap-3">
+    <div className="border border-border-light dark:border-border-dark rounded-xl mt-4 p-5 shadow-lg bg-surface-light dark:bg-surface-dark flex flex-col gap-3">
       <div className="w-full">
         {/* Header */}
         <div className="flex justify-between items-center py-2">
-          <h1 className="text-lg font-semibold flex-1">Ticker</h1>
+          <h1 className="text-lg font-semibold flex-1 text-primary-light dark:text-primary-dark">
+            Ticker
+          </h1>
           {metrics.map((metric, i) => (
             <h2
               key={i}
-              className="text-base font-semibold flex-1 text-center"
+              className="text-base font-semibold flex-1 text-center text-primary-light dark:text-primary-dark"
             >
               {metric.title}
             </h2>
@@ -81,9 +83,9 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
         {tickers.map((ticker, i) => (
           <div
             key={i}
-            className="flex justify-between items-center py-2 border-t border-gray-200"
+            className="flex justify-between items-center py-2 border-t border-border-light dark:border-border-dark"
           >
-            <h2 className="text-sm md:text-base font-medium flex-1">
+            <h2 className="text-sm md:text-base font-medium flex-1 text-primary-light dark:text-primary-dark">
               {ticker.ticker}
             </h2>
             {metrics.map((metric, j) => (

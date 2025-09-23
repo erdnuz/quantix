@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '../primitive';
 
 const AFF_ID = 135175;
@@ -13,19 +13,20 @@ interface ChartProps {
 export const Chart: React.FC<ChartProps> = ({
   symbol = 'AAPL',
   width = '100%',
-  height = 420, // define a fixed height or use parent with relative height
+  height = 420,
 }) => {
   const container = useRef<HTMLDivElement>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>(
+    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  );
 
   const handleClick = () => {
     const url = `https://www.tradingview.com/chart/?symbol=${symbol}&aff_id=${AFF_ID}`;
     window.open(url, '_blank');
   };
 
-  useEffect(() => {
+  const renderWidget = () => {
     if (!container.current) return;
-
-    // Clear previous content
     container.current.innerHTML = '';
 
     const script = document.createElement('script');
@@ -33,12 +34,11 @@ export const Chart: React.FC<ChartProps> = ({
       'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
     script.async = true;
 
-    // TradingView widget config
     script.innerHTML = JSON.stringify({
       symbol: symbol,
       interval: 'D',
       timezone: 'Etc/UTC',
-      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+      theme: theme,
       style: '1',
       autosize: true,
       hide_top_toolbar: true,
@@ -47,14 +47,27 @@ export const Chart: React.FC<ChartProps> = ({
     });
 
     container.current.appendChild(script);
-  }, [symbol]);
+  };
+
+  useEffect(() => {
+    renderWidget();
+
+    // Listen for changes to prefers-color-scheme
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const listener = (e: MediaQueryListEvent) => setTheme(e.matches ? 'dark' : 'light');
+    mediaQuery.addEventListener('change', listener);
+
+    return () => {
+      mediaQuery.removeEventListener('change', listener);
+    };
+  }, [symbol, theme]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-full" style={{ width }}>
       <div
         ref={container}
         id={'tradingview_' + symbol}
-        className="w-full rounded-lg border border-border-light bg-light"
+        className="w-full rounded-lg border border-border-light dark:border-border-dark"
         style={{ height }}
       ></div>
 

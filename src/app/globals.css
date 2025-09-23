@@ -1,81 +1,54 @@
-
 @import "tailwindcss";
 
 @theme {
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  /* Neutral / Background Colors */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-bg-primary-light: #FFFFFF;        /* pure white */
-  --color-bg-primary-dark: #0A0A0A;         /* deep black */
-  --color-bg-secondary-light: #F9FAFB;      /* slightly brighter background */
-  --color-bg-secondary-dark: #181818;       /* true dark surface */
-  --color-bg-surface-light: #F3F4F6;        /* cards, panels, surfaces */
-  --color-bg-surface-dark: #1F1F1F;
+  /* Neutral Colors */
+  --color-light: #f9fafb;   
+  --color-dark: #101828;  
+  
+  --color-surface-light: #f3f4f6;  /* slightly darker than #f9fafb */
+  --color-surface-dark: #1a1f40;   /* slightly darker than #101828 */
+  
+  --color-surface-light-hover: #eceff1;   /* between #f3f4f6 and #e5e7eb */
+  --color-surface-dark-hover: #19223a;    /* between #1a1f40 and #1e2939 */
+  /* slightly darker than dark surface */
 
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  /* Text Colors */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-text-default-light: #1F2937;      /* main text on light bg */
-  --color-text-default-dark: #F3F4F6;       /* main text on dark bg */
-  --color-text-secondary-light: #4B5563;    /* muted / secondary text on light bg */
-  --color-text-secondary-dark: #9CA3AF;     /* muted / secondary text on dark bg */
-  --color-text-accent-light: #374151;       /* headings / accent text light mode */
-  --color-text-accent-dark: #D1D5DB;        /* headings / accent text dark mode */
 
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
+  --color-surface-light-secondary: #e5e7eb;  /* slightly darker than light surface */
+  --color-surface-dark-secondary: #1e2939; 
+
+  --color-primary-light: #101828;  /* slightly richer slate for text on light bg */
+  --color-primary-dark: #f9fafb; 
+  
+  --color-secondary-light: #4B5563; /* muted gray for secondary text */
+  --color-secondary-dark: #9CA3AF;  /* muted gray for dark mode */
+  --color-accent-light: #1F2937;    /* darker accent for headings, improved contrast */
+  --color-accent-dark: #D1D5DB;     /* bright accent for dark mode */
+  --color-border-light: #E2E8F0;    /* subtle border with modern tone */
+  --color-border-dark: #2D2D2D;     /* slightly softer than pure black */
+
   /* Brand Colors */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-brand-primary-light: #1E3A8A;     /* primary brand blue */
-  --color-brand-primary-dark: #93C5FD;      /* softer blue dark mode */
-  --color-brand-hover-light: #2563EB;       /* vivid blue hover */
-  --color-brand-hover-dark: #60A5FA;
-  --color-brand-border-light: #E0E7FF;      /* brand border */
-  --color-brand-border-dark: #3B82F6;       /* brand border dark mode */
+  --color-brand-light: #1D4ED8;     /* more vivid primary blue for light mode */
+  --color-brand-dark: #60A5FA;      /* softer yet noticeable blue for dark mode */
+  --color-brand-hover: #2563EB;     /* more vibrant hover */
+  --color-brand-border: #DBEAFE;    /* subtle blue border for light mode */
 
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  /* Status / Feedback Colors */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-status-success: #10B981;          /* green / good */
-  --color-status-error: #EF4444;            /* red / bad */
-  --color-status-warning: #F59E0B;          /* yellow / warning */
-  --color-status-info: #3B82F6;             /* blue / info */
+  /* Status Colors */
+  --color-good: #22C55E;   /* brighter success green */
+  --color-bad: #EF4444;    /* red remains strong for errors */
+  --color-warning: #FBBF24; /* warm yellow for warnings */
+  --color-info: #3B82F6;    /* consistent info blue */
 
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  /* Border Colors */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-border-default-light: #E5E7EB;    /* default border light */
-  --color-border-default-dark: #2D2D2D;     /* default border dark */
-  --color-border-muted-light: #D1D5DB;      /* muted / subtle borders */
-  --color-border-muted-dark: #4B5563;
+  /* Hover States */
+  --color-primary-hover: #111827;    /* deeper slate hover */
+  --color-secondary-hover: #6B7280;  /* muted hover unchanged */
+  --color-brand-hover: #1E40AF;      /* more prominent brand hover */
 
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  /* Hover / Focus / Active States */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-hover-primary-light: #374151;     /* darker hover text */
-  --color-hover-primary-dark: #E5E7EB;
-  --color-hover-secondary-light: #6B7280;   /* muted hover text */
-  --color-hover-secondary-dark: #9CA3AF;
-  --color-hover-brand-light: #2563EB;
-  --color-hover-brand-dark: #60A5FA;
+  /* Border States */
+  --color-primary-border: #CBD5E1;   /* subtle border for primary elements */
+  --color-secondary-border: #9CA3AF; /* muted border */
+  --color-brand-border: #BFDBFE;     /* slightly stronger blue for brand */
 
-  --color-focus-ring-light: #3B82F6;
-  --color-focus-ring-dark: #60A5FA;
-
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  /* Shadows / Elevation (optional) */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-shadow-light: rgba(0, 0, 0, 0.1);
-  --color-shadow-dark: rgba(0, 0, 0, 0.5);
-
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  /* Misc / Semantic Colors */
-  /* --color---color---color---color---color---color---color---color---color---color---color---color---color---color---color- */
-  --color-link-light: #1D4ED8;              /* links in light mode */
-  --color-link-dark: #93C5FD;               /* links in dark mode */
-  --color-link-hover-light: #2563EB;
-  --color-link-hover-dark: #60A5FA;
-
-  --color-disabled-light: #9CA3AF;          /* disabled elements */
-  --color-disabled-dark: #6B7280;
+  /* Shadows / Elevation */
+  --color-shadow-light: rgba(0, 0, 0, 0.08); /* lighter shadow for cleaner design */
+  --color-shadow-dark: rgba(0, 0, 0, 0.4);   /* softer shadow for dark mode */
 }
-

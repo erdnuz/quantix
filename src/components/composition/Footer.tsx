@@ -11,7 +11,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ openEdit, logout }) => {
   return (
-    <footer className="bg-white border-t border-gray-200 py-8">
+    <footer className=" border-t border-border-light dark:border-border-dark py-8">
       <div className="max-w-screen-xl mx-auto px-6 sm:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Logo Section */}
@@ -21,34 +21,39 @@ export const Footer: React.FC<FooterProps> = ({ openEdit, logout }) => {
 
           {/* Navigation Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800">Navigation</h3>
+            <h3 className="text-lg font-semibold text-accent-light dark:text-accent-dark">Navigation</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/portfolios/" className="text-gray-600 hover:text-blue-600">Portfolios</Link>
+                <Link href="/portfolios/" className="text-secondary-light dark:text-secondary-dark hover:text-primary-light dark:hover:text-primary-dark">
+                  Portfolios
+                </Link>
               </li>
               <li>
-                <Link href="/screener" className="text-gray-600 hover:text-blue-600">Screener</Link>
+                <Link href="/screener" className="text-secondary-light dark:text-secondary-dark hover:text-primary-light dark:hover:text-primary-dark">
+                  Screener
+                </Link>
               </li>
               <li>
-                <Link href="/compare" className="text-gray-600 hover:text-blue-600">Compare</Link>
-              </li>
-              <li>
-                <Link href="/macro" className="text-gray-600 hover:text-blue-600">Macro Risk</Link>
+                <Link href="/compare" className="text-secondary-light dark:text-secondary-dark hover:text-primary-light dark:hover:text-primary-dark">
+                  Compare
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Account Actions */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800">Account</h3>
+            <h3 className="text-lg font-semibold text-accent-light dark:text-accent-dark">Account</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/dash" className="text-gray-600 hover:text-blue-600">My Dashboard</Link>
+                <Link href="/dash" className="text-secondary-light dark:text-secondary-dark hover:text-primary-light dark:hover:text-primary-dark">
+                  My Dashboard
+                </Link>
               </li>
               <li>
                 <button
                   onClick={openEdit}
-                  className="w-full text-left text-gray-600 hover:text-blue-600"
+                  className="w-full text-left cursor-pointer text-secondary-light dark:text-secondary-dark hover:text-primary-light dark:hover:text-primary-dark"
                 >
                   Edit Profile
                 </button>
@@ -56,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({ openEdit, logout }) => {
               <li>
                 <button
                   onClick={logout}
-                  className="w-full text-left text-gray-600 hover:text-blue-600"
+                  className="w-full text-left cursor-pointer text-secondary-light dark:text-secondary-dark hover:text-primary-light dark:hover:text-primary-dark"
                 >
                   Logout
                 </button>
@@ -66,7 +71,7 @@ export const Footer: React.FC<FooterProps> = ({ openEdit, logout }) => {
         </div>
 
         {/* Footer Bottom */}
-        <div className="mt-8 text-center text-gray-600">
+        <div className="mt-8 text-center text-secondary-light dark:text-secondary-dark">
           <p>&copy; 2025 Quantix. All Rights Reserved.</p>
         </div>
       </div>

@@ -13,67 +13,47 @@ interface ButtonProps {
 export const Button: React.FC<ButtonProps> = ({
   type = "primary",
   label,
-  className,
+  className = "",
   disabled = false,
   onClick,
   icon = "none",
 }) => {
   const baseClasses =
-    "flex items-center gap-1.5 px-4 py-2 rounded-md font-medium transition-colors duration-150 border cursor-pointer";
+    "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors duration-150 border cursor-pointer justify-center";
 
-  // Theme-based colors with borders + hover backgrounds
-  const typeClasses = {
+  const typeClasses: Record<string, string> = {
     primary: `
-      bg-primary-light text-light 
-      border-border-light 
-      hover:bg-secondary-light 
-      dark:bg-primary-dark dark:text-dark 
-      dark:border-border-dark 
-      dark:hover:bg-secondary-dark
+      bg-primary-light text-light border-border-light
+      hover:bg-primary-light-hover
+      dark:bg-primary-dark dark:text-dark dark:border-border-dark
+      dark:hover:bg-primary-dark-hover
     `,
     secondary: `
-      bg-surface-light text-secondary-light 
-      border-border-light 
-      hover:bg-border-light 
-      dark:bg-surface-dark dark:text-secondary-dark 
-      dark:border-border-dark 
-      dark:hover:bg-border-dark
+      bg-surface-light text-secondary-light border-border-light
+      hover:bg-surface-light-hover
+      dark:bg-surface-dark dark:text-secondary-dark dark:border-border-dark
+      dark:hover:bg-surface-dark-hover
     `,
     brand: `
-      bg-brand-light text-light 
-      border-border-light 
-      hover:bg-primary-light 
-      dark:bg-accent-dark dark:text-dark 
-      dark:border-border-dark 
-      dark:hover:bg-primary-dark
+      bg-brand-light text-light border-border-light
+      hover:bg-brand-hover
+      dark:bg-accent-dark dark:text-dark dark:border-border-dark
+      dark:hover:bg-accent-dark-hover
     `,
   };
 
   const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
 
-  // If destructive/trash action, override colors with accent
-  const iconClasses =
-    icon !== "none"
-      ? `
-        bg-accent-light dark:bg-accent-dark text-light dark:text-dark 
-        hover:bg-primary-light dark:hover:bg-primary-dark
-      `
-      : "";
+  const iconComponent =
+    icon === "trash" ? <IconTrash size={18} /> : icon === "plus" ? <IconAdd size={18} /> : null;
 
   return (
     <button
-      className={`
-        ${baseClasses}
-        ${typeClasses[type]}
-        ${disabledClasses}
-        ${iconClasses}
-        ${className || ""}
-      `}
+      className={`${baseClasses} ${typeClasses[type]} ${disabledClasses} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
-      {icon === "trash" && <IconTrash size={18} />}
-      {icon === "plus" && <IconAdd size={24} />}
+      {iconComponent}
       <span>{label}</span>
     </button>
   );

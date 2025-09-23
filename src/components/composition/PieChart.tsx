@@ -12,53 +12,52 @@ interface PieChartProps {
 }
 
 export const PieChart: React.FC<PieChartProps> = ({ title = '', data = {}, mult = true }) => {
-  const [isDark, setIsDark] = useState(
-    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
+  const [isDark, setIsDark] = useState<boolean>(
+    typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
   );
 
   const chartRef = useRef<any>(null);
 
+  // Watch for system theme changes
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
   const getGradientColors = (ctx: CanvasRenderingContext2D, count: number) => {
-  const baseColors = [
-    '#005C8A', '#2D6F4E', '#C9A500', '#F34A29', '#7F4BC2',
-    '#D62B2B', '#B49B4C', '#757575', '#4C8B3D', '#9B2E76'
-  ];
+    const baseColors = [
+      '#005C8A', '#2D6F4E', '#C9A500', '#F34A29', '#7F4BC2',
+      '#D62B2B', '#B49B4C', '#757575', '#4C8B3D', '#9B2E76'
+    ];
 
-  const lighten = (color: string, percent: number) => {
-    const f = parseInt(color.slice(1), 16);
-    const R = f >> 16;
-    const G = (f >> 8) & 0x00ff;
-    const B = f & 0x0000ff;
-    const p = percent / 100;
-    const newColor =
-      '#' +
-      (
-        0x1000000 +
-        (Math.round(R + (255 - R) * p) << 16) +
-        (Math.round(G + (255 - G) * p) << 8) +
-        Math.round(B + (255 - B) * p)
-      ).toString(16).slice(1);
-    return newColor;
+    const lighten = (color: string, percent: number) => {
+      const f = parseInt(color.slice(1), 16);
+      const R = f >> 16;
+      const G = (f >> 8) & 0x00ff;
+      const B = f & 0x0000ff;
+      const p = percent / 100;
+      const newColor =
+        '#' +
+        (
+          0x1000000 +
+          (Math.round(R + (255 - R) * p) << 16) +
+          (Math.round(G + (255 - G) * p) << 8) +
+          Math.round(B + (255 - B) * p)
+        ).toString(16).slice(1);
+      return newColor;
+    };
+
+    return Array.from({ length: count }).map((_, i) => {
+      const color = baseColors[i % baseColors.length];
+      const gradient = ctx.createRadialGradient(150, 150, 10, 150, 150, 160);
+      gradient.addColorStop(0, lighten(color, 40)); // lighter center
+      gradient.addColorStop(1, color);             // darker edge
+      return gradient;
+    });
   };
-
-  return Array.from({ length: count }).map((_, i) => {
-    const color = baseColors[i % baseColors.length];
-    const gradient = ctx.createRadialGradient(150, 150, 10, 150, 150, 160);
-    gradient.addColorStop(0, lighten(color, 40)); // lighter center
-    gradient.addColorStop(1, color);             // darker edge
-    return gradient;
-  });
-};
-
-
 
   const [gradients, setGradients] = useState<(string | CanvasGradient)[]>([]);
 
@@ -68,7 +67,6 @@ export const PieChart: React.FC<PieChartProps> = ({ title = '', data = {}, mult 
     const ctx = chart.ctx;
     const count = Object.keys(data).length;
     setGradients(getGradientColors(ctx, count));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, isDark]);
 
   const chartData = {
@@ -85,7 +83,7 @@ export const PieChart: React.FC<PieChartProps> = ({ title = '', data = {}, mult 
             ].slice(0, Object.keys(data).length),
         hoverOffset: 20,
         borderWidth: 0,
-        hoverBorderColor: isDark ? '#222' : '#fff',
+        hoverBorderColor: isDark ? '#19223A' : '#eceff1',
       },
     ],
   };
@@ -107,13 +105,14 @@ export const PieChart: React.FC<PieChartProps> = ({ title = '', data = {}, mult 
           boxHeight: 12,
           usePointStyle: true,
           pointStyle: 'circle',
-          color: isDark ? '#FFF' : '#000',
+          color: isDark ? '#f3f4f6' : '#1a1f40',
           font: { size: 14, family: 'Roboto, sans-serif', weight: '400' },
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        titleColor: '#fff',
+        backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.95)',
+        titleColor: isDark ? '#fff' : '#000',
+        bodyColor: isDark ? '#fff' : '#000',
         padding: 10,
         cornerRadius: 8,
         callbacks: {
