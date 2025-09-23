@@ -66,7 +66,7 @@ const Cell: React.FC<CellProps> = ({
       {isRanking ? (
         <Ranking barOnly score={children ? children.toFixed(2) : "none"} />
       ) : isPercent && !isHeader && !isNeutral ? (
-        <p className={`w-full text-left font-semibold ${textColor}`}>
+        <p className={`w-full text-left font-semibold ${children&&textColor}`}>
           {children ? `${(100 * children).toFixed(2)}%` : "NaN"}
         </p>
       ) : isPercent && !isHeader ? (
@@ -78,9 +78,9 @@ const Cell: React.FC<CellProps> = ({
           {children ? `$${Number(children).toFixed(2)}` : "NaN"}
         </p>
       ) : typeof children === "number" && !isNaN(children) ? (
-        <p className={isColored?textColor:"text-primary-light dark:text-primary-dark"}>{isColored&&children>=0&&'+'}{isColored?children:formatLargeNumber(children)}</p>
+        <p className={isColored?textColor + " font-semibold":"text-primary-light dark:text-primary-dark"}>{isColored&&children>=0&&'+'}{isColored?children:formatLargeNumber(children)}</p>
       ) : (
-        <p className={`truncate max-w-[150px] text-primary-light dark:text-primary-dark ${textColor}`}>{children || "NaN"}</p>
+        <p className={`truncate max-w-[150px] text-primary-light dark:text-primary-dark`}>{children || "NaN"}</p>
       )}
 
       {isSortable ? (

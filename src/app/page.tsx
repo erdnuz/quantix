@@ -8,24 +8,28 @@ const Home: React.FC = () => {
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      const initialTheme = (document.documentElement.getAttribute('data-theme') as 'light' | 'dark') || 'light';
-      setCurrentTheme(initialTheme);
-    }
+    if (typeof document === 'undefined') return;
 
+    // Initial theme
+    const initialTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    setCurrentTheme(initialTheme);
+
+    // Observe class changes on <html>
     const themeObserver = new MutationObserver(() => {
-      if (typeof document !== 'undefined') {
-        setCurrentTheme(document.documentElement.getAttribute('data-theme') as 'light' | 'dark');
-      }
+      setCurrentTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
     });
 
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
 
     return () => themeObserver.disconnect();
   }, []);
 
+
   return (
-    <div className="flex flex-col gap-16 bg-light dark:bg-dark">
+    <div className="flex flex-col gap-16 bg-bg-primary-light dark:bg-dark">
       <Hero 
         title="Quantix" 
         subtitle="Empowering Investors with Data-Driven Insights" 

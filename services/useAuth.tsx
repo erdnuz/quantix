@@ -79,6 +79,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     await signOut(auth);
     saveUser(null);
     localStorage.removeItem("saveLogin");
+    return
   };
 
   return (

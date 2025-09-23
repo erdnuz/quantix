@@ -29,7 +29,6 @@ const formatNumber = (number: number) => {
 
 const PortfolioPage = () => {
   const { currentUser } = useAuth();
-  const [selected, setSelected] = useState(0);
   const [isFavourite, setIsFavourite] = useState(false);
   const [favouriteCount, setFavouriteCount] = useState<number>(0);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
@@ -178,7 +177,7 @@ const PortfolioPage = () => {
         ))}
       </div>
 
-      {invalid && !loading && (
+      {invalid && !loading ? (
         <div className="flex flex-col justify-center items-center h-64 mt-10">
           <h1 className="text-xl font-bold">
             This portfolio has no holdings or history...
@@ -192,12 +191,12 @@ const PortfolioPage = () => {
             </h2>
           )}
         </div>
-      )}
+      ): null}
 
-      {loading && <Loading />}
+      {loading ? <Loading />: null}
 
       {/* Performance Metrics */}
-      {data?.allTimeGrowth && (
+      {data?.allTimeGrowth ? (
         <>
           <h3 className="text-xl md:text-xl font-bold mt-10 mb-4  pt-6">
             Performance Metrics
@@ -258,16 +257,16 @@ const PortfolioPage = () => {
           </div>
 
         </>
-      )}
+      ): null}
 
       {/* Chart */}
-      {chartData.portfolio.length > 3 && (
+      {chartData.portfolio.length > 10 ? (
         <div className="mt-8 w-full h-full">
           <BaselineChart data={chartData} />
         </div>
-      )}
+      ): null}
 
-      {data?.holdingsDict && (
+      {data?.holdingsDict ? (
   <>
     <h3 className="text-xl md:text-xl font-bold mt-10 mb-4">
       Holdings
@@ -280,13 +279,13 @@ const PortfolioPage = () => {
           public:['ticker','name', 'asset-class','sector','shares', 'avg_buy','price', 'open_pnl','weight', 'yield'],
           price:['avg_buy','price'],
           percent:['open_pnl', 'weight', 'yield'],
-          neutral: ['yield']
+          neutral: ['yield', 'weight']
         }}
         defSort='weight'
       />
     </div>
   </>
-)}
+): null}
 
 {data?.actionsDict && (
   <>
@@ -350,6 +349,10 @@ const PortfolioPage = () => {
             />
           </div>
 
+          {Object.values(data?.assetContrib || {}).reduce(
+            (acc, val) => acc + val,
+            0
+          ) > 0&&<>
           <h3 className="text-xl md:text-xl font-bold mt-10 mb-4">
             Contribution Breakdown
           </h3>
@@ -386,6 +389,7 @@ const PortfolioPage = () => {
               }
             />
           </div>
+          </>}
         </>
       )}
 

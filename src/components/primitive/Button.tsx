@@ -40,7 +40,7 @@ export const Button: React.FC<ButtonProps> = ({
       dark:hover:bg-border-dark
     `,
     brand: `
-      bg-accent-light text-light 
+      bg-brand-light text-light 
       border-border-light 
       hover:bg-primary-light 
       dark:bg-accent-dark dark:text-dark 

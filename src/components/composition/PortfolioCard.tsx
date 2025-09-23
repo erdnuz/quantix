@@ -13,9 +13,9 @@ export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
       <div className="flex flex-col w-full max-w-[600px] mb-6 p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer bg-white dark:bg-gray-800">
         
         {/* Top section: Title and Date */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-row gap-1 justify-between items-baseline">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-          <p className="text-xs text-gray-400 dark:text-gray-300">{created}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-300">Created {created}</p>
         </div>
 
         {/* Description */}

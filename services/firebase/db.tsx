@@ -151,9 +151,9 @@ export const getPortfolios = async (): Promise<Portfolio[]> => {
     const portfolios: Portfolio[] = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    } as Portfolio));
+    } as Portfolio)).filter((f) => {return f.cagr != null });;
 
-    return portfolios;
+    return portfolios
   } catch (error) {
     console.error('Error fetching portfolios:', error);
     return [];
@@ -551,32 +551,6 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
   }
 }
 
-export const getUserFavourites = async ({favourites}: {favourites: string[]}): Promise<Portfolio[]> => {
-  try {
-    if (!favourites || favourites.length === 0) return [];
-
-    const portfoliosCollection = collection(firestore, 'portfolios');
-
-    // Firestore doesn't allow `where in` with >10 items, so batch if needed
-    const batchSize = 10;
-    const result: Portfolio[] = [];
-
-    for (let i = 0; i < favourites.length; i += batchSize) {
-      const batchIds = favourites.slice(i, i + batchSize);
-      const q = query(portfoliosCollection, where('__name__', 'in', batchIds));
-      const snapshot = await getDocs(q);
-      snapshot.forEach((doc) => {
-        result.push({ id: doc.id, ...doc.data() } as Portfolio);
-      });
-    }
-
-    return result;
-  } catch (error) {
-    console.error('Error fetching user favourites:', error);
-    return [];
-  }
-};
-
 
 
 
@@ -771,7 +745,10 @@ export async function getPortfolioDoc({ id }: { id: string }): Promise<Portfolio
     if (!docSnap.exists) return null;
     const data = docSnap.data();
     if (!data) return null;
-    return data as Portfolio;
+    return {
+      id: docSnap.id,
+      ...data,
+    } as Portfolio;
   } catch (error) {
     console.error('Error fetching portfolio document:', error);
     return null;
@@ -793,6 +770,32 @@ export async function getFavourites({ userId }: { userId: string }): Promise<Fav
     })) as Favourite[];
   } catch (error) {
     console.error('Error fetching favourites:', error);
+    return [];
+  }
+}
+
+export async function getUserFavouritePortfolios({ userId }: { userId: string }): Promise<Portfolio[]> {
+  try {
+    const favsRef = collection(firestore, "favourites");
+    const q = query(favsRef, where("fromUser", "==", userId));
+    const querySnap = await getDocs(q);
+
+    const portfolioPromises = querySnap.docs.map(async (docSnap) => {
+      const favData = docSnap.data();
+      const portfolioId = favData.toPortfolio;
+      if (!portfolioId) return null;
+
+      const portfolioRef = doc(firestore, "portfolios", portfolioId);
+      const portfolioSnap = await getDoc(portfolioRef);
+
+      if (!portfolioSnap.exists()) return null;
+      return { id: portfolioSnap.id, ...portfolioSnap.data() } as Portfolio;
+    });
+
+    const portfolios = await Promise.all(portfolioPromises);
+    return portfolios.filter((p): p is Portfolio => p !== null);
+  } catch (error) {
+    console.error("Error fetching favourite portfolios:", error);
     return [];
   }
 }

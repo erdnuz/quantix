@@ -119,7 +119,10 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
                   ${index === filteredSuggestions.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
                 `}
-                onClick={() => setDropdownVisible(false)}
+                onClick={() => {
+                  setDropdownVisible(false)
+                  setQuery("")
+                }}
               >
                 <span className="font-semibold">{ticker}</span> - <span>{name}</span>
               </Link>

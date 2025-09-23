@@ -58,11 +58,11 @@ export const Login: React.FC<LoginProps> = ({
               </button>
               <button
                 className="block w-full px-4 py-3 text-bad hover:bg-red-100 dark:hover:bg-red-900 text-left font-medium border-t border-border-light dark:border-border-dark"
-                onClick={() => {
-                  signOut();
+                onClick={async () => {
+                  await signOut(); // make sure you pass your auth instance
                   closeDropdown();
-                  window.location.href = "/";
                 }}
+
               >
                 Logout
               </button>
