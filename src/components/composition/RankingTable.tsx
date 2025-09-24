@@ -1,28 +1,28 @@
-import { AssetTab, FullETF, FullStock } from '../../../types';
+import { AssetTab } from '../../../types';
 import { Ranking } from '../primitive';
 
-export type RankingOption = {
+export type RankingOption<T> = {
   display: string;
-  column: keyof FullStock | keyof FullETF;
+  column: keyof T;
   percent: boolean;
   goodBad: boolean;
 };
 
-interface RankingTableProps {
+interface RankingTableProps<T> {
   currentTab: AssetTab;
-  options: Partial<Record<AssetTab, RankingOption[]>>;
-  data?: Record<string, number>;
+  options: Partial<Record<AssetTab, RankingOption<T>[]>>;
+  data?: T;
   t?: number;
   header?: string;
 }
 
-export function RankingTable({
+export function RankingTable<T>({
   currentTab,
   options,
-  data = {},
+  data = {} as T,
   t = 0,
   header = '',
-}: RankingTableProps) {
+}: RankingTableProps<T>) {
   if (!data) return null;
 
   const formatNumber = (number: number) => {
@@ -37,36 +37,44 @@ export function RankingTable({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      {/* Header row in grid */}
+      {/* Header row */}
       <div
-        className="grid w-full gap-6 items-center font-semibold text-base md:text-sm"
-        style={{ gridTemplateColumns: `140px ${t==0?'40px':''} 1fr 1fr` }} // metric | value | sector/category | overall
+        className={`
+          grid w-full gap-2 sm:gap-6 items-center font-semibold
+          text-base md:text-sm
+          ${t === 0
+            ? "[grid-template-columns:80px_40px_1fr_1fr] sm:[grid-template-columns:140px_40px_1fr_1fr]"
+            : "[grid-template-columns:80px_1fr_1fr] sm:[grid-template-columns:140px_1fr_1fr]"}
+        `}
       >
-        <div className="text-2xl">{header}</div>
-        {t==0&&<div></div>}
-        <div className="text-lg text-center">{data?.V ? 'Sector' : 'Category'}</div>
-        <div className="text-lg text-center">Overall</div>
+        <div className="text-lg sm:text-2xl">{header}</div>
+        {t === 0 && <div></div>}
+        <div className="text-sm sm:text-lg text-left md:text-center">
+          {data?.['assetClass' as keyof T]=='Equity'? 'Sector' : 'Category'}
+        </div>
+        <div className="text-sm sm:text-lg text-left md:text-center">Overall</div>
       </div>
 
       {/* Data rows */}
       {options[currentTab]?.map((v) => {
-        if (!data[v.column]) return null;
-
         const val = data[v.column];
+        if (val === undefined) return null;
 
         return (
           <div
-            key={v.column}
-            className="grid w-full gap-6 items-end"
-            style={{ gridTemplateColumns: `140px ${t==0?'40px':''} 1fr 1fr` }}
+            key={String(v.column)}
+            className={`grid w-full gap-2 sm:gap-6 items-center
+            ${t === 0
+              ? "[grid-template-columns:80px_40px_1fr_1fr] sm:[grid-template-columns:140px_40px_1fr_1fr]"
+              : "[grid-template-columns:80px_1fr_1fr] sm:[grid-template-columns:140px_1fr_1fr]"}`}
           >
             {/* Metric */}
             <div className="flex flex-col justify-end">
               <h3
-                className={`font-bold ${
+                className={`font-bold truncate ${
                   t === 1 && v.column === 'qOverall'
-                    ? 'text-lg md:text-base'
-                    : 'text-base md:text-sm'
+                    ? 'text-sm sm:text-base md:text-lg'
+                    : 'text-xs sm:text-sm md:text-base'
                 }`}
               >
                 {v.display}
@@ -76,25 +84,25 @@ export function RankingTable({
             {/* Value column */}
             {t === 0 && (
               <div className="flex flex-col justify-end">
-                <h3 className="text-base md:text-sm">
-                  {v.percent ? formatPercent(val) : formatNumber(val)}
+                <h3 className="text-xs sm:text-sm md:text-base">
+                  {v.percent ? formatPercent(Number(val)) : formatNumber(Number(val))}
                 </h3>
               </div>
             )}
 
             {/* Sector / Category */}
-            <div className="flex justify-end items-end">
+            <div className="flex justify-center items-center">
               <Ranking
-                score={data[v.column + 'PS']}
+                score={data[v.column as string + 'PS' as keyof T] as number}
                 large={t === 1 && v.column === 'qOverall'}
                 goodBad={v.goodBad}
               />
             </div>
 
             {/* Overall */}
-            <div className="flex justify-end items-end">
+            <div className="flex justify-center items-center">
               <Ranking
-                score={data[t === 0 ? v.column + 'PO' : v.column]}
+                score={data[t === 0 ? (v.column as string + 'PO' as keyof T) : v.column] as number}
                 large={t === 1 && v.column === 'qOverall'}
                 goodBad={v.goodBad}
               />
@@ -102,7 +110,6 @@ export function RankingTable({
           </div>
         );
       })}
-
     </div>
   );
 }

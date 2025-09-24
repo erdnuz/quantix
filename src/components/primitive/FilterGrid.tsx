@@ -30,7 +30,7 @@ export const FilterGrid: React.FC<FilterGridProps> = ({
         {cols.map((col, j) => (
           <div
             key={`col-${j}`}
-            className="w-16 text-center flex items-end font-sans text-sm"
+            className="w-10 sm:w-15 text-center flex items-end font-sans text-xs sm:text-sm"
           >
             {col}
           </div>
@@ -41,7 +41,7 @@ export const FilterGrid: React.FC<FilterGridProps> = ({
       {rows.map((row, i) => (
         <div key={`row-${i}`} className="flex gap-1 justify-end">
           {/* Left label */}
-          <div className="flex-[0.4] flex items-center justify-end mr-1 font-sans text-sm">
+          <div className="flex-[0.4] flex items-center justify-end mr-1 font-sans text-xs sm:text-sm">
             {row}
           </div>
           {/* Grid cells */}
@@ -52,7 +52,7 @@ export const FilterGrid: React.FC<FilterGridProps> = ({
               <div
                 key={`cell-${i}-${j}`}
                 className={`
-                  h-15 w-15 rounded-md border cursor-pointer
+                  h-10 sm:h-15 w-10 sm:w-15 rounded-md border cursor-pointer
                   ${isSelected
                     ? 'bg-blue-600 border-blue-500'
                     : 'bg-blue-400 border-blue-400 hover:bg-blue-500'}

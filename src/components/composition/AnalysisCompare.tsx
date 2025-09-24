@@ -2,15 +2,22 @@ import React from "react";
 
 interface TickerData {
   ticker: string;
-  [key: string]: any; // allows an-rec, an-max, an-avg, an-min keys
+  anRec?: number | null;
+  anMax?: number | null;
+  anAvg?: number | null;
+  anMin?: number | null;
 }
+
 
 interface AnalysisCompareProps {
   tickers: TickerData[];
   prices: { [ticker: string]: number };
 }
 
-export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, prices }) => {
+export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({
+  tickers,
+  prices,
+}) => {
   const formatPercentage = (value: number) => {
     const percentage = ((value - 1) * 100).toFixed(2);
     const colorClass = parseFloat(percentage) >= 0 ? "text-good" : "text-bad";
@@ -25,9 +32,9 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
   ];
 
   const renderValue = (key: string, ticker: TickerData) => {
-    const value = ticker[key];
+    const value = ticker[key as keyof TickerData];
+    if (value == null || typeof value !== "number") return null
 
-    // Recommendation column
     if (key === "anRec") {
       let text = "NaN";
       if (value < 2) text = "Strong Buy";
@@ -46,15 +53,14 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
           : "text-gray-400 dark:text-gray-500";
 
       return (
-        <h3 className={`text-sm md:text-base  font-medium ${colorClass} m-0`}>
+        <h3 className={`text-xs sm:text-sm md:text-base font-medium ${colorClass} m-0 truncate`}>
           {text}
         </h3>
       );
     }
 
-    // Other metrics
     return (
-      <h3 className="text-sm md:text-base font-medium m-0 text-primary-light dark:text-primary-dark">
+      <h3 className="text-xs sm:text-sm md:text-base font-medium m-0 text-primary-light dark:text-primary-dark truncate">
         {value ? Number(value).toFixed(2) : "NaN"}{" "}
         {value ? formatPercentage(value / prices[ticker.ticker]) : null}
       </h3>
@@ -62,17 +68,18 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
   };
 
   return (
-    <div className="border border-border-light dark:border-border-dark rounded-xl mt-4 p-5 shadow-lg bg-surface-light dark:bg-surface-dark flex flex-col gap-3">
-      <div className="w-full">
+    <div className="border border-border-light dark:border-border-dark rounded-xl mt-4 p-4 sm:p-5 shadow-lg bg-surface-light dark:bg-surface-dark overflow-x-auto">
+      <div className="w-full sm:min-w-[400px]">
         {/* Header */}
-        <div className="flex justify-between items-center py-2">
-          <h1 className="text-lg font-semibold flex-1 text-primary-light dark:text-primary-dark">
+        <div className="flex items-center py-2">
+          {/* Fixed-width Ticker column */}
+          <h1 className="w-[40px] sm:flex-1 text-sm sm:text-base md:text-lg font-semibold text-primary-light dark:text-primary-dark truncate">
             Ticker
           </h1>
           {metrics.map((metric, i) => (
             <h2
               key={i}
-              className="text-base font-semibold flex-1 text-center text-primary-light dark:text-primary-dark"
+              className={`${metric.key == 'anMax' || metric.key == 'anMin' ? 'hidden sm:flex': ''} flex-1 text-xs sm:text-sm md:text-base font-semibold text-center text-primary-light dark:text-primary-dark truncate min-w-0`}
             >
               {metric.title}
             </h2>
@@ -83,13 +90,14 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({ tickers, price
         {tickers.map((ticker, i) => (
           <div
             key={i}
-            className="flex justify-between items-center py-2 border-t border-border-light dark:border-border-dark"
+            className="flex items-center py-2 border-t border-border-light dark:border-border-dark"
           >
-            <h2 className="text-sm md:text-base font-medium flex-1 text-primary-light dark:text-primary-dark">
+            {/* Fixed-width Ticker */}
+            <h2 className="w-[40px] sm:flex-1 text-xs sm:text-sm md:text-base font-medium text-primary-light dark:text-primary-dark truncate">
               {ticker.ticker}
             </h2>
             {metrics.map((metric, j) => (
-              <div key={j} className="flex-1 text-center">
+              <div key={j} className={`${metric.key == 'anMax' || metric.key == 'anMin' ? 'hidden sm:flex': ''} flex-1 text-center min-w-0`}>
                 {renderValue(metric.key, ticker)}
               </div>
             ))}

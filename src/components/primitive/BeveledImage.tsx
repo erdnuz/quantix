@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface BeveledImageProps {
   theme: string;
@@ -10,9 +11,10 @@ export const BeveledImage: React.FC<BeveledImageProps> = ({ theme, image }) => {
 
   return (
     <div className="overflow-hidden rounded-xl shadow-md inline-block">
-      <img
+      <Image
         src={imagePath}
         alt={`${image} ${theme}`}
+        unoptimized
         className="block w-full h-auto"
       />
     </div>

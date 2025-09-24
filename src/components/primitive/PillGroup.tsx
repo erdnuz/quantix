@@ -1,5 +1,5 @@
 'use client';
-import React, { memo } from 'react';
+import React from 'react';
 
 interface PillProps<T> {
   size?: 0 | 1;
@@ -27,7 +27,7 @@ function MemoPill<T extends string>({
   const sizeClasses =
     size === 0
       ? 'text-sm py-1.5 px-3'
-      : 'text-base py-2.5 px-5'; // slightly larger for size=1
+      : 'text-sm py-1 px-5'; // slightly larger for size=1
 
   const selectedClasses = selected
     ? 'bg-brand-light text-light dark:bg-brand-dark dark:text-dark'

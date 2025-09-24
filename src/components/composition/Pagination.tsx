@@ -59,8 +59,7 @@ export const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage,
         {getPages().map((page, idx) => (
           <button
             key={idx}
-            className={`
-              w-10 h-10 flex items-center justify-center rounded-md text-sm font-medium
+            className={`text-xs sm:text-sm w-6 h-5 sm:w-10 sm:h-10 flex items-center justify-center rounded-md  font-medium
               ${page === currentPage 
                 ? "bg-accent-light dark:bg-accent-dark text-light dark:text-dark" 
                 : "bg-surface-light dark:bg-surface-dark text-primary-light dark:text-primary-dark hover:bg-secondary-light dark:hover:bg-secondary-dark"}
@@ -83,7 +82,7 @@ export const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage,
       </div>
 
       {/* Go to page input */}
-      <div className="absolute right-0 flex items-center gap-2">
+      <div className="hidden absolute right-0 md:flex items-center gap-2">
         <input
           type="number"
           min={1}
@@ -91,8 +90,19 @@ export const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage,
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Page #"
-          className="w-24 p-2 rounded-md border border-border-light dark:border-border-dark text-center text-primary-light dark:text-primary-dark bg-surface-light dark:bg-surface-dark focus:outline-none focus:ring-1 focus:ring-accent-light dark:focus:ring-accent-dark"
+          className="
+            w-18 lg:w-24 h-12 p-2 
+            text-xs lg:text-base 
+            rounded-md 
+            border border-border-light dark:border-border-dark 
+            text-center 
+            text-primary-light dark:text-primary-dark 
+            bg-surface-light dark:bg-surface-dark 
+            focus:outline-none focus:ring-1 focus:ring-accent-light dark:focus:ring-accent-dark
+            appearance-none
+          "
         />
+
         <Button
           type="brand"
           label="Go"

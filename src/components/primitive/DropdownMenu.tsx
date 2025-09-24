@@ -2,10 +2,11 @@
 import { IconMenu } from "../icons";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { User } from "../../../types";
 
 interface DropdownMenuProps {
   className?: string;
-  currentUser?: any;
+  currentUser?: User | null;
   openAuth: () => void;
   signOut: () => void;
   openEdit: () => void;
@@ -43,12 +44,11 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     { href: "/screener", label: "Screener" },
     { href: "/metrics", label: "Metrics" },
     { href: "/compare", label: "Compare" },
-    { href: "/macro", label: "Macro Risk" },
     { href: "/dash", label: "Dashboard" },
   ];
 
   return (
-    <div className={`relative w-[140px] sm:hidden ${className}`}>
+    <div className={`relative w-[140px] md:hidden  ${className}`}>
       <div
         ref={dropdownRef}
 
@@ -62,16 +62,16 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
         />
 
         {isDropdownOpen && (
-          <div className="absolute top-full left-0 right-0 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark border-t-0 rounded-b-lg z-50 overflow-y-auto shadow-md">
+          <div className="absolute top-full left-0 right-0 bg-light dark:bg-dark border border-border-light dark:border-border-dark border-t-0 rounded-lg z-50 overflow-y-auto shadow-md">
             {links.map((link, idx) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`
-                  block px-4 py-3 text-primary-light dark:text-primary-dark truncate
+                  block text-sm px-4 py-2 text-primary-light dark:text-primary-dark truncate
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
-                  ${idx === 0 ? 'border-t border-border-light dark:border-border-dark' : ''}
-                  ${idx === links.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
+                  ${idx === 0 ? 'border-t border-b border-border-light dark:border-border-dark' : 
+                  'border-b border-border-light dark:border-border-dark'}
                 `}
                 onClick={() => closeDropdown()}
               >
@@ -81,7 +81,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
             {currentUser && (
               <button
-                className="block px-4 py-3 text-primary-light dark:text-primary-dark hover:bg-accent-light/10 dark:hover:bg-accent-dark/10 w-full text-left truncate"
+                className="block text-sm px-4 py-2 border-b border-border-light dark:border-border-dark text-primary-light dark:text-primary-dark hover:bg-accent-light/10 dark:hover:bg-accent-dark/10 w-full text-left truncate"
                 onClick={() => {
                   openEdit();
                   closeDropdown();
@@ -93,7 +93,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
             {currentUser ? (
               <button
-                className="block px-4 py-3 text-bad hover:bg-red-100 dark:hover:bg-red-900 w-full text-left truncate font-medium"
+                className="block text-sm px-4 py-2 text-bad hover:bg-red-100 dark:hover:bg-red-900 w-full text-left truncate font-medium"
                 onClick={() => {
                   signOut();
                   closeDropdown();
@@ -104,7 +104,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
               </button>
             ) : (
               <button
-                className="block px-4 py-3 text-accent hover:bg-accent-light/10 dark:hover:bg-accent-dark/10 w-full text-left truncate font-medium"
+                className="block text-sm px-4 py-2 text-accent hover:bg-accent-light/10 dark:hover:bg-accent-dark/10 w-full text-left truncate font-medium"
                 onClick={() => {
                   closeDropdown();
                   openAuth();

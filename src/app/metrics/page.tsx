@@ -1,6 +1,5 @@
 "use client";
 
-// Update the import path to the correct location of Search component
 import { Search } from "../../components/primitive";
 import { Hero } from "../../components/composition";
 
@@ -17,7 +16,7 @@ const Metrics: React.FC = () => {
 
         <p className="text-left text-gray-500 text-base leading-relaxed">
           <br />
-          Our platform gathers real-time market data alongside comprehensive fundamental data to provide you with a complete picture of each asset's performance and underlying value.
+          Our platform gathers market data alongside comprehensive fundamental information to provide a detailed picture of each asset&apos;s performance and underlying value.
           <br />
           <br />
           We focus on delivering the most critical metrics—such as valuation ratios, growth indicators, and risk measures—ensuring you can make well-informed decisions.

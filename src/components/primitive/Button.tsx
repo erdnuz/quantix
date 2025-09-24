@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
   icon = "none",
 }) => {
   const baseClasses =
-    "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors duration-150 border cursor-pointer justify-center";
+    "flex text-sm sm:text-base items-center gap-2 px-2 py-1 sm:px-4 sm:py-2 rounded-md font-medium transition-colors duration-150 border cursor-pointer justify-center";
 
   const typeClasses: Record<string, string> = {
     primary: `

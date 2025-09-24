@@ -1,4 +1,4 @@
-import { SuccessCallback, ErrorCallback } from "../types";
+import { SuccessCallback, ErrorCallback, User } from "../types";
 import { auth } from "./firebase/initialization";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
@@ -6,7 +6,7 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 
 // Function to handle Google Login with success and error callbacks
-export function loginWithGoogle(onSuccess: SuccessCallback, onError: ErrorCallback ) {
+export function loginWithGoogle(onSuccess: SuccessCallback<Partial<User>>, onError: ErrorCallback ) {
   signInWithPopup(auth, provider)
     .then((result) => {
 

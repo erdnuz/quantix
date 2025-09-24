@@ -10,6 +10,7 @@ import {
   TimeChartOptions,
   Logical,
   LineSeries,
+  Time,
 } from 'lightweight-charts';
 
 
@@ -40,11 +41,6 @@ export const BaselineChart: React.FC<BaselineChartProps> = ({ data }) => {
       return () => mediaQuery.removeEventListener('change', handler);
     }, []);
 
-  const timeToMs = (t: any) => {
-    if (t instanceof Date) return t.getTime();
-    if (typeof t === 'number') return t > 1e12 ? t : t * 1000;
-    return Date.parse(String(t));
-  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -147,25 +143,11 @@ export const BaselineChart: React.FC<BaselineChartProps> = ({ data }) => {
     };
   }, []);
 
-  // sanitize helper
-  const sanitizeData = (arr: BaselineData[]) =>
-    arr
-      .map((d) => {
-        let t: any = d.time;
-        if (t instanceof Date) t = t.toISOString().split('T')[0];
-        else if (typeof t === 'number') t = t > 1e12 ? Math.floor(t / 1000) : t;
-        else if (typeof t !== 'string') t = new Date(t).toISOString().split('T')[0];
-        else if (typeof t === 'string' && t.includes('T')) t = t.split('T')[0];
-        return { time: t, value: Number(d.value ?? 0) } as BaselineData;
-      })
-      .sort((a, b) => timeToMs(a.time) - timeToMs(b.time));
-
   // Portfolio baseline data
   useEffect(() => {
     if (!baselineSeriesRef.current || !data || data.portfolio.length === 0) return;
-    const sanitized = sanitizeData(data.portfolio);
     try {
-      baselineSeriesRef.current.setData(sanitized);
+      baselineSeriesRef.current.setData(data.portfolio);
       chartRef.current?.timeScale().fitContent();
     } catch (err) {
       console.error('[BaselineChart] failed to set baseline data', err);
@@ -174,10 +156,9 @@ export const BaselineChart: React.FC<BaselineChartProps> = ({ data }) => {
 
   // Market line data
   useEffect(() => {
-    if (!lineSeriesRef.current || !data || data.market.length === 0) return;
-    const sanitized = sanitizeData(data.market);
+    if (!lineSeriesRef.current || !data || data.market.length === 0) return;;
     try {
-      lineSeriesRef.current.setData(sanitized);
+      lineSeriesRef.current.setData(data.market);
     } catch (err) {
       console.error('[BaselineChart] failed to set line data', err);
     }

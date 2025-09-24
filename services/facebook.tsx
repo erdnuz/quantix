@@ -6,7 +6,7 @@ const provider = new FacebookAuthProvider();
 provider.addScope("email");
 
 type FacebookLoginSuccess = (user: { id: string; firstName: string; lastName: string }) => void;
-type FacebookLoginError = (error: any) => void;
+type FacebookLoginError = (error: string) => void;
 
 export function loginWithFacebook(onSuccess: FacebookLoginSuccess, onError?: FacebookLoginError) {
   signInWithPopup(auth, provider)
@@ -26,6 +26,6 @@ export function loginWithFacebook(onSuccess: FacebookLoginSuccess, onError?: Fac
     })
     .catch((error: Error) => {
       console.error("Error during login:", error);
-      if (onError) onError(error);
+      if (onError) onError("Facebook login error");
     });
 }

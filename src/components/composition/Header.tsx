@@ -4,9 +4,10 @@ import React from 'react';
 import { IconQuantix } from '../icons';
 import { Login, Search, DropdownMenu } from '../primitive';
 import Link from 'next/link';
+import { User } from '../../../types';
 
 interface HeaderProps {
-  currentUser: any;
+  currentUser: User | null;
   openAuth: () => void;
   signOut: () => void;
   openEdit: () => void;
@@ -46,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
                 { href: '/portfolios', label: 'Portfolios' },
                 { href: '/screener', label: 'Screener' },
                 { href: '/compare', label: 'Compare' },
-                { href: '/dash', label: 'My Dashboard' },
+                { href: '/dash', label: 'Dashboard' },
               ].map((link) => (
                 <Link
                   key={link.href}

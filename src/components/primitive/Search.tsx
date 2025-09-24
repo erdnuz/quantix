@@ -73,7 +73,7 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
       {/* Search Box */}
       <div
         className={`
-          flex items-center px-3 py-1 bg-transparent text-primary-light dark:text-primary-dark placeholder-secondary-light dark:placeholder-secondary-dark
+          flex items-center px-2 py-0.5 sm:px-3 sm:py-1 bg-transparent text-primary-light dark:text-primary-dark placeholder-secondary-light dark:placeholder-secondary-dark
           rounded-t-2xl ${dropdownVisible ? 'rounded-b-none' : 'rounded-b-2xl'}
           border border-border-light dark:border-border-dark
         `}
@@ -82,7 +82,7 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
           type="text"
           value={query}
           placeholder={label}
-          className="flex-1 bg-transparent outline-none text-primary-light dark:text-primary-dark placeholder-secondary-light dark:placeholder-secondary-dark truncate"
+          className="flex-1 text-sm sm:text-base bg-transparent outline-none text-primary-light dark:text-primary-dark placeholder-secondary-light dark:placeholder-secondary-dark truncate"
           onChange={handleInputChange}
         />
         <IconSearch size={24} isClickable={false} />
@@ -102,7 +102,9 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
               <div
                 key={ticker}
                 className={`
-                  cursor-pointer px-4 py-2 text-primary-light dark:text-primary-dark truncate
+                  cursor-pointer px-2 py-1 sm:px-4 sm:py-2
+                  text-sm sm:text-base
+                   text-primary-light dark:text-primary-dark truncate
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
                   ${index === filteredSuggestions.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
                 `}
@@ -115,7 +117,8 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
                 key={ticker}
                 href={`/metrics/${ticker}/`}
                 className={`
-                  block px-4 py-2 truncate
+                  block px-2 py-1 sm:px-4 sm:py-2 truncate
+                  text-sm sm:text-base
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
                   ${index === filteredSuggestions.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
                 `}

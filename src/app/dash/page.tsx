@@ -4,14 +4,14 @@ import { useAuth } from '../../../services/useAuth';
 import { useEffect, useState, useMemo } from 'react';
 import { PortfolioCard, Hero } from '../../components/composition';
 import Link from 'next/link';
-import { Portfolio } from '../../../types';
-import { Button, TabGroup, TagGroup } from '@/components/primitive';
+import { Portfolio, User } from '../../../types';
+import { Button, TabGroup } from '@/components/primitive';
 const Dash = () => {
   const { currentUser } = useAuth();
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [favourites, setFavourites] = useState<Portfolio[]>([]);
-  const [combined, setCombined] = useState<any[]>([]);
-  const [target, setTarget] = useState<any>();
+  const [combined, setCombined] = useState<Portfolio[]>([]);
+  const [target, setTarget] = useState<User | null>();
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'All' | 'By You' | 'Favourites'>('All');
 
@@ -56,7 +56,7 @@ const Dash = () => {
         subtitle="Manage and track all your portfolios in one place" 
       />
 
-      <div className="flex flex-col justify-between items-center p-12 gap-4">
+      <div className="flex flex-col justify-between items-center p-4 sm:p-8 md:p-12 gap-4">
             {/* Create Portfolio Button */}
             <Link href="/dash/create" className="w-full sm:w-auto mt-4 sm:mt-0">
                 <Button
@@ -81,7 +81,7 @@ const Dash = () => {
 
 
       {/* Portfolios Section */}
-      <section className="flex flex-col p-12 gap-6">
+      <section className="flex flex-col p-4 sm:p-8 md:p-12 gap-6">
         {filteredPortfolios.length > 0?<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {/* Combined Portfolios */}
@@ -92,10 +92,10 @@ const Dash = () => {
         </div>:null}
 
         {filteredPortfolios.length === 0 && (
-  <div className="flex flex-col items-center text-center py-12 text-gray-500 px-6">
+  <div className="flex text-sm sm:text-base flex-col items-center text-center py-12 text-gray-500 px-6">
     {filter === 'All' && (
       <p>
-        You don't have any portfolios yet. Explore public portfolios in the{' '}
+        You don&apos;t have any portfolios yet. Explore public portfolios in the{' '}
         <Link href="/portfolios" className="text-brand underline hover:text-brand-dark">
           Portfolio Screener
         </Link>{' '}
@@ -107,7 +107,7 @@ const Dash = () => {
     )}
     {filter === 'By You' && (
       <p>
-        You haven't created any portfolios yet. Start by{' '}
+        You haven&apos;t created any portfolios yet. Start by{' '}
         <Link href="/dash/create" className="text-brand underline hover:text-brand-dark">
           creating your first portfolio
         </Link>.
@@ -115,7 +115,7 @@ const Dash = () => {
     )}
     {filter === 'Favourites' && (
       <p>
-        You don't have any favourite portfolios yet. Browse the{' '}
+        You don&apos;t have any favourite portfolios yet. Browse the{' '}
         <Link href="/portfolios" className="text-brand underline hover:text-brand-dark">
           Portfolio Screener
         </Link>{' '}

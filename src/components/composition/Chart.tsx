@@ -60,7 +60,7 @@ export const Chart: React.FC<ChartProps> = ({
     return () => {
       mediaQuery.removeEventListener('change', listener);
     };
-  }, [symbol, theme]);
+  }, [symbol, theme, renderWidget]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-full" style={{ width }}>

@@ -8,32 +8,38 @@ interface PortfolioCardProps {
 export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
   const { id, title, created, description, tags } = portfolio;
 
+  const stats = {
+    Class: portfolio.primaryAssetClass,
+    YoY: portfolio.oneYearGrowth,
+    '3mo': portfolio.threeMonthGrowth,
+    CAGR: portfolio.cagr,
+  };
+
   return (
     <Link href={`/portfolios/${id}/`} className="block">
-      <div className="flex flex-col w-full max-w-[600px] shadow-lg p-6 rounded-xl border hover:shadow-xl transition-shadow duration-300 cursor-pointer
+      <div className="flex flex-col w-full max-w-[600px] p-4 sm:p-6 rounded-xl border shadow hover:shadow-lg transition-shadow
                       bg-surface-light dark:bg-surface-dark
                       border-border-light dark:border-border-dark">
 
-        {/* Top section: Title and Date */}
-        <div className="flex flex-row gap-1 justify-between items-baseline">
-          <h3 className="text-xl font-semibold text-[var(--color-primary-light)] dark:text-[var(--color-primary-dark)]">{title}</h3>
-          <p className="text-xs text-[var(--color-secondary-light)] dark:text-[var(--color-secondary-dark)]">Created {created}</p>
+        {/* Title and date */}
+        <div className="flex justify-between items-baseline gap-2">
+          <h3 className="text-lg sm:text-xl font-semibold text-primary-light dark:text-primary-dark truncate">{title}</h3>
+          <p className="text-xs text-secondary-light dark:text-secondary-dark">Created {created}</p>
         </div>
 
         {/* Description */}
-        <p className="text-sm mt-3 text-[var(--color-text-light)] dark:text-[var(--color-text-dark)] line-clamp-2">{description}</p>
+        <p className="text-sm mt-2 text-text-light dark:text-text-dark line-clamp-2">{description}</p>
 
         {/* Tags */}
-        {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4">
-            {tags.map((tag, index) => (
+        {tags?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {tags.map((tag, i) => (
               <span
-                key={index}
-                className="text-xs px-3 py-1 rounded-full border
-                           bg-[var(--color-surface-light-secondary)] dark:bg-[var(--color-surface-dark-secondary)]
-                           border-[var(--color-border-light)] dark:border-[var(--color-border-dark)]
-                           text-[var(--color-text-light)] dark:text-[var(--color-text-dark)]
-                           whitespace-nowrap"
+                key={i}
+                className="text-xs px-2 py-1 rounded-full border
+                           bg-surface-light-secondary dark:bg-surface-dark-secondary
+                           border-border-light dark:border-border-dark
+                           text-text-light dark:text-text-dark"
               >
                 {tag}
               </span>
@@ -41,28 +47,17 @@ export const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
           </div>
         )}
 
-        {/* Stats row */}
-        <div className="flex w-full mt-4 gap-4">
-          {Object.entries({
-            primaryAssetClass: 'Class',
-            oneYearGrowth: '1y',
-            threeMonthGrowth: '3mo',
-            cagr: 'CAGR'
-          }).map(([columnName, display]) => (
+        {/* Stats */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          {Object.entries(stats).map(([label, value]) => (
             <div
-              key={columnName}
-              className="flex flex-col flex-none items-center justify-center 
-                         rounded-lg py-3 px-4 min-w-[80px] grow
-                         bg-[var(--color-surface-light)] dark:bg-[var(--color-surface-dark)]"
+              key={label}
+              className={`${label=='YoY' || label == '3mo'?'hidden':'flex'} md:flex flex-col items-center justify-center min-w-[60px] py-2 px-3 rounded bg-surface-light dark:bg-surface-dark`}
             >
-              <p className="text-base font-medium text-[var(--color-text-light)] dark:text-[var(--color-text-dark)]">
-                {portfolio[columnName as keyof Portfolio] !== undefined
-                  ? columnName === 'primaryAssetClass'
-                    ? (portfolio[columnName as keyof Portfolio] as string)
-                    : `${(100 * (portfolio[columnName as keyof Portfolio] as number)).toFixed(2)}%`
-                  : 'NaN'}
+              <p className="text-sm font-medium text-text-light dark:text-text-dark truncate">
+                {typeof value === 'number' ? `${(100 * value).toFixed(2)}%` : value ?? 'N/A'}
               </p>
-              <p className="text-sm text-[var(--color-secondary-light)] dark:text-[var(--color-secondary-dark)]">{display}</p>
+              <p className="text-xs text-secondary-light dark:text-secondary-dark">{label}</p>
             </div>
           ))}
         </div>

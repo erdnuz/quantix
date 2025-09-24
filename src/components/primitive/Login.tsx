@@ -2,10 +2,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { IconUser } from "../icons/IconUser";
 import { Button } from ".";
+import { User } from "../../../types";
 
 interface LoginProps {
   className?: string;
-  currentUser?: any;
+  currentUser?: User | null;
   openAuth: () => void;
   signOut: () => void;
   openEdit: () => void;
@@ -36,7 +37,7 @@ export const Login: React.FC<LoginProps> = ({
   }, [isDropdownOpen]);
 
   return (
-    <div className={`relative hidden sm:flex justify-end w-[140px] ${className}`}>
+    <div className={`relative hidden md:flex flex-1 justify-end min-w-fit ${className}`}>
       {currentUser ? (
         <div ref={dropdownRef} className="relative w-full flex justify-end">
           <IconUser
@@ -46,9 +47,10 @@ export const Login: React.FC<LoginProps> = ({
           />
 
           {isDropdownOpen && (
-            <div className="absolute top-full right-0 z-50 w-[140px] bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-b-lg shadow-md overflow-hidden">
+            <div className="absolute top-full right-0 z-50 w-[140px] bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark 
+            rounded-lg shadow-md overflow-hidden">
               <button
-                className="block w-full px-4 py-3 text-primary-light dark:text-primary-dark hover:bg-accent-light/10 dark:hover:bg-accent-dark/10 text-left"
+                className="block w-full px-4 py-3 bg-light dark:bg-dark text-primary-light dark:text-primary-dark hover:bg-accent-light/10 dark:hover:bg-accent-dark/10 text-left"
                 onClick={() => {
                   openEdit();
                   closeDropdown();
@@ -57,7 +59,7 @@ export const Login: React.FC<LoginProps> = ({
                 Edit Profile
               </button>
               <button
-                className="block w-full px-4 py-3 text-bad hover:bg-red-100 dark:hover:bg-red-900 text-left font-medium border-t border-border-light dark:border-border-dark"
+                className="block w-full px-4 py-3 bg-light dark:bg-dark text-bad hover:bg-red-100 dark:hover:bg-red-900 text-left font-medium border-t border-border-light dark:border-border-dark"
                 onClick={async () => {
                   await signOut(); // make sure you pass your auth instance
                   closeDropdown();

@@ -7,7 +7,7 @@ interface IconProps {
   className?: string;
   children: ReactNode;
   viewBox?: string;
-  fillIcon?:boolean;
+  fillIcon?: boolean;
   hoverStrokeColor?: string; // Tailwind class
   defaultStrokeColor?: string; // Tailwind class
   isClickable?: boolean;
@@ -18,7 +18,7 @@ export const Icon: React.FC<IconProps> = ({
   size = 16,
   className,
   children,
-  fillIcon=false,
+  fillIcon = false,
   viewBox = "0 0 16 16",
   hoverStrokeColor = "text-accent-light dark:text-accent-dark",
   defaultStrokeColor = "text-secondary-light dark:text-secondary-dark",
@@ -26,7 +26,6 @@ export const Icon: React.FC<IconProps> = ({
   onClick,
 }) => {
   const [hover, setHover] = useState(false);
-
   const strokeClass = hover && isClickable ? hoverStrokeColor : defaultStrokeColor;
 
   return (
@@ -46,14 +45,11 @@ export const Icon: React.FC<IconProps> = ({
       onClick={onClick}
     >
       {React.Children.map(children, (child) =>
-        React.isValidElement(child)
-          ? React.cloneElement(child as React.ReactElement<any>, fillIcon?{
-              // Use currentColor so tailwind text/fill classes apply correctly
-              stroke: "currentColor",
-              fill: "currentColor",
-            }: {stroke: "currentColor",
-              fill:"none"
-            })
+        React.isValidElement<React.SVGProps<SVGElement>>(child)
+          ? React.cloneElement(child, fillIcon
+              ? { stroke: "currentColor", fill: "currentColor" }
+              : { stroke: "currentColor", fill: "none" }
+            )
           : child
       )}
     </svg>

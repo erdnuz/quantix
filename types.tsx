@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { BaselineData, Time } from "lightweight-charts";
 
 export interface User {
   id: string;
@@ -58,10 +58,10 @@ export interface Portfolio {
   alpha?: number;
   beta?:number;
 
-  holdingsDict?: Record<string, any>[];
-  actionsDict?: Record<string, any>[];
-  historicalReturns?: Record<string, number>[];
-  marketReturns?: Record<string, number>[];
+  holdingsDict?: Record<string, number | string | null>[];
+  actionsDict?: Record<string, number | string | null>[];
+  historicalReturns?: BaselineData<Time>[];
+  marketReturns?: BaselineData<Time>[];
 
 }
 export type AssetClass = "Equity" | "ETF"
@@ -194,10 +194,10 @@ export type FullETF = {
 } & TableETF & WithPSPO<Omit<TableETF, "ticker" | "name" | "category" | "assetClass" | "sector">>;
 
 
-export type Filter = {
+export type Filter<T> = {
   display: string;
   id: string;
-  fit: (asset: Record<string, any>) => boolean;
+  fit: (asset: T) => boolean;
   label?: string;
   onRemove?: () => void;
 };
@@ -207,10 +207,10 @@ export type AssetTab = 'Profile' | 'Growth' | 'Risk' | 'Performance' | 'Profitab
 export type SelectOption = {
     column:string;
     label:string;
-    options: {label:string, lowerBound?:number|null, upperBound?:number|null, eq?:any}[];
+    options: {label:string, lowerBound?:number|null, upperBound?:number|null, eq?:string | number | null}[];
 }
 
 // Callback types
-export type SuccessCallback<T = any> = (result: T) => void;
+export type SuccessCallback<T> = (result: T) => void;
 export type ErrorCallback = (error: string) => void;
 

@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   AreaSeries,
   AreaStyleOptions,
-  ColorType,
   createChart,
   DeepPartial,
   IChartApi,

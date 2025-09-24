@@ -96,16 +96,17 @@ export function EditPortfolioDialog({
 
   return (
     <BaseDialog isOpen={isOpen} onClose={close}>
-      <h2 className="text-xl font-semibold mb-2">Edit Portfolio</h2>
+      <div className="flex flex-col gap-2 min-w-xs sm:min-w-sm md:min-w-lg">
+      <h2 className="text-lg sm:text-xl font-semibold mb-2">Edit Portfolio</h2>
       {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
 
       {/* Title */}
-      <div className="flex flex-col gap-1 mb-4">
-        <label htmlFor="title" className="text-sm font-medium">Title</label>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="title" className="text-xs sm:text-sm font-medium">Title</label>
         <input
           type="text"
           id="title"
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-xs sm:text-sm rounded-lg border border-border-light dark:border-border-dark bg-light dark:bg-dark px-3 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
@@ -116,12 +117,12 @@ export function EditPortfolioDialog({
       </div>
 
       {/* Description */}
-      <div className="flex flex-col gap-1 mb-4">
-        <label htmlFor="description" className="text-sm font-medium">Description</label>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="description" className="text-xs sm:text-sm font-medium">Description</label>
         <textarea
           id="description"
           rows={4}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-xs sm:text-sm rounded-lg border border-border-light dark:border-border-dark bg-light dark:bg-dark px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={description}
           onChange={(e) => {
             setDescription(e.target.value);
@@ -132,12 +133,11 @@ export function EditPortfolioDialog({
       </div>
 
       {/* Tags */}
-      <div className="flex flex-col gap-1 mb-4">
-        <label htmlFor="tags" className="text-sm font-medium">Tags</label>
+      <div className="flex flex-col gap-1 ">
+        <label htmlFor="tags" className="text-xs sm:text-sm font-medium">Tags</label>
         <TagGroup
           items={tagItems}
           iconType="hash"
-          size={0}
           selectedIndices={selectedIndices}
           setSelectedIndices={(lst) => {
             setSelectedIndices((prev) => removeContradictions(prev, lst));
@@ -147,12 +147,12 @@ export function EditPortfolioDialog({
       </div>
 
      {/* Action Buttons */}
-    <div className="flex gap-3 mb-3 w-full">
+    <div className="flex gap-2 w-full">
       <Button
         type="secondary"
         label="Cancel"
         onClick={close}
-        className="flex-2"
+        className="flex-1"
       />
       <Button
         type="brand"
@@ -169,7 +169,7 @@ export function EditPortfolioDialog({
       onClick={handleDeletePortfolio}
       className="w-full justify-center text-base"
     />
-
+    </div>
     </BaseDialog>
   );
 }

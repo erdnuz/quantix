@@ -14,13 +14,10 @@ const firebaseConfig = {
 };
 
 // Declare typed variables
-let app: FirebaseApp;
+const app: FirebaseApp = initializeApp(firebaseConfig);
 let analytics: Analytics | null = null;
-let auth: Auth;
-let firestore: Firestore;
 
-// Initialize Firebase app
-app = initializeApp(firebaseConfig);
+
 
 // Initialize Analytics if supported
 isSupported().then((supported) => {
@@ -30,8 +27,8 @@ isSupported().then((supported) => {
 });
 
 // Initialize Authentication and Firestore services
-auth = getAuth(app);
-firestore = getFirestore(app);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
 
 // Export typed services
 export { app, analytics, auth, firestore };

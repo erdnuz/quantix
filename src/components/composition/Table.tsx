@@ -3,11 +3,12 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { IconChevronDown, IconChevronUp } from "../icons";
 import { Pagination } from "./Pagination";
 import { Ranking } from "../primitive";
+import { Filter } from '../../../types';
 
 const RANKING_COL_NAMES = ["qOverall"];
 
 interface CellProps {
-  children: any;
+  children: string | number | null | React.JSX.Element;
   isSortable: boolean;
   isRanking: boolean;
   isPercent: boolean;
@@ -49,7 +50,7 @@ const Cell: React.FC<CellProps> = ({
   const indexClasses = isIndex ? "font-semibold bg-surface-light dark:bg-surface-dark" : "";
   const rankingClasses = isRanking ? "min-w-[140px]" : "";
 
-  const textColor = ((isPercent && !isHeader && !isNeutral) || isColored)
+  const textColor = ((isPercent && !isHeader && !isNeutral) || isColored) && typeof children == "number"
     ? children >= 0
       ? "text-good"
       : "text-bad"
@@ -61,25 +62,29 @@ const Cell: React.FC<CellProps> = ({
       className={`${baseClasses} ${headerClasses} ${tickerClasses} ${indexClasses} ${rankingClasses}`}
     >
       {isRanking ? (
-        <Ranking barOnly score={children ? children.toFixed(2) : "none"} />
+        <Ranking 
+          barOnly 
+          score={(children && typeof children === "number") ? Number(children.toFixed(2)) : null} 
+        />
+
       ) : isPercent && !isHeader && !isNeutral ? (
-        <p className={`w-full text-left font-semibold ${children && textColor}`}>
-          {children ? `${(100 * children).toFixed(2)}%` : "NaN"}
+        <p className={`text-xs sm:text-base w-full text-left font-semibold ${children && textColor}`}>
+          {typeof children === "number" ? `${(100 * children).toFixed(2)}%` : "NaN"}
         </p>
       ) : isPercent && !isHeader ? (
-        <p className="w-full text-left font-semibold text-primary-light dark:text-primary-dark">
-          {children ? `${(100 * children).toFixed(2)}%` : "NaN"}
+        <p className="text-xs sm:text-base w-full text-left font-semibold text-primary-light dark:text-primary-dark">
+          {children&&typeof children === "number" ? `${(100 * children).toFixed(2)}%` : "NaN"}
         </p>
       ) : isPrice ? (
-        <p className="w-full text-left text-primary-light dark:text-primary-dark">
+        <p className="text-xs sm:text-base w-full text-left text-primary-light dark:text-primary-dark">
           {children ? `$${Number(children).toFixed(2)}` : "NaN"}
         </p>
       ) : typeof children === "number" && !isNaN(children) ? (
-        <p className={isColored ? `${textColor} font-semibold` : "text-primary-light dark:text-primary-dark"}>
+        <p className={isColored ? `${textColor} font-semibold` : "text-xs sm:text-base text-primary-light dark:text-primary-dark"}>
           {isColored && children >= 0 && '+'}{isColored ? children : formatLargeNumber(children)}
         </p>
       ) : (
-        <p className="truncate max-w-[150px] text-primary-light dark:text-primary-dark">{children || "NaN"}</p>
+        <p className="text-xs sm:text-base truncate max-w-[100px] sm:max-w-[150px] text-primary-light dark:text-primary-dark">{children || "NaN"}</p>
       )}
 
       {isSortable ? (
@@ -93,26 +98,26 @@ const Cell: React.FC<CellProps> = ({
   );
 };
 
-interface TableProps {
+interface TableProps<T extends object> {
   header: string[];
-  data: Record<string, any>[];
-  filters?: { fit: (row: any) => boolean }[];
+  data: T[];
+  filters?: Filter<T>[];
   isIndexed?: boolean;
   hints?: boolean;
   rowsPerPage?: number;
   columnDetails: {
-    public: string[];
-    percent?: string[];
-    neutral?: string[];
-    large?: string[];
-    price?: string[];
-    baseLine?: string[]
+    public: (keyof T)[];
+    percent?: (keyof T)[];
+    neutral?: (keyof T)[];
+    large?: (keyof T)[];
+    price?: (keyof T)[];
+    baseLine?: (keyof T)[]
   };
   error?: string;
-  defSort?: string | null;
+  defSort?: keyof T | null;
 }
 
-export const Table: React.FC<TableProps> = ({
+export function Table<T extends object>({
   header,
   data,
   filters = [],
@@ -122,8 +127,8 @@ export const Table: React.FC<TableProps> = ({
   columnDetails,
   error,
   defSort = null,
-}) => {
-  const [sortColumn, setSortColumn] = useState<string | null>(defSort);
+}: TableProps<T>): React.JSX.Element {
+  const [sortColumn, setSortColumn] = useState<keyof T | null>(defSort);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "none">(defSort ? "desc" : "none");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -156,7 +161,7 @@ export const Table: React.FC<TableProps> = ({
   const endIdx = startIdx + rowsPerPage;
   const currentPageRows = sortedRows.slice(startIdx, endIdx);
 
-  const handleSort = (columnName: string) => {
+  const handleSort = (columnName: keyof T) => {
     const newSortOrder = sortColumn === columnName && sortOrder === "asc" ? "desc" : "asc";
     setSortColumn(columnName);
     setSortOrder(newSortOrder);
@@ -180,7 +185,7 @@ export const Table: React.FC<TableProps> = ({
   return (
     <div className="flex flex-col w-full">
       {hints && (
-        <div className="flex justify-between mb-1 px-3 w-full text-xs text-secondary-light dark:text-secondary-dark">
+        <div className="hidden sm:flex justify-between mb-1 px-3 w-full text-xs text-secondary-light dark:text-secondary-dark">
           <p>
             Displaying results {startIdx + 1}-{Math.min(endIdx, sortedRows.length)} of {sortedRows.length}
           </p>
@@ -223,29 +228,32 @@ export const Table: React.FC<TableProps> = ({
                       isTicker={columnName === 'ticker'}
                       isHeader={false}
                       isIndex={isIndexed && colIndex === 0}
-                      isRanking={RANKING_COL_NAMES.includes(columnName)}
+                      isRanking={RANKING_COL_NAMES.includes(columnName as string)}
                       isPercent={columnDetails.percent?.includes(columnName) || false}
                       isNeutral={columnDetails.neutral?.includes(columnName) || false}
                       isColored={columnDetails.baseLine?.includes(columnName) || false}
                       isPrice={columnDetails.price?.includes(columnName) || false}
                     >
-                      {columnName === "ticker" ? (
-                        <a
-                          href={`/metrics/${row[columnName]}/`}
-                          className="px-2 py-0.5 bg-accent-light dark:bg-accent-dark text-light dark:text-dark rounded-full"
-                        >
-                          {row[columnName]}
-                        </a>
-                      ) : columnName === "title" ? (
-                        <a
-                          href={`/portfolios/${row.id}/`}
-                          className="px-2 py-0.5 bg-accent-light dark:bg-accent-dark text-light dark:text-dark rounded-full"
-                        >
-                          {row[columnName]}
-                        </a>
-                      ) : (
-                        row[columnName]
-                      )}
+                      {
+  columnName === "ticker" ? (
+    <a
+      href={`/metrics/${String(row[columnName])}/`}
+      className="px-2 py-0.5 bg-accent-light dark:bg-accent-dark text-light dark:text-dark rounded-full"
+    >
+      {String(row[columnName])}
+    </a>
+  ) : columnName === "title" ? (
+    <a
+      href={`/portfolios/${String(row['id' as keyof T])}/`}
+      className="px-2 py-0.5 bg-accent-light dark:bg-accent-dark text-light dark:text-dark rounded-full"
+    >
+      {String(row[columnName])}
+    </a>
+  ) : (
+    row[columnName] as string | number | null
+  )
+}
+
                     </Cell>
                   </td>
                 ))}
@@ -255,13 +263,13 @@ export const Table: React.FC<TableProps> = ({
         </table>
       </div>
 
-      {totalPages > 1 && (
+      {totalPages > 1 ? (
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />
-      )}
+      ): null}
     </div>
   );
 };

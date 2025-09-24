@@ -8,7 +8,7 @@ const New = () =>
 
         <Hero title="Build your Portfolio" subtitle="Select and customize your investment strategy" />
         
-        <div className = "flex p-12 items-center justify-center" >
+        <div className = "flex p-6 sm:p-12 items-center justify-center" >
             <NewPortfolio />
         </div>
         

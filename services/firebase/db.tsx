@@ -1,4 +1,4 @@
-import { Portfolio, ProxyAsset, SuccessCallback, ErrorCallback, TableETF, TableStock, User, FullStock, FullETF, Favourite, PortfolioTag } from '../../types';
+import { Portfolio, ProxyAsset, TableETF, TableStock, User, FullStock, FullETF, Favourite } from '../../types';
 import { firestore } from './initialization'; 
 import {
   collection,
@@ -17,7 +17,6 @@ import {
   limit,
   getCountFromServer,
 } from 'firebase/firestore';
-import { useAuth } from '../useAuth';
 
 // ------------------ USERS -------------------
 
@@ -37,7 +36,7 @@ export const generateUsername = async ({
   let count = 0;
   while (true) {
     for (const option of usernameOptions) {
-      let username = count > 0 ? `${option}${count}` : option;
+      const username = count > 0 ? `${option}${count}` : option;
       const exists = await usernameExists({ username });
       if (!exists) return username;
     }
@@ -93,9 +92,9 @@ export const deleteUser = async ({
     const userDocRef = doc(firestore, 'users', userId);
     await deleteDoc(userDocRef);
     onSuccess('User deleted successfully.');
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error deleting user:', error);
-    onError('Error deleting user: ' + error.message);
+    onError('Error deleting user: ' + error);
   }
 };
 
@@ -269,6 +268,10 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
         anAvg:data['an-avg'],
         anMax:data['an-max'],
 
+        wacc:data['wacc'],
+        waccPS:data['wacc_SECT'],
+        waccPO:data['wacc_OVER'],
+
         assetClass,
         name: data['name'],
         ticker: assetSnap.id,
@@ -412,12 +415,12 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
         qProfitability: data['PR'],
         qProfitabilityPS: data['PR_SECT'],
         qProfitabilityPO: data['PR_OVER'],
-      } as FullStock;
+      };
     } else {
       return {
         assetClass,
         plotSectors: data['plot-sectors'],
-        plotHoldings: data['plotHoldings'],
+        plotHoldings: data['plot-holdings'],
         expenses: data['expenses'],
         expensesPO: data['expenses_OVER'],
         expensesPS: data['expenses_SECT'],
@@ -543,7 +546,7 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
         qPerformance: data['PE'],
         qPerformancePS: data['PE_SECT'],
         qPerformancePO: data['PE_OVER'],
-        } as FullETF
+        }
       }
   } catch (err) {
     console.error('Error fetching asset data for', ticker, err);
@@ -558,7 +561,7 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
 interface GetTableDataParams {
   equity: boolean; // true = equities, false = ETFs
   onSuccess: (data: TableStock[] | TableETF[]) => void;
-  onError?: (err: any) => void;
+  onError?: (err: string) => void;
 }
 
 export async function getTableData({ equity, onSuccess, onError }: GetTableDataParams) {
@@ -566,7 +569,7 @@ export async function getTableData({ equity, onSuccess, onError }: GetTableDataP
     const collectionName = equity ? 'equities' : 'etfs';
     const stocksCollection = collection(firestore, collectionName);
 
-    let q: Query<DocumentData> = query(stocksCollection); // can still wrap in query()
+    const q: Query<DocumentData> = query(stocksCollection); // can still wrap in query()
     
 
     // Then:
@@ -690,7 +693,7 @@ export async function getTableData({ equity, onSuccess, onError }: GetTableDataP
     onSuccess(data);
   } catch (error) {
     console.error('Error fetching table data:', error);
-    if (onError) onError(error);
+    if (onError) onError('Error fetching table data.');
   }
 }
 
@@ -706,7 +709,7 @@ export async function getCompetitors({ ticker }: { ticker: string }): Promise<Pr
     const category = assetClass === 'Equity' ? mainAsset['sector'] : mainAsset['category'];
 
     // Query top 4 assets with same class and category, excluding current ticker
-    let q = query(
+    const q = query(
       assetRef,
       where('asset-class', '==', assetClass),
       where(assetClass === 'Equity' ? 'sector' : 'category', '==', category),

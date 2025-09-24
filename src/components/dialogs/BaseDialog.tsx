@@ -21,13 +21,13 @@ export const BaseDialog: React.FC<BaseDialogProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-light dark:bg-dark rounded-xl shadow-lg w-full max-w-3xl mx-4 relative"
+        className="bg-light dark:bg-dark rounded-xl shadow-lg w-fit max-w-3xl mx-4 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Optional header can be added here if needed */}
         
         {/* Body */}
-        <div className="w-full p-4 text-primary-light dark:text-primary-dark">
+        <div className="w-fit p-4 text-primary-light dark:text-primary-dark">
           {children}
         </div>
       </div>

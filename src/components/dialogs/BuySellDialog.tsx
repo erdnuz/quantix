@@ -114,7 +114,7 @@ export const BuySellDialog: React.FC<BuySellDialogProps> = ({ isOpen, onClose, t
 
   return (
     <BaseDialog isOpen={isOpen} onClose={close}>
-      <div className="flex flex-col gap-4 w-full">
+      <div className="flex flex-col gap-4 min-w-xs sm:min-w-sm md:min-w-lg">
         {/* Pills */}
         <PillGroup size={0} currentPill={pill} onSelect={setPill} options={['Add','Remove']} />
 

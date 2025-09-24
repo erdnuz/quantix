@@ -1,6 +1,6 @@
 
 import { RankingOption } from "@/components/composition/RankingTable";
-import type { AssetClass, AssetTab, SelectOption } from "./types"
+import type { AssetClass, AssetTab, FullETF, FullStock, SelectOption } from "./types"
 
 export const selectOptions: (currentPill: AssetClass) => Record<AssetTab, SelectOption[]> =
   (currentPill) => {
@@ -564,16 +564,12 @@ export const selectOptions: (currentPill: AssetClass) => Record<AssetTab, Select
 }}
 
 
-export function METRICS(assetClass: AssetClass): Partial<Record<AssetTab, RankingOption[]>> {
-  return {
+export const STOCK_METRICS: Partial<Record<AssetTab, RankingOption<FullStock>[]>> = {
   'Profile': [
-    { display: 'Market Corr.', column: 'marketCorrelation', percent: true, goodBad: false },
-    { display: assetClass === 'Equity'?'Market Cap':'Net Assets', column: 'size', percent: false, goodBad: false },
-    { display: 'Div. Yield', column: 'dividendYield', percent: true, goodBad: false },
-    { display: 'Expense Ratio', column: 'expenses', percent: true, goodBad: false },
-    { display: 'Turnover Ratio', column: 'turnover', percent: true, goodBad: false },
-    { display: 'Holding Div.', column: 'holdingsDiversity', percent: true, goodBad: false },
-    { display: 'Sector Div.', column: 'sectorDiversity', percent: true, goodBad: false },
+    { display: 'Market Correlation', column: 'marketCorrelation', percent: true, goodBad: false },
+    { display: 'Market Cap', column: 'size', percent: false, goodBad: false },
+    { display: 'Dividend Yield', column: 'dividendYield', percent: true, goodBad: false },
+
     { display: 'Volume', column: 'volume', percent: false, goodBad: false },
   ],
   'Growth': [
@@ -581,7 +577,7 @@ export function METRICS(assetClass: AssetClass): Partial<Record<AssetTab, Rankin
     { display: '3y CAGR', column: 'threeYearGrowth', percent: true, goodBad: true },
     { display: '1y Return', column: 'oneYearGrowth', percent: true, goodBad: true },
     { display: '6mo CAGR', column: 'sixMonthGrowth', percent: true, goodBad: true },
-    { display: 'Div. Growth', column: 'dividendGrowth', percent: true, goodBad: true },
+    { display: 'Dividend Growth', column: 'dividendGrowth', percent: true, goodBad: true },
   ],
   'Performance': [
     { display: 'Alpha', column: 'alpha', percent: true, goodBad: true },
@@ -595,8 +591,8 @@ export function METRICS(assetClass: AssetClass): Partial<Record<AssetTab, Rankin
   'Risk': [
     { display: 'Beta', column: 'beta', percent: false, goodBad: false },
     { display: 'Std. Returns', column: 'standardDeviationReturns', percent: true, goodBad: true },
-    { display: 'Max. DD', column: 'maxDrawdown', percent: true, goodBad: true },
-    { display: 'Avg. DD', column: 'avgDrawdown', percent: true, goodBad: true },
+    { display: 'Max Drawdown', column: 'maxDrawdown', percent: true, goodBad: true },
+    { display: 'Avg Drawdown', column: 'avgDrawdown', percent: true, goodBad: true },
     { display: 'VaR 1%', column: 'var1', percent: true, goodBad: true },
     { display: 'VaR 5%', column: 'var5', percent: true, goodBad: true },
     { display: 'VaR 10%', column: 'var10', percent: true, goodBad: true },
@@ -622,9 +618,48 @@ export function METRICS(assetClass: AssetClass): Partial<Record<AssetTab, Rankin
     { display: 'Current Ratio', column: 'assetsToLiabilities', percent: false, goodBad: true },
     { display: 'Altman Z-Score', column: 'altmanZ', percent: false, goodBad: true },
   ],
-}};
+};
 
-export const Q : Record<'Q-Scores', RankingOption[]> = {
+export const ETF_METRICS: Partial<Record<AssetTab, RankingOption<FullETF>[]>> = {
+  'Profile': [
+    { display: 'Market Correlation', column: 'marketCorrelation', percent: true, goodBad: false },
+    { display: 'Net Assets', column: 'size', percent: false, goodBad: false },
+    { display: 'Dividend Yield', column: 'dividendYield', percent: true, goodBad: false },
+    { display: 'Expense Ratio', column: 'expenses', percent: true, goodBad: false },
+    { display: 'Turnover Ratio', column: 'turnover', percent: true, goodBad: false },
+    { display: 'Holding Diversity', column: 'holdingsDiversity', percent: true, goodBad: false },
+    { display: 'Sector Diversity', column: 'sectorDiversity', percent: true, goodBad: false },
+    { display: 'Volume', column: 'volume', percent: false, goodBad: false },
+  ],
+  'Growth': [
+    { display: '5y CAGR', column: 'cagr', percent: true, goodBad: true },
+    { display: '3y CAGR', column: 'threeYearGrowth', percent: true, goodBad: true },
+    { display: '1y Return', column: 'oneYearGrowth', percent: true, goodBad: true },
+    { display: '6mo CAGR', column: 'sixMonthGrowth', percent: true, goodBad: true },
+    { display: 'Dividend Growth', column: 'dividendGrowth', percent: true, goodBad: true },
+  ],
+  'Performance': [
+    { display: 'Alpha', column: 'alpha', percent: true, goodBad: true },
+    { display: 'Sharpe', column: 'sharpe', percent: false, goodBad: true },
+    { display: 'Sortino', column: 'sortino', percent: false, goodBad: true },
+    { display: 'M-Squared', column: 'mSquared', percent: false, goodBad: true },
+    { display: 'Omega', column: 'omega', percent: false, goodBad: true },
+    { display: 'Calmar', column: 'calmar', percent: false, goodBad: true },
+    { display: 'Martin', column: 'martin', percent: false, goodBad: true },
+  ],
+  'Risk': [
+    { display: 'Beta', column: 'beta', percent: false, goodBad: false },
+    { display: 'Std. Returns', column: 'standardDeviationReturns', percent: true, goodBad: true },
+    { display: 'Max Drawdown', column: 'maxDrawdown', percent: true, goodBad: true },
+    { display: 'Avg Drawdown', column: 'avgDrawdown', percent: true, goodBad: true },
+    { display: 'VaR 1%', column: 'var1', percent: true, goodBad: true },
+    { display: 'VaR 5%', column: 'var5', percent: true, goodBad: true },
+    { display: 'VaR 10%', column: 'var10', percent: true, goodBad: true },
+  ],
+  
+};
+
+export const Q_STOCK : Record<'Q-Scores', RankingOption<FullStock>[]> = {
   'Q-Scores': [
   {
     display: 'Overall',
@@ -645,26 +680,56 @@ export const Q : Record<'Q-Scores', RankingOption[]> = {
     goodBad: true
   },
   {
-    display: 'Perf.',
+    display: 'Performance',
     column: 'qPerformance',
     percent: false,
     goodBad: true
   },
   {
-    display: 'Val.',
+    display: 'Valuation',
     column: 'qValuation',
     percent: false,
     goodBad: true
   },
   {
-    display: 'Prof.',
+    display: 'Profitability',
     column: 'qProfitability',
     percent: false,
     goodBad: true
   },
   {
-    display: 'Lev.',
+    display: 'Leverage',
     column: 'qLeverage',
+    percent: false,
+    goodBad: true
+  }
+]
+
+};
+
+export const Q_ETF : Record<'Q-Scores', RankingOption<FullETF>[]> = {
+  'Q-Scores': [
+  {
+    display: 'Overall',
+    column: 'qOverall',
+    percent: true, 
+    goodBad: true
+  },
+  {
+    display: 'Growth',
+    column: 'qGrowth',
+    percent: true, 
+    goodBad: true
+  },
+  {
+    display: 'Risk',
+    column: 'qRisk',
+    percent: true,
+    goodBad: true
+  },
+  {
+    display: 'Performance',
+    column: 'qPerformance',
     percent: false,
     goodBad: true
   }

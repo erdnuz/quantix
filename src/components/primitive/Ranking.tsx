@@ -2,15 +2,13 @@
 import React from 'react';
 
 function interpolateColor(percentile: number, goodBad = true): string {
-  // Good-bad color scheme
-  const red = [190, 15, 15]; // #c00f0c
-  const yellow = [230, 180, 50]; // #e8b931
-  const green = [0, 90, 50]; // #2ECC71
+  const red = [190, 15, 15];
+  const yellow = [230, 180, 50];
+  const green = [0, 90, 50];
 
-  // Neutral color scheme
-  const p1 = [240, 130, 200]; // rgb(240, 130, 200)
-  const p2 = [200, 80, 160];  // rgb(200, 80, 160)
-  const p3 = [160, 30, 120];  // rgb(160, 30, 120)
+  const p1 = [240, 130, 200];
+  const p2 = [200, 80, 160];
+  const p3 = [160, 30, 120];
 
   const [c1, c2, c3] = goodBad ? [red, yellow, green] : [p1, p2, p3];
 
@@ -51,29 +49,31 @@ export const Ranking: React.FC<RankingProps> = ({
   number = null,
 }) => {
   const isNone = score === null || score === undefined || score === 'none';
-  const color = isNone
-    ? 'var(--sds-color-background-default-tertiary)'
-    : interpolateColor(Number(score), goodBad);
-  const displayScore = isNone ? 'N/A' : (100 * Number(score)).toFixed(0);
   const width = isNone ? '100%' : `${clip(Number(score))}%`;
+  const displayScore = isNone ? '—' : (number ?? (100 * Number(score)).toFixed(0));
+  const barColor = isNone ? '#d1d5db' : interpolateColor(Number(score), goodBad); // gray-300 for missing
 
   return (
-    <div className="flex w-full items-center gap-2.5 md:flex-col md:gap-0.5">
+    <div className="flex w-full justify-center items-center md:flex-col">
+      {/* Number label for medium+ screens */}
       {!barOnly && (
         <p
-          className={`${
-            large ? 'text-lg md:text-base font-semibold' : 'text-base md:text-sm'
-          } ${number ? 'w-30 md:w-10' : 'w-15 md:w-7.5'} m-0`}
+          className={`hidden md:flex text-center ${
+            large ? 'text-base md:text-lg font-semibold' : 'sm:text-sm md:text-base'
+          } m-0`}
         >
-          {number ?? displayScore}
+          {displayScore}
         </p>
       )}
-      <div className="w-full">
+
+      <div className="w-full px-1 sm:px-0">
         <div
-          className={`h-2.5 ${large ? 'h-5' : ''}`}
-          style={{ width, backgroundColor: color, borderRadius: '9999px' }}
+          className={`h-2.5 ${large ? 'h-5' : ''} rounded-full`}
+          style={{ width, backgroundColor: barColor }}
         />
       </div>
+
+      
     </div>
   );
 };

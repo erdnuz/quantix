@@ -1,40 +1,30 @@
 'use client';
-
-import { Loading } from '@/components/primitive';
 import { Hero, ImagePanel } from '../components/composition';
 import { useState, useEffect } from 'react';
 
 const Home: React.FC = () => {
-  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    // Initial theme
-    const initialTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-    setCurrentTheme(initialTheme);
-
-    // Observe class changes on <html>
-    const themeObserver = new MutationObserver(() => {
-      setCurrentTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    });
-
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-
-    return () => themeObserver.disconnect();
-  }, []);
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(
+        typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches?
+        'dark':'light'
+      );
+    
+    // Watch for system theme changes
+    useEffect(() => {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handler = (e: MediaQueryListEvent) => setCurrentTheme(e.matches?'dark':'light');
+  
+      mediaQuery.addEventListener('change', handler);
+      return () => mediaQuery.removeEventListener('change', handler);
+    }, []);
 
 
   return (
-    <div className="flex flex-col gap-16 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50">
+    <div className="flex flex-col gap-4 sm:gap-12">
       <Hero 
         title="Quantix" 
         subtitle="Empowering Investors with Data-Driven Insights" 
       />
-      <div className="flex flex-col p-12 gap-12" >
+      <div className="flex flex-col p-4 gap-4 sm:p-8 sm:gap-8 md:p-12 md:gap-12" >
       <ImagePanel
         title="Build and Explore Portfolios"
         subtitle="Community Portfolios for Every Investor"

@@ -21,18 +21,32 @@ export const Card: React.FC<ProxyAsset> = ({
 
   return (
     <div className="
-      flex flex-col items-center gap-2 p-4 sm:p-6 
-      border border-border-light dark:border-border-dark 
-      rounded-lg max-w-[180px] cursor-pointer 
-      shadow-lg
-      bg-surface-light dark:bg-surface-dark 
-      hover:bg-surface-light-hover dark:hover:bg-surface-dark-hover
-      transition-colors
-    ">
-      <h2 className="text-lg font-semibold truncate text-primary-light dark:text-primary-dark">{ticker}</h2>
-      <h1 className="text-xl font-bold truncate max-w-[160px] text-primary-light dark:text-primary-dark">{name}</h1>
-      <p className="text-sm truncate max-w-[180px] text-secondary-light dark:text-secondary-dark">{category}</p>
-      <p className="text-sm truncate max-w-[180px] text-secondary-light dark:text-secondary-dark">${size?formatLargeNumber(size): size}</p>
-    </div>
+        flex flex-col items-center gap-1 sm:gap-2
+        w-full sm:w-[180px] p-2 sm:p-6
+        border border-border-light dark:border-border-dark
+        rounded-lg cursor-pointer shadow-lg
+        bg-surface-light dark:bg-surface-dark
+        hover:bg-surface-light-hover dark:hover:bg-surface-dark-hover
+        transition-colors
+      "
+    >
+
+      <h2 className="text-sm sm:text-lg font-semibold truncate w-full text-center text-primary-light dark:text-primary-dark">
+        {ticker}
+      </h2>
+
+      <h1 className="text-base sm:text-lg md:text-xl font-bold truncate w-full text-center sm:max-w-[160px] text-primary-light dark:text-primary-dark">
+        {name}
+      </h1>
+
+      <p className="text-xs sm:text-sm truncate w-full text-center sm:max-w-[160px] text-secondary-light dark:text-secondary-dark">
+        {category}
+      </p>
+
+      <p className="text-xs sm:text-sm truncate w-full text-center sm:max-w-[160px] text-secondary-light dark:text-secondary-dark">
+        ${size ? formatLargeNumber(size) : size}
+      </p>
+
+</div>
   );
 };

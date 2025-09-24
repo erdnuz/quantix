@@ -8,9 +8,10 @@ const NotFound: React.FC = () => {
       <main className="flex flex-col items-start justify-start p-16 gap-4 max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold">Oops! Page Not Found</h1>
         <p className="text-lg leading-relaxed">
-          The page you're looking for doesn't exist or has been moved. <br />
-          It's possible you entered the wrong URL, or the page has been removed.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved. <br />
+          It&apos;s possible you entered the wrong URL, or the page has been removed.
         </p>
+
         <div className="flex flex-row gap-2 mt-4">
           <Link
             href="/"

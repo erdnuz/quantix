@@ -10,15 +10,16 @@ import {
   CorrelationTable,
   AnalysisCompare
 } from '../../components/composition';
-import { Button, TabGroup, Card, Search, Loading } from '../../components/primitive';
+import { Button, Card, Search, Loading } from '../../components/primitive';
 import { getAssetData } from '../../../services/firebase/db';
 import { AssetTab, FullETF, FullStock, ProxyAsset } from '../../../types';
 import { getCompareData } from '../../../services/firebase/api';
-import { METRICS, Q, tabOptions } from '../../../options';
+import {  ETF_METRICS, Q_ETF, Q_STOCK, STOCK_METRICS, tabOptions } from '../../../options';
+import { ResponsiveTabs } from '@/components/primitive/TabGroup';
 
 const Compare: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<AssetTab>('Profile');
-  const [tickers, setTickers] = useState<FullStock[] | FullETF[]>([]);
+  const [tickers, setTickers] = useState<(FullStock | FullETF)[]>([]);
   const [corr, setCorr] = useState<Record<string, Record<string, number>>>({});
   const [chartData, setChartData] = useState<Record<string, { time: string; value: number }[]>>({});
   const [loading, setLoading] = useState<boolean>(true);
@@ -52,29 +53,23 @@ const Compare: React.FC = () => {
 
   const addTicker = async (
     ticker: string,
-    setData: React.Dispatch<React.SetStateAction<FullStock[] | FullETF[]>>
+    setData: React.Dispatch<React.SetStateAction<(FullStock | FullETF)[]>>
   ) => {
     const d = await getAssetData({ ticker });
     if (!d) return;
     if(tickers[0]&&tickers[0].assetClass != d.assetClass) return;
-
-    setData((prev) => {
-      if (d.assetClass === 'Equity') {
-        return [...(prev as FullStock[]), d as FullStock];
-      } else {
-        return [...(prev as FullETF[]), d as FullETF];
-      }
-    });
+  
+    setData((prev) => [...prev, d as FullStock | FullETF]);
   };
 
   
 
 
-  const addTickers = async (tickers: string[], setData: React.Dispatch<React.SetStateAction<FullStock[] | FullETF[]>>) => {
-    const data: FullStock[] | FullETF[] = [];
+  const addTickers = async (tickers: string[], setData: React.Dispatch<React.SetStateAction<(FullStock | FullETF)[]>>) => {
+    const data: (FullStock | FullETF)[] = [];
     for (const t of tickers) {
       const d = await getAssetData({ticker:t});
-      if (d) data.push(d as any);
+      if (d) data.push(d as FullStock | FullETF);
     }
     if (data.length > 1) setData(data);
   };
@@ -93,10 +88,18 @@ const Compare: React.FC = () => {
       setLoading(true);
       getCompareData({tickers:tickers.map((t) => t.ticker)}).then((data) => {
         if (data) {
-          const dataList = Object.keys(data.plot).reduce((acc: any, ticker) => {
-            acc[ticker] = Object.entries(data.plot[ticker]).map(([time, value]) => ({ time, value }));
-            return acc;
-          }, {});
+          const dataList: Record<string, { time: string; value: number }[]> = Object.keys(data.plot).reduce(
+            (acc: Record<string, { time: string; value: number }[]>, ticker) => {
+              acc[ticker] = Object.entries(data.plot[ticker]).map(([time, value]) => ({
+                time,
+                value: Number(value),
+              }));
+              return acc;
+            },
+            {}
+          );
+
+
           setChartData(dataList);
           setCorr(data.corr);
           setPrices(data.prices);
@@ -114,9 +117,19 @@ const Compare: React.FC = () => {
       />
 
       <div className="flex flex-col gap-6 w-full p-6">
-        <div className="flex flex-wrap justify-center gap-6">
+        <div
+          className="
+            grid gap-4 sm:gap-6 mt-4
+            grid-cols-1
+            sm:grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-4
+            xl:grid-cols-5
+            justify-items-center
+          "
+        >
           {tickers.map((competitor, index) => (
-            <Link key={index} href={`/metrics/${competitor.ticker}/`}>
+            <Link key={index} href={`/metrics/${competitor.ticker}/`} className="w-full">
               <Card
                 ticker={competitor.ticker}
                 name={competitor.name}
@@ -128,6 +141,7 @@ const Compare: React.FC = () => {
             </Link>
           ))}
         </div>
+
 
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-4 justify-center items-center w-full">
           <Button 
@@ -153,41 +167,51 @@ const Compare: React.FC = () => {
 
       {tickers.length > 1 ? (
         loading ? (
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-2 sm:mt-6">
             <Loading />
           </div>
         ) : (
-          <div className="flex flex-col gap-8 p-12">
+          <div className="flex flex-col gap-4 p-6 sm:gap-8 sm:p-12">
 
 
-            <TabGroup<AssetTab>
+            <ResponsiveTabs<AssetTab>
               currentTab={currentTab}
               onSelect={setCurrentTab}
               options={tabOptions(tickers[0].assetClass).filter(o => o !== 'Q-Scores')}
             />
 
-            <CompareTable 
+            {tickers[0].assetClass=='Equity'?<CompareTable<FullStock>
               currentTab={currentTab} 
-              options={METRICS(tickers[0].assetClass)} 
-              data={tickers} 
-            />
+              options={STOCK_METRICS} 
+              data={tickers as FullStock[]} 
+            />:<CompareTable<FullETF>
+              currentTab={currentTab} 
+              options={ETF_METRICS} 
+              data={tickers  as FullETF[]} 
+            />}
 
             <div className="mt-6">
-              <h1 className="text-2xl font-semibold mb-3">Chart</h1>
+              <h1 className="text-lg sm:text-2xl font-semibold mb-3">Chart</h1>
               <CompareChart 
                 lines={chartData} 
               />
             </div>
 
-            <CompareTable 
+            {tickers[0].assetClass=='Equity'?<CompareTable<FullStock>
               currentTab={'Q-Scores'} 
-              options={Q} 
-              data={tickers} 
+              options={Q_STOCK} 
+              data={tickers as FullStock[]} 
               style={1} 
               header="Q-Scores" 
-            />
+            />:<CompareTable<FullETF>
+              currentTab={'Q-Scores'} 
+              options={Q_ETF} 
+              data={tickers as FullETF[]} 
+              style={1} 
+              header="Q-Scores" 
+            />}
 
-            {tickers.some((ticker) => ticker.assetClass === 'Equity' && (ticker as any)?.numAn > 0) && (
+            {tickers.some((ticker) => ticker.assetClass === 'Equity' && (ticker as FullStock)?.numAn > 0) && (
               <AnalysisCompare 
                 tickers={tickers} 
                 prices={prices} 
@@ -195,7 +219,7 @@ const Compare: React.FC = () => {
             )}
 
             <div className="mt-6">
-              <h1 className="text-2xl font-semibold mb-3">Correlation</h1>
+              <h1 className="text-lg sm:text-2xl font-semibold mb-3">Correlation</h1>
               <CorrelationTable 
                 data={corr} 
               />
@@ -204,8 +228,8 @@ const Compare: React.FC = () => {
         )
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <h1 className="text-3xl font-bold mb-2">Nothing to show...</h1>
-          <h2 className="text-xl">Add at least 2 assets to start comparing</h2>
+          <h1 className="text-xl sm:text-3xl font-bold mb-2">Nothing to show...</h1>
+          <h2 className="text-base sm:text-xl">Add at least 2 assets to start comparing</h2>
         </div>
       )}
     </div>

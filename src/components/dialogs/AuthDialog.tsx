@@ -7,7 +7,7 @@ import { User } from "../../../types";
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  handleSaveLoginChange: (value: any) => void; // adjust type as needed
+  handleSaveLoginChange: (value: boolean) => void; // adjust type as needed
   setCurrentUser: (user: User) => void;
 }
 
