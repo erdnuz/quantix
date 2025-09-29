@@ -97,6 +97,7 @@ export interface TableStock extends ProxyAsset {
         priceToSales:number;
         priceToBook:number;
         priceToEarningsToGrowth:number;
+        priceToSalesToGrowth:number;
 
         avgDrawdown:number;
         maxDrawdown:number;
@@ -115,12 +116,9 @@ export interface TableStock extends ProxyAsset {
         martin:number;
         omega:number;
 
-        wacc:number;
-        altmanZ:number;
         assetsToLiabilities:number;
         debtToAssets:number;
         debtToEquity:number;
-        debtToEBIT:number;
 
         qOverall:number;
         qGrowth:number;

@@ -22,7 +22,7 @@ export const Card: React.FC<ProxyAsset> = ({
   return (
     <div className="
         flex flex-col items-center gap-1 sm:gap-2
-        w-full sm:w-[180px] p-2 sm:p-6
+        w-full p-2 sm:p-6
         border border-border-light dark:border-border-dark
         rounded-lg cursor-pointer shadow-lg
         bg-surface-light dark:bg-surface-dark

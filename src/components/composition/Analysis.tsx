@@ -45,54 +45,58 @@ export const Analysis: React.FC<AnalysisProps> = ({
   return (
     <div
       className={`
-        border border-border-light dark:border-border-dark 
-        rounded-xl p-4 sm:p-5 flex flex-col gap-4 
+        bg-surface-light-secondary dark:bg-surface-dark-secondary border border-border-light-secondary dark:border-border-dark-secondary
+        rounded-xl p-4 sm:p-6 lg:p-8 flex flex-col max-w-4xl gap-4
         ${className}
       `}
     >
       {/* Header */}
-      <div className="flex flex-row justify-between gap-2">
-        <h3 className="text-base sm:text-lg font-semibold m-0">
+      <div className="flex flex-row items-baseline justify-between md:justify-start md:gap-4 gap-2">
+        <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold m-0">
           Analysis
         </h3>
-        <p className="text-xs sm:text-sm text-secondary-light dark:text-secondary-dark">
+        <p className="text-xs sm:text-sm lg:text-base text-secondary-light dark:text-secondary-dark pb-1">
           {numAnalysts} Analysts
         </p>
       </div>
 
-      {/* Recommendation */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 items-center">
-        <h2 className="text-sm sm:text-base font-medium">Recommendation</h2>
-        <p className={`text-sm sm:text-base m-0 ${getRecommendationColor()}`}>
-          {getRecommendation()}
-        </p>
-      </div>
 
-      {/* Max Target */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 items-center">
-        <h2 className="text-sm sm:text-base font-medium">Max. Price Target</h2>
-        <p className="text-sm sm:text-base m-0">
-          {maxTarget ? maxTarget.toFixed(2) : "NaN"}{" "}
-          {maxTarget ? formatPercentage(maxTarget / price) : ""}
-        </p>
-      </div>
+      {/* Data Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 items-center">
+        {/* Recommendation */}
+        <div className="flex justify-between md:justify-start md:gap-4 items-center">
+          <h2 className="text-sm sm:text-base lg:text-lg font-medium">Recommendation</h2>
+          <p className={`text-sm sm:text-base lg:text-lg m-0 ${getRecommendationColor()}`}>
+            {getRecommendation()}
+          </p>
+        </div>
 
-      {/* Mean Target */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 items-center">
-        <h2 className="text-sm sm:text-base font-medium">Mean Price Target</h2>
-        <p className="text-sm sm:text-base m-0">
-          {meanTarget ? meanTarget.toFixed(2) : "NaN"}{" "}
-          {meanTarget ? formatPercentage(meanTarget / price) : ""}
-        </p>
-      </div>
+        {/* Max Target */}
+        <div className="flex justify-between md:justify-start md:gap-4 items-center">
+          <h2 className="text-sm sm:text-base lg:text-lg font-medium">Max. Price Target</h2>
+          <p className="text-sm sm:text-base lg:text-lg m-0">
+            {maxTarget ? maxTarget.toFixed(2) : "NaN"}{" "}
+            {maxTarget ? formatPercentage(maxTarget / price) : ""}
+          </p>
+        </div>
 
-      {/* Min Target */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 items-center">
-        <h2 className="text-sm sm:text-base font-medium">Min. Price Target</h2>
-        <p className="text-sm sm:text-base m-0">
-          {minTarget ? minTarget.toFixed(2) : "NaN"}{" "}
-          {minTarget ? formatPercentage(minTarget / price) : ""}
-        </p>
+        {/* Mean Target */}
+        <div className="flex justify-between md:justify-start md:gap-4 items-center">
+          <h2 className="text-sm sm:text-base lg:text-lg font-medium">Mean Price Target</h2>
+          <p className="text-sm sm:text-base lg:text-lg m-0">
+            {meanTarget ? meanTarget.toFixed(2) : "NaN"}{" "}
+            {meanTarget ? formatPercentage(meanTarget / price) : ""}
+          </p>
+        </div>
+
+        {/* Min Target */}
+        <div className="flex justify-between md:justify-start md:gap-4 items-center">
+          <h2 className="text-sm sm:text-base lg:text-lg font-medium">Min. Price Target</h2>
+          <p className="text-sm sm:text-base lg:text-lg m-0">
+            {minTarget ? minTarget.toFixed(2) : "NaN"}{" "}
+            {minTarget ? formatPercentage(minTarget / price) : ""}
+          </p>
+        </div>
       </div>
     </div>
   );

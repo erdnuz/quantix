@@ -377,28 +377,6 @@ export const selectOptions: (currentPill: AssetClass) => Record<AssetTab, Select
   }
   ],
   'Leverage': [
-    {
-    column: 'wacc',
-    label: 'WACC',
-    options: [
-      { label: 'Any', lowerBound: null, upperBound: null },
-      { label: 'Fair', lowerBound: null, upperBound: 0.2 },
-      { label: 'Good', lowerBound: null, upperBound: 0.15 },
-      { label: 'Great', lowerBound: null, upperBound: 0.1 },
-      { label: 'Excellent', lowerBound: null, upperBound: 0.05 },
-    ]
-  },
-  {
-    column: 'altmanZ',
-    label: 'Altman-Z',
-    options: [
-      { label: 'Any', lowerBound: null, upperBound: null },
-      { label: 'Fair', lowerBound: 2, upperBound: null},
-      { label: 'Good', lowerBound: 3, upperBound: null },
-      { label: 'Great', lowerBound: 5, upperBound: null },
-      { label: 'Excellent', lowerBound: 8, upperBound: null },
-    ]
-  },
   {
     column: 'assetsToLiabilities',
     label: 'Assets / Liabilities',
@@ -477,6 +455,17 @@ export const selectOptions: (currentPill: AssetClass) => Record<AssetTab, Select
       { label: '< 0.8', lowerBound: null, upperBound: 0.8 },
       { label: '< 1.2', lowerBound: null, upperBound: 1.2 },
       { label: '< 2', lowerBound: null, upperBound: 2 },
+    ]
+  },
+  {
+    column: 'priceToSalesToGrowth',
+    label: 'PSG',
+    options: [
+      { label: 'Any', lowerBound: null, upperBound: null },
+      { label: '< 0.02', lowerBound: null, upperBound: 0.02 },
+      { label: '< 0.04', lowerBound: null, upperBound: 0.04 },
+      { label: '< 0.10', lowerBound: null, upperBound: 0.10 },
+      { label: '< 0.15', lowerBound: null, upperBound: 0.15 },
     ]
   }
   ],
@@ -598,11 +587,11 @@ export const STOCK_METRICS: Partial<Record<AssetTab, RankingOption<FullStock>[]>
     { display: 'VaR 10%', column: 'var10', percent: true, goodBad: true },
   ],
   'Valuation': [
-    { display: 'WACC', column: 'wacc', percent: false, goodBad: true },
     { display: 'Price to Earnings', column: 'priceToEarnings', percent: false, goodBad: true },
     { display: 'Price to Book', column: 'priceToBook', percent: false, goodBad: true },
     { display: 'Price to Sales', column: 'priceToSales', percent: false, goodBad: true },
     { display: 'PE to Growth', column: 'priceToEarningsToGrowth', percent: false, goodBad: true },
+    { display: 'PS to Growth', column: 'priceToSalesToGrowth', percent: false, goodBad: true },
   ],
   'Profitability': [
     { display: 'Profit Margin', column: 'profitMargin', percent: true, goodBad: true },
@@ -614,9 +603,7 @@ export const STOCK_METRICS: Partial<Record<AssetTab, RankingOption<FullStock>[]>
   'Leverage': [
     { display: 'Debt to Equity', column: 'debtToEquity', percent: false, goodBad: true },
     { display: 'Debt to Assets', column: 'debtToAssets', percent: false, goodBad: true },
-    { display: 'Debt to EBITDA', column: 'debtToEBIT', percent: false, goodBad: true },
     { display: 'Current Ratio', column: 'assetsToLiabilities', percent: false, goodBad: true },
-    { display: 'Altman Z-Score', column: 'altmanZ', percent: false, goodBad: true },
   ],
 };
 

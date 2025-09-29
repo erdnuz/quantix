@@ -119,17 +119,18 @@ const Compare: React.FC = () => {
       <div className="flex flex-col gap-6 w-full p-6">
         <div
           className="
-            grid gap-4 sm:gap-6 mt-4
-            grid-cols-1
-            sm:grid-cols-2
-            md:grid-cols-3
-            lg:grid-cols-4
-            xl:grid-cols-5
-            justify-items-center
+            grid grid-cols-1 sm:flex flex-wrap
+            justify-center   /* centers horizontally */
+            items-center     /* centers vertically */
+            gap-4            /* optional spacing */
           "
         >
           {tickers.map((competitor, index) => (
-            <Link key={index} href={`/metrics/${competitor.ticker}/`} className="w-full">
+            <Link
+              key={index}
+              href={`/metrics/${competitor.ticker}/`}
+              className="flex"
+            >
               <Card
                 ticker={competitor.ticker}
                 name={competitor.name}
@@ -143,6 +144,7 @@ const Compare: React.FC = () => {
         </div>
 
 
+
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-4 justify-center items-center w-full">
           <Button 
             label="Clear Selection" 
@@ -154,7 +156,6 @@ const Compare: React.FC = () => {
             filter= {(asset : ProxyAsset)=>{
               
               if (tickers?.[0]) {
-                console.log(asset.assetClass, tickers[0].assetClass)
                 return asset.assetClass == tickers[0].assetClass && !tickers.some((t)=>t.ticker==asset.ticker)
               }
               return true

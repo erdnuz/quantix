@@ -268,10 +268,6 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
         anAvg:data['an-avg'],
         anMax:data['an-max'],
 
-        wacc:data['wacc'],
-        waccPS:data['wacc_SECT'],
-        waccPO:data['wacc_OVER'],
-
         assetClass,
         name: data['name'],
         ticker: assetSnap.id,
@@ -333,6 +329,9 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
         priceToEarningsToGrowth: data['peg'],
         priceToEarningsToGrowthPS: data['peg_SECT'],
         priceToEarningsToGrowthPO: data['peg_OVER'],
+        priceToSalesToGrowth: data['psg'],
+        priceToSalesToGrowthPS: data['psg_SECT'],
+        priceToSalesToGrowthPO: data['psg_OVER'],
 
         avgDrawdown: data['avg-d'],
         avgDrawdownPS: data['avg-d_SECT'],
@@ -378,9 +377,6 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
         omegaPS: data['omega_SECT'],
         omegaPO: data['omega_OVER'],
 
-        altmanZ: data['altman-z'],
-        altmanZPS: data['altman-z_SECT'],
-        altmanZPO: data['altman-z_OVER'],
         assetsToLiabilities: data['assets-l'],
         assetsToLiabilitiesPS: data['assets-l_SECT'],
         assetsToLiabilitiesPO: data['assets-l_OVER'],
@@ -390,9 +386,6 @@ export async function getAssetData({ticker} : {ticker: string}): Promise<FullSto
         debtToEquity: data['debt-e'],
         debtToEquityPS: data['debt-e_SECT'],
         debtToEquityPO: data['debt-e_OVER'],
-        debtToEBIT: data['debt-ebit'],
-        debtToEBITPS: data['debt-ebit_SECT'],
-        debtToEBITPO: data['debt-ebit_OVER'],
 
         qOverall: data['OVERALL'],
         qOverallPS: data['OVERALL_SECT'],
@@ -604,6 +597,7 @@ export async function getTableData({ equity, onSuccess, onError }: GetTableDataP
           priceToSales: data['p-sales'],
           priceToBook: data['p-book'],
           priceToEarningsToGrowth: data['peg'],
+          priceToSalesToGrowth: data['psg'],
 
           avgDrawdown: data['avg-d'],
           maxDrawdown: data['max-d'],
@@ -621,12 +615,9 @@ export async function getTableData({ equity, onSuccess, onError }: GetTableDataP
           martin: data['martin'],
           omega: data['omega'],
 
-          altmanZ: data['altman-z'],
           assetsToLiabilities: data['assets-l'],
           debtToAssets: data['debt-a'],
           debtToEquity: data['debt-e'],
-          debtToEBIT: data['debt-ebit'],
-          wacc: data['wacc'],
 
           qOverall: data['OVERALL'],
           qGrowth: data['G'],

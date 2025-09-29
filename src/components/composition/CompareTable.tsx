@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Ranking } from '../primitive';
 import { AssetTab, FullETF, FullStock } from '../../../types';
 import { RankingOption } from './RankingTable';
@@ -20,7 +20,7 @@ export function CompareTable<T extends FullStock | FullETF>({
   style = 0,
   header = '',
 }: CompareTableProps<T>) {
-  if (!data.length) return null;
+  
 
   const formatNumber = (number: number | string) => {
     const num = Number(number);
@@ -29,7 +29,22 @@ export function CompareTable<T extends FullStock | FullETF>({
     if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
     if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
     return `${num.toFixed(2)}`;
-  };
+  };  
+
+  const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  
+
+  useEffect(() => {
+
+    const resizeHandler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', resizeHandler);
+
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+    };
+  }, []);
+  const firstColWidth = windowWidth>640 ? 140 : 80;
+
 
   const formatPercent = (number: number | string) => `${(Number(number) * 100).toFixed(2)}%`;
 
@@ -39,9 +54,9 @@ export function CompareTable<T extends FullStock | FullETF>({
       <div
         className="grid w-full gap-2 sm:gap-4 items-center font-semibold"
         style={{
-          gridTemplateColumns: `80px repeat(${data.length}, minmax(0,1fr))`,
-        }}
-      >
+          gridTemplateColumns: `${firstColWidth}px repeat(${data.length}, minmax(0, 1fr))`,
+        }}>
+      
         <div className="text-base sm:text-lg md:text-2xl px-1 sm:px-2">{header}</div>
         {data.map((ticker, idx) => (
           <div key={idx} className="flex justify-left sm:justify-center items-center px-1 sm:px-2">
@@ -59,9 +74,8 @@ export function CompareTable<T extends FullStock | FullETF>({
             key={v.column as string}
             className="grid w-full gap-2 sm:gap-4 items-end"
             style={{
-              gridTemplateColumns: `80px repeat(${data.length}, minmax(0,1fr))`,
-            }}
-          >
+              gridTemplateColumns: `${firstColWidth}px repeat(${data.length}, minmax(0, 1fr))`,
+            }}>
             {/* Metric */}
             <div className="flex flex-col justify-end px-1 sm:px-2">
               <h3

@@ -30,7 +30,7 @@ export const ImagePanel: React.FC<ImagePanelProps> = ({
       className={`
         flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'}
         items-center gap-6 lg:gap-12 p-6 sm:p-8 lg:p-12
-        bg-light dark:bg-dark rounded-xl shadow-sm
+        bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm
       `}
     >
       {/* Image */}
@@ -38,9 +38,14 @@ export const ImagePanel: React.FC<ImagePanelProps> = ({
         <Image
           src={image}
           alt={title}
-          className="w-full h-auto rounded-lg object-cover shadow-lg"
+          width={800}      // set a reasonable width based on your design
+          height={600}     // set height to maintain the image's natural aspect ratio
+          className="w-full h-auto rounded-lg shadow-lg"
         />
       </div>
+
+
+
 
       {/* Text Content */}
       <div className="flex-1 text-center sm:text-center lg:text-left space-y-4">

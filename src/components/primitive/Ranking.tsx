@@ -48,7 +48,12 @@ export const Ranking: React.FC<RankingProps> = ({
   goodBad = true,
   number = null,
 }) => {
-  const isNone = score === null || score === undefined || score === 'none';
+  const isNone =
+  score === null ||
+  score === undefined ||
+  score === 'none' ||
+  Number.isNaN(Number(score));
+
   const width = isNone ? '100%' : `${clip(Number(score))}%`;
   const displayScore = isNone ? '—' : (number ?? (100 * Number(score)).toFixed(0));
   const barColor = isNone ? '#d1d5db' : interpolateColor(Number(score), goodBad); // gray-300 for missing

@@ -22,9 +22,13 @@
   --color-secondary-light: #4B5563; /* muted gray for secondary text */
   --color-secondary-dark: #9CA3AF;  /* muted gray for dark mode */
   --color-accent-light: #1F2937;    /* darker accent for headings, improved contrast */
-  --color-accent-dark: #D1D5DB;     /* bright accent for dark mode */
-  --color-border-light: #E2E8F0;    /* subtle border with modern tone */
-  --color-border-dark: #2D2D2D;     /* slightly softer than pure black */
+  --color-accent-dark: #D1D5DB;  
+     /* bright accent for dark mode */
+  --color-border-light: #E2E8F0;  
+  --color-border-light-secondary: #D0D0D0; 
+     /* subtle border with modern tone */
+  --color-border-dark: #2D2D2D;   /* subtle border with modern tone */
+  --color-border-dark-secondary: #4D4D4D;     /* slightly softer than pure black */
 
   /* Brand Colors */
   --color-brand-light: #1D4ED8;     /* more vivid primary blue for light mode */
@@ -33,10 +37,22 @@
   --color-brand-border: #DBEAFE;    /* subtle blue border for light mode */
 
   /* Status Colors */
-  --color-good: #22C55E;   /* brighter success green */
-  --color-bad: #EF4444;    /* red remains strong for errors */
-  --color-warning: #FBBF24; /* warm yellow for warnings */
-  --color-info: #3B82F6;    /* consistent info blue */
+  /* Success / Good */   /* very light green for backgrounds or highlights */
+--color-good-dark: #22C55E;         /* primary success green */
+--color-good-light: #166534;    /* darker green for text or dark mode accents */
+
+/* Error / Bad */   /* light red/pink for backgrounds */
+--color-bad-dark: #EF4444;           /* primary red */
+--color-bad-light: #B91C1C;     /* deep red for dark mode or text */
+
+/* Warning *//* pale yellow for highlights */
+--color-warning-dark: #FBBF24;       /* primary warm yellow */
+--color-warning-light: #B45309;  /* darker amber for text or dark mode */
+
+/* Info */  /* light blue for backgrounds */
+--color-info-dark: #3B82F6;          /* primary info blue */
+--color-info-light: #1E40AF;     /* deep blue for text or dark mode */
+  /* consistent info blue */
 
   /* Hover States */
   --color-primary-hover: #111827;    /* deeper slate hover */

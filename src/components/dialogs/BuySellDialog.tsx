@@ -174,7 +174,7 @@ export const BuySellDialog: React.FC<BuySellDialogProps> = ({ isOpen, onClose, t
                   <span className="flex gap-2">
                     <span>${projectedCash.toFixed(2)}</span>
                     {quantity > 0 && price && (
-                      <span className={isNegativeCash ? "text-bad" : "text-good"}>
+                      <span className={isNegativeCash ? "text-bad-light dark:text-bad-dark" : "text-good-light dark:text-good-dark"}>
                         ({pill === 'Add' ? "-" : "+"}${(quantity * price).toFixed(2)})
                       </span>
                     )}
@@ -189,7 +189,7 @@ export const BuySellDialog: React.FC<BuySellDialogProps> = ({ isOpen, onClose, t
                   <span className="flex gap-2">
                     <span>{projectedShares}</span>
                     {quantity > 0 && (
-                      <span className={isNegativeShares ? "text-bad" : "text-good"}>
+                      <span className={isNegativeShares ? "text-bad-light dark:text-bad-dark" : "text-good-light dark:text-good-dark"}>
                         ({pill === 'Remove' ? "-" : "+"}{quantity})
                       </span>
                     )}

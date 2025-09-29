@@ -35,26 +35,46 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
 
   // Filtered & sorted suggestions
   const filteredSuggestions = useMemo(() => {
-    if (!query) return [];
+  if (!query) return [];
 
-    const lowerQuery = query.toLowerCase();
-    const fillerWords = /(the|inc\.|company|corporation)/gi;
+  const lowerQuery = query.toLowerCase();
+  const fillerWords = /(the|inc\.|company|corporation)/gi;
 
-    const filtered = suggestions.filter(({ ticker, name }) => {
-      const cleanName = name?.toLowerCase().replace(fillerWords, '').trim();
-      return ticker.toLowerCase().startsWith(lowerQuery) || cleanName?.startsWith(lowerQuery);
-    });
+  const filtered = suggestions.filter((value) => {
+    // Safely extract name and ticker
+    const nameStr =
+      typeof value.name === 'string'
+        ? value.name.toLowerCase().replace(fillerWords, '').trim()
+        : '';
+    const tickerStr =
+      typeof value.ticker === 'string' ? value.ticker.toLowerCase() : '';
+
+    return (
+      tickerStr.startsWith(lowerQuery) || nameStr.startsWith(lowerQuery)
+    );
+  });
+
+
 
     const finalFiltered = filter ? filtered.filter(filter) : filtered;
 
     // Sort matches: exact start matches first, then by size descending
     return finalFiltered.sort((a, b) => {
-      const aStarts = a.ticker.toLowerCase().startsWith(lowerQuery) || a.name.toLowerCase().startsWith(lowerQuery);
-      const bStarts = b.ticker.toLowerCase().startsWith(lowerQuery) || b.name.toLowerCase().startsWith(lowerQuery);
+      const aTicker = typeof a.ticker === 'string' ? a.ticker.toLowerCase() : '';
+      const aName   = typeof a.name === 'string' ? a.name.toLowerCase() : '';
+      const bTicker = typeof b.ticker === 'string' ? b.ticker.toLowerCase() : '';
+      const bName   = typeof b.name === 'string' ? b.name.toLowerCase() : '';
+
+      const aStarts = aTicker.startsWith(lowerQuery) || aName.startsWith(lowerQuery);
+      const bStarts = bTicker.startsWith(lowerQuery) || bName.startsWith(lowerQuery);
+
       if (!aStarts && bStarts) return 1;
       if (aStarts && !bStarts) return -1;
-      return (b.size || 0) - (a.size || 0);
+
+      return (typeof b.size === 'number' ? b.size : 0) -
+            (typeof a.size === 'number' ? a.size : 0);
     });
+
   }, [query, suggestions, filter]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,10 +117,10 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
             bg-light dark:bg-dark shadow-sm
           "
         >
-          {(filter ? filteredSuggestions.filter(filter) : filteredSuggestions).slice(0, 5).map(({ ticker, name }, index) =>
+          {(filter ? filteredSuggestions.filter(filter) : filteredSuggestions).slice(0, 5).map((value:ProxyAsset, index) =>
             onClick ? (
               <div
-                key={ticker}
+                key={value.ticker}
                 className={`
                   cursor-pointer px-2 py-1 sm:px-4 sm:py-2
                   text-sm sm:text-base
@@ -108,14 +128,14 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
                   hover:bg-accent-light/10 dark:hover:bg-accent-dark/10
                   ${index === filteredSuggestions.length - 1 ? '' : 'border-b border-border-light dark:border-border-dark'}
                 `}
-                onClick={() => handleSelect(ticker)}
+                onClick={() => handleSelect(value.ticker)}
               >
-                <span className="font-semibold">{ticker}</span> - <span>{name}</span>
+                <span className="font-semibold">{value.ticker}</span> - <span>{value.name}</span>
               </div>
             ) : (
               <Link
-                key={ticker}
-                href={`/metrics/${ticker}/`}
+                key={value.ticker}
+                href={`/metrics/${value.ticker}/`}
                 className={`
                   block px-2 py-1 sm:px-4 sm:py-2 truncate
                   text-sm sm:text-base
@@ -127,7 +147,7 @@ export const Search: React.FC<SearchProps> = ({ label = 'Search', onClick = null
                   setQuery("")
                 }}
               >
-                <span className="font-semibold">{ticker}</span> - <span>{name}</span>
+                <span className="font-semibold">{value.ticker}</span> - <span>{value.name}</span>
               </Link>
             )
           )}

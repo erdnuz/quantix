@@ -20,12 +20,12 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({
 }) => {
   const formatPercentage = (value: number) => {
     const percentage = ((value - 1) * 100).toFixed(2);
-    const colorClass = parseFloat(percentage) >= 0 ? "text-good" : "text-bad";
+    const colorClass = parseFloat(percentage) >= 0 ? "text-good-light dark:text-good-dark" : "text-bad-light dark:text-bad-dark";
     return <span className={`${colorClass}`}>({percentage}%)</span>;
   };
 
   const metrics = [
-    { title: "Rec.", key: "anRec" },
+    { title: "Rating", key: "anRec" },
     { title: "Max. Target", key: "anMax" },
     { title: "Mean Target", key: "anAvg" },
     { title: "Min. Target", key: "anMin" },
@@ -45,12 +45,12 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({
 
       const colorClass =
         value < 3
-          ? "text-green-500 dark:text-green-400"
+          ? "text-good-light dark:text-good-dark"
           : value < 4
-          ? "text-gray-500 dark:text-gray-400"
+          ? "text-warning-light dark:text-warning-dark"
           : value < 6
-          ? "text-red-500 dark:text-red-400"
-          : "text-gray-400 dark:text-gray-500";
+          ? "text-bad-light dark:text-bad-dark"
+          : "text-light-secondary dark:text-dark-secondary";
 
       return (
         <h3 className={`text-xs sm:text-sm md:text-base font-medium ${colorClass} m-0 truncate`}>
@@ -68,7 +68,7 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({
   };
 
   return (
-    <div className="border border-border-light dark:border-border-dark rounded-xl mt-4 p-4 sm:p-5 shadow-lg bg-surface-light dark:bg-surface-dark overflow-x-auto">
+    <div className="border border-border-light-secondary dark:border-border-dark-secondary bg-surface-light-secondary dark:bg-surface-dark-secondary rounded-xl mt-4 p-4 sm:p-5 shadow-lg b overflow-x-auto">
       <div className="w-full sm:min-w-[400px]">
         {/* Header */}
         <div className="flex items-center py-2">
@@ -77,27 +77,32 @@ export const AnalysisCompare: React.FC<AnalysisCompareProps> = ({
             Ticker
           </h1>
           {metrics.map((metric, i) => (
-            <h2
-              key={i}
-              className={`${metric.key == 'anMax' || metric.key == 'anMin' ? 'hidden sm:flex': ''} flex-1 text-xs sm:text-sm md:text-base font-semibold text-center text-primary-light dark:text-primary-dark truncate min-w-0`}
-            >
-              {metric.title}
-            </h2>
-          ))}
+          <h2
+            key={i}
+            className={`
+              ${metric.key === 'anMax' || metric.key === 'anMin' ? 'hidden sm:inline' : 'inline'}
+              flex-1 text-xs sm:text-sm md:text-base font-semibold text-center text-primary-light dark:text-primary-dark
+              truncate overflow-hidden whitespace-nowrap min-w-0
+            `}
+          >
+            {metric.title}
+          </h2>
+        ))}
+
         </div>
 
         {/* Ticker Rows */}
         {tickers.map((ticker, i) => (
           <div
             key={i}
-            className="flex items-center py-2 border-t border-border-light dark:border-border-dark"
+            className="flex items-center py-2 border-t border-border-light-secondary dark:border-border-dark-secondary"
           >
             {/* Fixed-width Ticker */}
             <h2 className="w-[40px] sm:flex-1 text-xs sm:text-sm md:text-base font-medium text-primary-light dark:text-primary-dark truncate">
               {ticker.ticker}
             </h2>
             {metrics.map((metric, j) => (
-              <div key={j} className={`${metric.key == 'anMax' || metric.key == 'anMin' ? 'hidden sm:flex': ''} flex-1 text-center min-w-0`}>
+              <div key={j} className={`${metric.key == 'anMax' || metric.key == 'anMin' ? 'hidden sm:inline': 'inline'} flex-1 text-center min-w-0`}>
                 {renderValue(metric.key, ticker)}
               </div>
             ))}

@@ -73,8 +73,9 @@ const Metrics: React.FC = () => {
               <span
                 className={`text-xs sm:text-sm px-2 py-0.5 rounded-full border ${
                   Number(fastInfo?.change) >= 0
-                    ? 'border-good bg-good/20 text-good'
-                    : 'border-bad bg-bad/20 text-bad'
+                    ? 'border-good-light bg-good-light/20 text-good-light dark:border-good-dark dark:bg-good-dark/20 dark:text-good-dark'
+                    : 'border-bad-light bg-bad-light/20 text-bad-light dark:border-bad-dark dark:bg-bad-dark/20 dark:text-bad-dark'
+
                 }`}
               >
                 {fastInfo?.change !== undefined ? `${(100 * fastInfo.change).toFixed(2)}%` : ''}

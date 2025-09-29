@@ -52,8 +52,8 @@ const Cell: React.FC<CellProps> = ({
 
   const textColor = ((isPercent && !isHeader && !isNeutral) || isColored) && typeof children == "number"
     ? children >= 0
-      ? "text-good"
-      : "text-bad"
+      ? "text-good-light dark:text-good-dark"
+      : "text-bad-light dark:text-bad-dark"
     : "text-primary-light dark:text-primary-dark";
 
   return (

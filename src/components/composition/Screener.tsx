@@ -271,9 +271,9 @@ export const Screener: React.FC = () => {
     'Growth':[0, 0, 0, 0, 0],
     'Performance':[0, 0, 0, 0, 0, 0, 0],
     'Risk':[0, 0, 0, 0, 0, 0, 0],
-    'Valuation':[0, 0, 0, 0],
+    'Valuation':[0, 0, 0, 0, 0],
     'Profitability':[0, 0, 0, 0, 0, 0],
-    'Leverage':[0, 0, 0, 0, 0, 0],
+    'Leverage':[0, 0, 0],
 })
     if (cache[currentPill].length > 0) {
       setData(cache[currentPill]);
